@@ -170,6 +170,27 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 .confirm-title{font-size:18px;font-weight:600;margin-bottom:.25rem}
 .confirm-sub{font-size:13px;color:var(--txt2);margin-bottom:1rem}
 .obs-presets{display:flex;flex-wrap:wrap;gap:6px;padding:.75rem 1rem}
+/* BOBINAS */
+.bob-list{padding:.5rem 1rem;display:flex;flex-direction:column;gap:8px}
+.bob-row{background:var(--surf2);border:1px solid var(--bord);border-radius:var(--rs);padding:.625rem .75rem}
+.bob-row-head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.bob-num{font-size:11px;font-weight:600;color:var(--amber);font-family:var(--mono);flex:1}
+.bob-del{font-size:12px;padding:2px 8px;border:none;background:none;color:var(--red-tx);cursor:pointer;border-radius:4px}
+.bob-del:hover{background:var(--red-bg)}
+.bob-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bob-field{display:flex;flex-direction:column;gap:3px}
+.bob-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3)}
+.bob-input{font-family:var(--mono);font-size:15px;font-weight:700;border:1px solid var(--bord2);border-radius:var(--rs);padding:7px 8px;background:var(--surf);color:var(--txt);text-align:right;outline:none;width:100%}
+.bob-input:focus{border-color:var(--amber)}
+.bob-consumido{display:flex;align-items:center;justify-content:space-between;margin-top:6px;padding-top:6px;border-top:1px solid var(--bord)}
+.bob-consumido-label{font-size:12px;color:var(--txt2)}
+.bob-consumido-val{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--green-tx)}
+.bob-add{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:2px dashed var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:500;color:var(--txt3);background:none;width:100%;transition:all .15s}
+.bob-add:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-lt)}
+.bob-total-bar{display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem;border-top:1px solid var(--bord);background:var(--surf2)}
+.bob-total-label{font-size:12px;color:var(--txt2)}
+.bob-total-val{font-size:16px;font-weight:700;font-family:var(--mono);color:var(--amber)}
+.bob-total-info{font-size:11px;color:var(--txt3)}
 .obs-chip{font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--bord2);cursor:pointer;background:var(--surf2);color:var(--txt2);transition:all .15s}
 .obs-chip:hover,.obs-chip.sel{background:var(--amber);color:white;border-color:var(--amber)}
 .empty{text-align:center;padding:3rem 1rem;color:var(--txt3);font-size:14px}
@@ -308,30 +329,37 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
       <div class="t-section-head">Nueva corrida — <span id="t-corrida-num">Corrida 1</span></div>
 
       <!-- LAMINADO -->
-      <div style="padding:.5rem 1rem .25rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--amber-dk);background:var(--amber-lt)">Laminado</div>
-      <div class="t-teo-row">Teórico esta corrida → PET: <span id="t-teo-pet-corrida">—</span> &nbsp;|&nbsp; PE: <span id="t-teo-pe-corrida">—</span></div>
-      <div class="t-field">
-        <span class="t-field-name">kg PET recibidos</span>
-        <span class="t-field-unit">kg</span>
-        <div class="t-input-wrap">
-          <button class="t-step-btn" onclick="stepKg('c-pet',-10)">−</button>
-          <input class="t-kg-input" type="number" id="c-pet" value="0" min="0" step="1" oninput="updateTeoCompar()"/>
-          <button class="t-step-btn" onclick="stepKg('c-pet',10)">+</button>
+      <div style="padding:.5rem 1rem .25rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--amber-dk);background:var(--amber-lt)">Lámina PET</div>
+      <div class="t-teo-row">Teórico restante → PET: <span id="t-teo-pet-corrida">—</span></div>
+      <div class="bob-list" id="pet-bobinas-list"></div>
+      <div style="padding:0 1rem .5rem">
+        <button class="bob-add" onclick="addBobina('pet')">+ Agregar bobina PET</button>
+      </div>
+      <div class="bob-total-bar">
+        <span class="bob-total-label">Total PET consumido</span>
+        <div style="text-align:right">
+          <div class="bob-total-val" id="pet-total">0 kg</div>
+          <div class="bob-total-info" id="pet-count">0 bobinas · 0 empalmadas</div>
         </div>
       </div>
-      <div class="t-field">
-        <span class="t-field-name">kg PE recibidos</span>
-        <span class="t-field-unit">kg</span>
-        <div class="t-input-wrap">
-          <button class="t-step-btn" onclick="stepKg('c-pe',-5)">−</button>
-          <input class="t-kg-input" type="number" id="c-pe" value="0" min="0" step="1" oninput="updateTeoCompar()"/>
-          <button class="t-step-btn" onclick="stepKg('c-pe',5)">+</button>
+
+      <div style="padding:.5rem 1rem .25rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--amber-dk);background:var(--amber-lt)">Lámina PE</div>
+      <div class="t-teo-row">Teórico restante → PE: <span id="t-teo-pe-corrida">—</span></div>
+      <div class="bob-list" id="pe-bobinas-list"></div>
+      <div style="padding:0 1rem .5rem">
+        <button class="bob-add" onclick="addBobina('pe')">+ Agregar bobina PE</button>
+      </div>
+      <div class="bob-total-bar">
+        <span class="bob-total-label">Total PE consumido</span>
+        <div style="text-align:right">
+          <div class="bob-total-val" id="pe-total">0 kg</div>
+          <div class="bob-total-info" id="pe-count">0 bobinas · 0 empalmadas</div>
         </div>
       </div>
 
       <!-- REFILADO -->
       <div style="padding:.5rem 1rem .25rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--blue-tx);background:var(--blue-bg)">Refilado</div>
-      <div class="t-teo-row">Teórico → kg finales: <span id="t-teo-fin-corrida">—</span></div>
+      <div class="t-teo-row">Teórico → kg finales restantes: <span id="t-teo-fin-corrida">—</span></div>
       <div class="t-field">
         <span class="t-field-name">kg finales producidos</span>
         <span class="t-field-unit">kg</span>
@@ -352,7 +380,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
       </div>
 
       <!-- COMPARACIÓN RÁPIDA -->
-      <div id="t-compar" style="display:none;padding:.5rem 1rem;font-size:12px;border-top:1px solid var(--bord)"></div>
+      <div id="t-compar" style="display:none;padding:.75rem 1rem;font-size:12px;border-top:1px solid var(--bord);line-height:1.8"></div>
 
       <!-- OBSERVACIONES -->
       <div style="padding:.5rem 1rem .25rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3)">Observaciones</div>
@@ -394,8 +422,10 @@ const OPERARIOS={
 };
 
 const OBS_PRESETS=[
-  'Empalmada PET','Empalmada PE','Rotura PET','Rotura PE',
-  'Problema adhesivo','Desalineación','Arranque largo','Todo normal',
+  'Rotura PET','Rotura PE',
+  'Problema adhesivo','Desalineación',
+  'Arranque largo','Bobina defectuosa',
+  'Problema máquina','Todo normal',
 ];
 
 const CLIENTES=[
@@ -428,6 +458,8 @@ let selectedOP=null;
 let tScreen='pin';
 let pinBuffer='';
 let selectedObs=new Set();
+let petBobinas=[]; // [{total: 92, sobrante: 0}, ...]
+let peBobinas=[];
 
 /* ══ JSONBin ══ */
 async function loadData(){
@@ -656,12 +688,18 @@ function renderOPDetail(){
               <span class="corrida-op">${c.operario||'—'} · ${c.fecha||'—'}</span>
             </div>
             <div class="corrida-data">
-              <div class="corrida-val">PET: <span>${c.kgPET||0} kg</span></div>
-              <div class="corrida-val">PE: <span>${c.kgPE||0} kg</span></div>
+              <div class="corrida-val">PET: <span>${c.kgPET.toFixed(1)||0} kg</span></div>
+              <div class="corrida-val">PE: <span>${c.kgPE.toFixed(1)||0} kg</span></div>
               <div class="corrida-val">Finales: <span>${c.kgFin||0} kg</span></div>
               <div class="corrida-val">Scrap: <span>${c.kgScrap||0} kg</span></div>
             </div>
-            ${c.obs?`<div style="font-size:12px;color:var(--txt2);margin-top:6px;font-style:italic">"${c.obs}"</div>`:''}
+            ${c.bobinas_pet?.length?`<div style="font-size:11px;color:var(--txt3);margin-top:6px">
+              PET: ${c.bobinas_pet.map((b,j)=>`B${j+1} #${b.numBobina||'—'} / P:${b.partida||'—'} · ${b.kgNetos}kg · ${b.metros||'—'}m`).join(' | ')}
+            </div>`:''}
+            ${c.bobinas_pe?.length?`<div style="font-size:11px;color:var(--txt3);margin-top:2px">
+              PE: ${c.bobinas_pe.map((b,j)=>`B${j+1} #${b.numBobina||'—'} / P:${b.partida||'—'} · ${b.kgNetos}kg · ${b.metros||'—'}m`).join(' | ')}
+            </div>`:''}
+            ${c.obs?`<div style="font-size:12px;color:var(--txt2);margin-top:5px;font-style:italic">"${c.obs}"</div>`:''}
           </div>`).join('')}
       </div>
     </div>
@@ -805,14 +843,13 @@ function selectOP(id){
   const real=calcReal(selectedOP.corridas||[]);
   const teo=selectedOP.teorico;
   const nCorrida=(selectedOP.corridas?.length||0)+1;
-  // Teórico por corrida (dividido en partes iguales de 4 corridas estimadas)
   const teoCorr={
     kgPET:Math.max(0,teo.kgPET-real.kgPET),
     kgPE :Math.max(0,teo.kgPE -real.kgPE),
     kgFin:Math.max(0,selectedOP.kgPedidos-real.kgFin)
   };
   document.getElementById('t-carga-titulo').textContent=selectedOP.numero+' — '+selectedOP.cliente;
-  document.getElementById('t-carga-sub').textContent=`Corrida ${nCorrida} · Operario: ${currentUser.nombre}`;
+  document.getElementById('t-carga-sub').textContent=`Corrida ${nCorrida} · ${currentUser.nombre}`;
   document.getElementById('t-corrida-num').textContent='Corrida '+nCorrida;
   document.getElementById('t-kg-pedidos').textContent=selectedOP.kgPedidos+' kg';
   document.getElementById('t-kg-real').textContent=real.kgFin.toFixed(1)+' kg';
@@ -826,13 +863,120 @@ function selectOP(id){
   document.getElementById('t-teo-pet-corrida').textContent=teoCorr.kgPET.toFixed(1)+' kg';
   document.getElementById('t-teo-pe-corrida').textContent=teoCorr.kgPE.toFixed(1)+' kg';
   document.getElementById('t-teo-fin-corrida').textContent=teoCorr.kgFin.toFixed(1)+' kg';
-  // Reset form
-  ['c-pet','c-pe','c-fin','c-scrap'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  // Reset bobinas y form
+  petBobinas=[]; peBobinas=[];
+  renderBobinas('pet'); renderBobinas('pe');
+  ['c-fin','c-scrap'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
   document.getElementById('c-obs').value='';
-  selectedObs=new Set();
   document.getElementById('t-compar').style.display='none';
+  selectedObs=new Set();
   renderObsPresets();
   tShowScreen('carga');
+}
+
+/* ══ BOBINAS ══ */
+function addBobina(tipo){
+  const arr=tipo==='pet'?petBobinas:peBobinas;
+  arr.push({numBobina:'',partida:'',kgNetos:0,metros:0});
+  renderBobinas(tipo);
+}
+function removeBobina(tipo,idx){
+  const arr=tipo==='pet'?petBobinas:peBobinas;
+  arr.splice(idx,1);
+  renderBobinas(tipo);
+  updateTeoCompar();
+}
+function updateBobinaField(tipo,idx,field,val){
+  const arr=tipo==='pet'?petBobinas:peBobinas;
+  if(!arr[idx])return;
+  arr[idx][field]=(field==='kgNetos'||field==='metros')?Math.max(0,parseFloat(val)||0):val;
+  renderBobinas(tipo);
+  updateTeoCompar();
+}
+function totalBobinas(arr){
+  return arr.reduce((s,b)=>s+(parseFloat(b.kgNetos)||0),0);
+}
+function renderBobinas(tipo){
+  const arr=tipo==='pet'?petBobinas:peBobinas;
+  const listEl=document.getElementById(tipo+'-bobinas-list');
+  const totalEl=document.getElementById(tipo+'-total');
+  const countEl=document.getElementById(tipo+'-count');
+  const color=tipo==='pet'?'var(--green-tx)':'var(--blue-tx)';
+  const total=arr.reduce((s,b)=>s+(parseFloat(b.kgNetos)||0),0);
+  const empalmadas=Math.max(0,arr.length-1);
+  if(totalEl)totalEl.textContent=total.toFixed(1)+' kg';
+  if(countEl)countEl.textContent=`${arr.length} bobina${arr.length!==1?'s':''} · ${empalmadas} empalmada${empalmadas!==1?'s':''}`;
+  if(!listEl)return;
+  if(!arr.length){listEl.innerHTML='';return;}
+  listEl.innerHTML=arr.map((b,i)=>{
+    if(tipo==='pet'){
+      return`<div class="bob-row">
+        <div class="bob-row-head">
+          <span class="bob-num">Bobina PET ${i+1}</span>
+          <button class="bob-del" onclick="removeBobina('pet',${i})">✕</button>
+        </div>
+        <div class="bob-fields" style="grid-template-columns:1fr 1fr">
+          <div class="bob-field">
+            <span class="bob-label">N° Bobina</span>
+            <input class="bob-input" type="text" value="${b.numBobina||''}" placeholder="ej: B-0042"
+              oninput="updateBobinaField('pet',${i},'numBobina',this.value)"/>
+          </div>
+          <div class="bob-field">
+            <span class="bob-label">N° Partida</span>
+            <input class="bob-input" type="text" value="${b.partida||''}" placeholder="ej: P-2026-04"
+              oninput="updateBobinaField('pet',${i},'partida',this.value)"/>
+          </div>
+          <div class="bob-field">
+            <span class="bob-label">Kg netos</span>
+            <input class="bob-input" type="number" value="${b.kgNetos||''}" min="0" step="0.1" placeholder="0"
+              oninput="updateBobinaField('pet',${i},'kgNetos',this.value)"/>
+          </div>
+          <div class="bob-field">
+            <span class="bob-label">Metros</span>
+            <input class="bob-input" type="number" value="${b.metros||''}" min="0" step="1" placeholder="0"
+              oninput="updateBobinaField('pet',${i},'metros',this.value)"/>
+          </div>
+        </div>
+        <div class="bob-consumido">
+          <span class="bob-consumido-label">Kg netos registrados</span>
+          <span class="bob-consumido-val" style="color:${color}">${(parseFloat(b.kgNetos)||0).toFixed(1)} kg · ${parseFloat(b.metros)||0} m</span>
+        </div>
+      </div>`;
+    } else {
+      return`<div class="bob-row">
+        <div class="bob-row-head">
+          <span class="bob-num">Bobina PE ${i+1}</span>
+          <button class="bob-del" onclick="removeBobina('pe',${i})">✕</button>
+        </div>
+        <div class="bob-fields" style="grid-template-columns:1fr 1fr">
+          <div class="bob-field">
+            <span class="bob-label">N° Bobina</span>
+            <input class="bob-input" type="text" value="${b.numBobina||''}" placeholder="ej: B-0087"
+              oninput="updateBobinaField('pe',${i},'numBobina',this.value)"/>
+          </div>
+          <div class="bob-field">
+            <span class="bob-label">N° Partida</span>
+            <input class="bob-input" type="text" value="${b.partida||''}" placeholder="ej: P-2026-04"
+              oninput="updateBobinaField('pe',${i},'partida',this.value)"/>
+          </div>
+          <div class="bob-field">
+            <span class="bob-label">Kg netos</span>
+            <input class="bob-input" type="number" value="${b.kgNetos||''}" min="0" step="0.1" placeholder="0"
+              oninput="updateBobinaField('pe',${i},'kgNetos',this.value)"/>
+          </div>
+          <div class="bob-field">
+            <span class="bob-label">Metros</span>
+            <input class="bob-input" type="number" value="${b.metros||''}" min="0" step="1" placeholder="0"
+              oninput="updateBobinaField('pe',${i},'metros',this.value)"/>
+          </div>
+        </div>
+        <div class="bob-consumido">
+          <span class="bob-consumido-label">Kg netos registrados</span>
+          <span class="bob-consumido-val" style="color:${color}">${(parseFloat(b.kgNetos)||0).toFixed(1)} kg · ${parseFloat(b.metros)||0} m</span>
+        </div>
+      </div>`;
+    }
+  }).join('');
 }
 
 function renderObsPresets(){
@@ -840,7 +984,6 @@ function renderObsPresets(){
     `<div class="obs-chip${selectedObs.has(o)?' sel':''}" onclick="toggleObs('${o}')">${o}</div>`
   ).join('');
 }
-
 function toggleObs(o){
   selectedObs.has(o)?selectedObs.delete(o):selectedObs.add(o);
   renderObsPresets();
@@ -855,44 +998,55 @@ function stepKg(id,delta){
 
 function updateTeoCompar(){
   if(!selectedOP)return;
-  const pet=parseFloat(document.getElementById('c-pet').value)||0;
-  const pe =parseFloat(document.getElementById('c-pe').value)||0;
+  const pet=totalBobinas(petBobinas);
+  const pe =totalBobinas(peBobinas);
   const fin=parseFloat(document.getElementById('c-fin').value)||0;
   if(!pet&&!pe&&!fin){document.getElementById('t-compar').style.display='none';return;}
   const teo=selectedOP.teorico;
   const real=calcReal(selectedOP.corridas||[]);
-  // Acumulado incluyendo esta corrida
   const accPET=real.kgPET+pet;
   const accPE =real.kgPE +pe;
   const accFin=real.kgFin+fin;
   const dPET=accPET-teo.kgPET;
   const dPE =accPE -teo.kgPE;
   const dFin=accFin-selectedOP.kgPedidos;
-  const cls=v=>Math.abs(v/teo.kgPET*100)<3?'color:var(--green-tx)':v>0?'color:var(--red-tx)':'color:var(--amber)';
+  const clsP=v=>Math.abs(v)<teo.kgPET*0.03?'color:var(--green-tx)':v>0?'color:var(--red-tx)':'color:var(--amber)';
+  const clsE=v=>Math.abs(v)<teo.kgPE*0.03?'color:var(--green-tx)':v>0?'color:var(--red-tx)':'color:var(--amber)';
+  const clsF=v=>v>=0?'color:var(--green-tx)':'color:var(--amber)';
   document.getElementById('t-compar').style.display='';
   document.getElementById('t-compar').innerHTML=`
-    <b>Acumulado después de esta corrida:</b><br>
-    PET: ${accPET.toFixed(0)} kg <span style="${cls(dPET)}">(${dPET>=0?'+':''}${dPET.toFixed(0)} vs teórico)</span><br>
-    PE:  ${accPE.toFixed(0)} kg <span style="${cls(dPE)}">(${dPE>=0?'+':''}${dPE.toFixed(0)} vs teórico)</span><br>
-    Finales: ${accFin.toFixed(0)} / ${selectedOP.kgPedidos} kg <span style="${dFin>=0?'color:var(--green-tx)':'color:var(--amber)'}">(${dFin>=0?'+':''}${dFin.toFixed(0)})</span>
+    <strong>Acumulado después de esta corrida:</strong><br>
+    PET: ${accPET.toFixed(1)} kg <span style="${clsP(dPET)}">(${dPET>=0?'+':''}${dPET.toFixed(1)} vs teórico)</span><br>
+    PE:  ${accPE.toFixed(1)} kg <span style="${clsE(dPE)}">(${dPE>=0?'+':''}${dPE.toFixed(1)} vs teórico)</span><br>
+    Finales: ${accFin.toFixed(1)} / ${selectedOP.kgPedidos} kg <span style="${clsF(dFin)}">(${dFin>=0?'+':''}${dFin.toFixed(1)})</span>
   `;
 }
 
 async function guardarCorrida(){
-  const kgPET=parseFloat(document.getElementById('c-pet').value)||0;
-  const kgPE =parseFloat(document.getElementById('c-pe').value)||0;
+  const kgPET=totalBobinas(petBobinas);
+  const kgPE =totalBobinas(peBobinas);
   const kgFin=parseFloat(document.getElementById('c-fin').value)||0;
   const kgScrap=parseFloat(document.getElementById('c-scrap').value)||0;
+  if(!kgPET&&!kgPE&&!kgFin){alert('Cargá al menos una bobina o los kg finales.');return;}
   const obsCustom=document.getElementById('c-obs').value.trim();
   const obsArr=[...selectedObs];
   if(obsCustom)obsArr.push(obsCustom);
+  // Auto-detectar empalmadas desde cantidad de bobinas
+  const empPET=Math.max(0,petBobinas.length-1);
+  const empPE =Math.max(0,peBobinas.length-1);
+  if(empPET>0&&!obsArr.includes('Rotura PET'))obsArr.unshift(`${empPET} empalmada${empPET>1?'s':''} PET`);
+  if(empPE >0&&!obsArr.includes('Rotura PE')) obsArr.unshift(`${empPE} empalmada${empPE>1?'s':''} PE`);
   const obs=obsArr.join(' · ');
   const corrida={
     id:'corr_'+Date.now(),
     operario:currentUser.nombre,
     fecha:new Date().toLocaleDateString('es-AR'),
     timestamp:new Date().toISOString(),
-    kgPET,kgPE,kgFin,kgScrap,obs
+    kgPET,kgPE,kgFin,kgScrap,obs,
+    bobinas_pet:[...petBobinas],
+    bobinas_pe:[...peBobinas],
+    empalmadas_pet:empPET,
+    empalmadas_pe:empPE
   };
   if(!selectedOP.corridas)selectedOP.corridas=[];
   selectedOP.corridas.push(corrida);
@@ -900,7 +1054,8 @@ async function guardarCorrida(){
   const real=calcReal(selectedOP.corridas);
   document.getElementById('confirm-msg').innerHTML=
     `Corrida ${selectedOP.corridas.length} guardada.<br>
-    Acumulado: ${real.kgFin.toFixed(0)} / ${selectedOP.kgPedidos} kg finales.`;
+    PET: ${kgPET.toFixed(1)} kg · PE: ${kgPE.toFixed(1)} kg · Finales: ${kgFin} kg<br>
+    Acumulado: ${real.kgFin.toFixed(0)} / ${selectedOP.kgPedidos} kg.`;
   tShowScreen('confirm');
 }
 
