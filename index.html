@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>OP Laminado — Winflex</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --amber:#C07A10;--amber-lt:#FDF0D8;--amber-dk:#7A4D06;
+  --bg:#F2F1ED;--surf:#FFF;--surf2:#ECEAE4;
+  --bord:rgba(0,0,0,.10);--bord2:rgba(0,0,0,.18);
+  --txt:#181815;--txt2:#5C5B55;--txt3:#9E9C94;
+  --green-bg:#E6F3DA;--green-tx:#2E6B0E;
+  --red-bg:#FDEAEA;--red-tx:#A32020;
+  --blue-bg:#E6F0FB;--blue-tx:#1558A0;
+  --r:10px;--rs:6px;--mono:'Courier New',Courier,monospace;
+  --shadow:0 2px 8px rgba(0,0,0,.07)
+}
+@media(prefers-color-scheme:dark){:root{
+  --amber:#E8A030;--amber-lt:#3D2800;--amber-dk:#FAC86A;
+  --bg:#18181A;--surf:#222224;--surf2:#2A2A2C;
+  --bord:rgba(255,255,255,.08);--bord2:rgba(255,255,255,.16);
+  --txt:#EDECEA;--txt2:#9E9C94;--txt3:#5C5B55;
+  --green-bg:#162B08;--green-tx:#9DD96A;
+  --red-bg:#2B0A0A;--red-tx:#F49090;
+  --blue-bg:#0C1E36;--blue-tx:#7AB8F5;
+  --shadow:0 2px 12px rgba(0,0,0,.3)
+}}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;min-height:100vh}
+
+/* HEADER */
+.header{background:var(--txt);color:white;padding:0 1.5rem;display:flex;align-items:center;gap:1rem;height:52px;position:sticky;top:0;z-index:100}
+.header-logo{width:28px;height:28px;background:var(--amber);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.header-logo svg{width:14px;height:14px;fill:white}
+.header-title{font-size:14px;font-weight:600}
+.header-sub{font-size:11px;opacity:.4}
+.header-sep{flex:1}
+.view-toggle{display:flex;gap:4px;background:rgba(255,255,255,.08);border-radius:20px;padding:3px}
+.view-btn{font-size:11px;font-weight:500;padding:4px 12px;border-radius:16px;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,.6);transition:all .15s}
+.view-btn.active{background:var(--amber);color:white}
+
+/* LAYOUT */
+.page{max-width:960px;margin:0 auto;padding:1.25rem 1rem}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:1.25rem}
+.tab{font-size:13px;font-weight:500;padding:6px 14px;border:1px solid var(--bord);border-radius:20px;cursor:pointer;background:var(--surf);color:var(--txt2);transition:all .15s}
+.tab.active{background:var(--txt);color:white;border-color:var(--txt)}
+.tab:hover:not(.active){border-color:var(--bord2);color:var(--txt)}
+
+/* CARDS */
+.card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);margin-bottom:1rem}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--bord)}
+.card-title{font-size:13px;font-weight:600;color:var(--txt)}
+.card-body{padding:1rem}
+
+/* FIELD */
+.field{display:flex;align-items:center;padding:8px 1rem;border-bottom:1px solid var(--bord);gap:8px}
+.field:last-child{border-bottom:none}
+.field-name{flex:1;font-size:13px;color:var(--txt)}
+.field-unit{font-size:11px;color:var(--txt3);white-space:nowrap}
+.field input,.field select{font-family:var(--mono);font-size:13px;font-weight:600;border:1px solid var(--bord2);border-radius:var(--rs);padding:5px 8px;background:var(--surf2);color:var(--txt);text-align:right;outline:none;transition:border .15s;width:120px}
+.field input:focus,.field select:focus{border-color:var(--amber)}
+.field select{text-align:left;width:auto;flex:1;max-width:260px}
+.field textarea{font-size:13px;border:1px solid var(--bord2);border-radius:var(--rs);padding:6px 8px;background:var(--surf2);color:var(--txt);outline:none;transition:border .15s;width:100%;resize:vertical;min-height:60px}
+.field textarea:focus{border-color:var(--amber)}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.badge.open{background:var(--green-bg);color:var(--green-tx)}
+.badge.closed{background:var(--surf2);color:var(--txt3)}
+.badge.warn{background:var(--amber-lt);color:var(--amber-dk)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:500;padding:7px 14px;border-radius:var(--rs);border:1px solid var(--bord2);cursor:pointer;background:var(--surf);color:var(--txt);transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--surf2)}
+.btn.primary{background:var(--amber);color:white;border-color:var(--amber)}
+.btn.primary:hover{background:var(--amber-dk)}
+.btn.danger{color:var(--red-tx);border-color:transparent}
+.btn.danger:hover{background:var(--red-bg)}
+.btn.sm{font-size:11px;padding:4px 10px}
+
+/* OP LIST */
+.op-list{display:flex;flex-direction:column;gap:8px}
+.op-item{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:.875rem 1rem;cursor:pointer;transition:border-color .15s;box-shadow:var(--shadow)}
+.op-item:hover{border-color:var(--amber)}
+.op-item-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.op-item-id{font-size:12px;font-weight:600;font-family:var(--mono);color:var(--amber)}
+.op-item-cliente{font-size:14px;font-weight:500}
+.op-item-meta{font-size:12px;color:var(--txt3)}
+.op-item-progress{margin-top:8px}
+.progress-bar{height:5px;background:var(--surf2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--green-tx);border-radius:3px;transition:width .3s}
+.progress-label{font-size:11px;color:var(--txt3);margin-top:3px}
+
+/* COMPARISON TABLE */
+.cmp-table{width:100%;border-collapse:collapse;font-size:13px}
+.cmp-table th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);padding:8px 10px;border-bottom:2px solid var(--bord)}
+.cmp-table td{padding:8px 10px;border-bottom:1px solid var(--bord)}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table .metric{color:var(--txt2)}
+.cmp-table .num{font-family:var(--mono);font-weight:600;text-align:right}
+.cmp-table .ok{color:var(--green-tx)}
+.cmp-table .warn{color:var(--amber)}
+.cmp-table .bad{color:var(--red-tx)}
+.cmp-table .na{color:var(--txt3)}
+
+/* DIAGNOSTIC */
+.diag{border-radius:var(--r);padding:.875rem 1rem;margin-top:.75rem;font-size:13px;line-height:1.6}
+.diag.ok{background:var(--green-bg);color:var(--green-tx)}
+.diag.warn{background:var(--amber-lt);color:var(--amber-dk)}
+.diag.bad{background:var(--red-bg);color:var(--red-tx)}
+.diag-title{font-weight:600;margin-bottom:4px}
+
+/* CORRIDA LIST */
+.corrida-item{background:var(--surf2);border:1px solid var(--bord);border-radius:var(--rs);padding:.75rem 1rem;margin-bottom:6px}
+.corrida-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.corrida-num{font-size:11px;font-family:var(--mono);color:var(--amber);font-weight:600}
+.corrida-op{font-size:12px;color:var(--txt2)}
+.corrida-data{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:4px;margin-top:6px}
+.corrida-val{font-size:11px;color:var(--txt3)} .corrida-val span{color:var(--txt);font-weight:600;font-family:var(--mono)}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:600px){.grid-2{grid-template-columns:1fr}}
+
+/* ══ TABLET VIEW ══ */
+.tablet-screen{min-height:calc(100vh - 52px);display:flex;flex-direction:column}
+.tablet-page{padding:1.25rem 1rem;flex:1}
+
+/* PIN */
+.pin-wrap{max-width:320px;margin:2rem auto;text-align:center}
+.pin-title{font-size:18px;font-weight:600;margin-bottom:.5rem}
+.pin-sub{font-size:13px;color:var(--txt3);margin-bottom:1.5rem}
+.pin-display{font-size:32px;font-family:var(--mono);font-weight:700;letter-spacing:.3em;min-height:48px;color:var(--amber);margin-bottom:1rem;min-width:160px}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.pin-key{font-size:22px;font-weight:500;padding:16px;border:1px solid var(--bord2);border-radius:var(--r);cursor:pointer;background:var(--surf);transition:all .15s;text-align:center}
+.pin-key:hover{background:var(--surf2)}
+.pin-key:active{transform:scale(.95)}
+.pin-key.action{font-size:14px;background:var(--surf2);color:var(--txt2)}
+.pin-key.enter{background:var(--amber);color:white;border-color:var(--amber)}
+
+/* TABLET OP LIST */
+.t-op-item{background:var(--surf);border:2px solid var(--bord);border-radius:var(--r);padding:1rem;cursor:pointer;margin-bottom:.75rem;transition:border-color .15s}
+.t-op-item:hover{border-color:var(--amber)}
+.t-op-id{font-size:12px;font-family:var(--mono);color:var(--amber);font-weight:600}
+.t-op-cliente{font-size:18px;font-weight:600;margin:.25rem 0}
+.t-op-meta{font-size:13px;color:var(--txt2)}
+
+/* TABLET FORM */
+.t-section{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;margin-bottom:.875rem;box-shadow:var(--shadow)}
+.t-section-head{padding:.75rem 1rem;border-bottom:1px solid var(--bord);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3)}
+.t-field{display:flex;align-items:center;padding:10px 1rem;border-bottom:1px solid var(--bord);gap:8px}
+.t-field:last-child{border-bottom:none}
+.t-field-name{flex:1;font-size:14px;color:var(--txt);font-weight:500}
+.t-field-unit{font-size:12px;color:var(--txt3);white-space:nowrap}
+.t-field-val{font-size:13px;font-family:var(--mono);color:var(--amber);font-weight:600;white-space:nowrap}
+.t-input-wrap{display:flex;align-items:center;gap:4px}
+.t-step-btn{width:36px;height:36px;border:1px solid var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:18px;background:var(--surf2);color:var(--txt);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.t-step-btn:hover{background:var(--amber);color:white;border-color:var(--amber)}
+.t-kg-input{font-family:var(--mono);font-size:16px;font-weight:700;width:90px;border:1px solid var(--bord2);border-radius:var(--rs);padding:6px 8px;background:var(--surf2);color:var(--txt);text-align:right;outline:none}
+.t-kg-input:focus{border-color:var(--amber)}
+.t-obs-input{font-size:13px;border:1px solid var(--bord2);border-radius:var(--rs);padding:8px;background:var(--surf2);color:var(--txt);outline:none;width:100%;resize:none;min-height:70px}
+.t-obs-input:focus{border-color:var(--amber)}
+.t-teo-row{display:flex;align-items:center;padding:6px 1rem;gap:8px;background:var(--surf2);font-size:12px;color:var(--txt3)}
+.t-teo-row span{font-family:var(--mono);font-weight:600;color:var(--amber)}
+.confirm-box{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:1.25rem;text-align:center;box-shadow:var(--shadow)}
+.confirm-icon{font-size:36px;margin-bottom:.5rem}
+.confirm-title{font-size:18px;font-weight:600;margin-bottom:.25rem}
+.confirm-sub{font-size:13px;color:var(--txt2);margin-bottom:1rem}
+.obs-presets{display:flex;flex-wrap:wrap;gap:6px;padding:.75rem 1rem}
+.obs-chip{font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--bord2);cursor:pointer;background:var(--surf2);color:var(--txt2);transition:all .15s}
+.obs-chip:hover,.obs-chip.sel{background:var(--amber);color:white;border-color:var(--amber)}
+.empty{text-align:center;padding:3rem 1rem;color:var(--txt3);font-size:14px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5.5" height="5.5" rx="1.2"/><rect x="8.5" y="2" width="5.5" height="5.5" rx="1.2"/><rect x="2" y="8.5" width="5.5" height="5.5" rx="1.2"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1.2"/></svg></div>
+  <div><div class="header-title">OP Laminado</div><div class="header-sub">Winflex S.A.</div></div>
+  <div class="header-sep"></div>
+  <div class="view-toggle">
+    <button class="view-btn active" id="btn-manager" onclick="switchView('manager')">Gestión</button>
+    <button class="view-btn" id="btn-tablet" onclick="switchView('tablet')">Tablet</button>
+  </div>
+</div>
+
+<!-- ══════════════ MANAGER VIEW ══════════════ -->
+<div id="view-manager">
+<div class="page">
+
+  <div class="tabs">
+    <button class="tab active" id="mtab-ops" onclick="mTab('ops')">📋 Órdenes</button>
+    <button class="tab" id="mtab-nueva" onclick="mTab('nueva')">+ Nueva OP</button>
+  </div>
+
+  <!-- OPs list -->
+  <div id="m-ops">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <div style="font-size:13px;color:var(--txt2)" id="ops-summary">Cargando…</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn sm" onclick="filterOPs('all')" id="filter-all" style="border-color:var(--amber);color:var(--amber)">Todas</button>
+        <button class="btn sm" onclick="filterOPs('open')" id="filter-open">Abiertas</button>
+        <button class="btn sm" onclick="filterOPs('closed')" id="filter-closed">Cerradas</button>
+      </div>
+    </div>
+    <div class="op-list" id="op-list"></div>
+  </div>
+
+  <!-- Nueva OP form -->
+  <div id="m-nueva" style="display:none">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Nueva Orden de Producción</span></div>
+      <div class="field"><span class="field-name">N° de OP</span><input type="text" id="new-num" placeholder="LAM-001" style="text-align:left;width:160px"/></div>
+      <div class="field"><span class="field-name">Cliente / producto</span>
+        <select id="new-cliente" onchange="onClienteSelect()" style="text-align:left;flex:1;max-width:280px">
+          <option value="">— seleccionar —</option>
+        </select>
+      </div>
+      <div class="field"><span class="field-name">Kg finales pedidos</span><span class="field-unit">kg</span><input type="number" id="new-kg" value="1000" step="50" min="1" oninput="recalcTeo()"/></div>
+      <div class="field"><span class="field-name">Merma proceso</span><span class="field-unit">%</span><input type="number" id="new-merma" value="2" step="0.5" min="0" oninput="recalcTeo()"/></div>
+      <div class="field"><span class="field-name">Fecha</span><input type="date" id="new-fecha" style="text-align:left;width:160px"/></div>
+      <div class="field"><span class="field-name">Notas</span><input type="text" id="new-notas" placeholder="opcional" style="text-align:left;flex:1"/></div>
+    </div>
+
+    <!-- Teórico preview -->
+    <div class="card" id="teo-preview" style="display:none">
+      <div class="card-head"><span class="card-title">Teórico calculado</span></div>
+      <div class="field"><span class="field-name">PET lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pet" style="font-family:var(--mono);font-weight:600;color:var(--amber)">—</span></div>
+      <div class="field"><span class="field-name">PE lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pe" style="font-family:var(--mono);font-weight:600;color:var(--amber)">—</span></div>
+      <div class="field"><span class="field-name">Metros de corrida</span><span class="field-unit">m</span><span id="tp-metros" style="font-family:var(--mono);font-weight:600">—</span></div>
+      <div class="field"><span class="field-name">Trim teórico</span><span class="field-unit">%</span><span id="tp-trim" style="font-family:var(--mono);font-weight:600">—</span></div>
+      <div class="field"><span class="field-name">Tiempo laminado est.</span><span class="field-unit">horas</span><span id="tp-tlam" style="font-family:var(--mono);font-weight:600">—</span></div>
+      <div class="field"><span class="field-name">Tiempo refilado est.</span><span class="field-unit">horas</span><span id="tp-tref" style="font-family:var(--mono);font-weight:600">—</span></div>
+    </div>
+    <div id="teo-nodata" class="empty" style="display:none">Seleccioná un cliente para ver el teórico</div>
+
+    <div style="display:flex;gap:8px;margin-top:.5rem">
+      <button class="btn primary" onclick="crearOP()" style="flex:1">Crear OP</button>
+      <button class="btn" onclick="mTab('ops')">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- OP Detail -->
+  <div id="m-detail" style="display:none">
+    <button class="btn sm" onclick="mTab('ops')" style="margin-bottom:1rem">← Volver</button>
+    <div id="detail-content"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════ TABLET VIEW ══════════════ -->
+<div id="view-tablet" style="display:none">
+<div class="tablet-screen">
+
+  <!-- PIN screen -->
+  <div id="t-pin" class="tablet-page">
+    <div class="pin-wrap">
+      <div class="pin-title">Identificación</div>
+      <div class="pin-sub">Ingresá tu PIN de operario</div>
+      <div class="pin-display" id="pin-display">·  ·  ·  ·</div>
+      <div class="pin-grid" id="pin-grid"></div>
+      <div id="pin-error" style="color:var(--red-tx);font-size:13px;margin-top:.5rem"></div>
+    </div>
+  </div>
+
+  <!-- OP list -->
+  <div id="t-ops" class="tablet-page" style="display:none">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+      <div style="flex:1">
+        <div style="font-size:18px;font-weight:600" id="t-username">Operario</div>
+        <div style="font-size:12px;color:var(--txt3)">Seleccioná una OP para cargar datos</div>
+      </div>
+      <button class="btn sm" onclick="tLogout()">Salir</button>
+    </div>
+    <div id="t-op-list"></div>
+  </div>
+
+  <!-- Cargar corrida -->
+  <div id="t-carga" class="tablet-page" style="display:none">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">
+      <button class="btn sm" onclick="tVolverOPs()">←</button>
+      <div>
+        <div style="font-size:16px;font-weight:600" id="t-carga-titulo">OP</div>
+        <div style="font-size:12px;color:var(--txt3)" id="t-carga-sub"></div>
+      </div>
+    </div>
+
+    <!-- Progreso acumulado -->
+    <div class="t-section" id="t-progreso">
+      <div class="t-section-head">Progreso de la OP</div>
+      <div class="t-teo-row">Kg pedidos: <span id="t-kg-pedidos">—</span></div>
+      <div class="t-teo-row">Kg finales acumulados: <span id="t-kg-real">—</span></div>
+      <div class="t-teo-row">PET acumulado: <span id="t-pet-real">—</span> / teórico: <span id="t-pet-teo">—</span></div>
+      <div class="t-teo-row">PE acumulado: <span id="t-pe-real">—</span> / teórico: <span id="t-pe-teo">—</span></div>
+      <div style="padding:.5rem 1rem .75rem">
+        <div class="progress-bar" style="height:8px"><div class="progress-fill" id="t-progress-fill" style="width:0%"></div></div>
+        <div class="progress-label" id="t-progress-label"></div>
+      </div>
+    </div>
+
+    <!-- Nueva corrida form -->
+    <div class="t-section">
+      <div class="t-section-head">Nueva corrida — <span id="t-corrida-num">Corrida 1</span></div>
+
+      <!-- LAMINADO -->
+      <div style="padding:.5rem 1rem .25rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--amber-dk);background:var(--amber-lt)">Laminado</div>
+      <div class="t-teo-row">Teórico esta corrida → PET: <span id="t-teo-pet-corrida">—</span> &nbsp;|&nbsp; PE: <span id="t-teo-pe-corrida">—</span></div>
+      <div class="t-field">
+        <span class="t-field-name">kg PET recibidos</span>
+        <span class="t-field-unit">kg</span>
+        <div class="t-input-wrap">
+          <button class="t-step-btn" onclick="stepKg('c-pet',-10)">−</button>
+          <input class="t-kg-input" type="number" id="c-pet" value="0" min="0" step="1" oninput="updateTeoCompar()"/>
+          <button class="t-step-btn" onclick="stepKg('c-pet',10)">+</button>
+        </div>
+      </div>
+      <div class="t-field">
+        <span class="t-field-name">kg PE recibidos</span>
+        <span class="t-field-unit">kg</span>
+        <div class="t-input-wrap">
+          <button class="t-step-btn" onclick="stepKg('c-pe',-5)">−</button>
+          <input class="t-kg-input" type="number" id="c-pe" value="0" min="0" step="1" oninput="updateTeoCompar()"/>
+          <button class="t-step-btn" onclick="stepKg('c-pe',5)">+</button>
+        </div>
+      </div>
+
+      <!-- REFILADO -->
+      <div style="padding:.5rem 1rem .25rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--blue-tx);background:var(--blue-bg)">Refilado</div>
+      <div class="t-teo-row">Teórico → kg finales: <span id="t-teo-fin-corrida">—</span></div>
+      <div class="t-field">
+        <span class="t-field-name">kg finales producidos</span>
+        <span class="t-field-unit">kg</span>
+        <div class="t-input-wrap">
+          <button class="t-step-btn" onclick="stepKg('c-fin',-10)">−</button>
+          <input class="t-kg-input" type="number" id="c-fin" value="0" min="0" step="1" oninput="updateTeoCompar()"/>
+          <button class="t-step-btn" onclick="stepKg('c-fin',10)">+</button>
+        </div>
+      </div>
+      <div class="t-field">
+        <span class="t-field-name">kg scrap/tiras recuperadas</span>
+        <span class="t-field-unit">kg</span>
+        <div class="t-input-wrap">
+          <button class="t-step-btn" onclick="stepKg('c-scrap',-2)">−</button>
+          <input class="t-kg-input" type="number" id="c-scrap" value="0" min="0" step="1"/>
+          <button class="t-step-btn" onclick="stepKg('c-scrap',2)">+</button>
+        </div>
+      </div>
+
+      <!-- COMPARACIÓN RÁPIDA -->
+      <div id="t-compar" style="display:none;padding:.5rem 1rem;font-size:12px;border-top:1px solid var(--bord)"></div>
+
+      <!-- OBSERVACIONES -->
+      <div style="padding:.5rem 1rem .25rem;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3)">Observaciones</div>
+      <div class="obs-presets" id="obs-presets"></div>
+      <div style="padding:0 1rem .75rem">
+        <textarea class="t-obs-input" id="c-obs" placeholder="Detalles adicionales…"></textarea>
+      </div>
+    </div>
+
+    <button class="btn primary" onclick="guardarCorrida()" style="width:100%;padding:14px;font-size:15px">Confirmar corrida</button>
+  </div>
+
+  <!-- Confirmación -->
+  <div id="t-confirm" class="tablet-page" style="display:none">
+    <div class="confirm-box">
+      <div class="confirm-icon">✓</div>
+      <div class="confirm-title">Corrida registrada</div>
+      <div class="confirm-sub" id="confirm-msg"></div>
+      <button class="btn primary" onclick="tVolverOPs()" style="width:100%;margin-top:.5rem">Volver a OPs</button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+/* ══ CONFIG ══ */
+const API_KEY = '$2a$10$8p4t41BnTv.9Ls.4kFLhouDMqJGQEd5LQlBYEz8n1y6nH/3dFq27G';
+let BIN_ID = localStorage.getItem('op_lam_bin') || '';
+const DENS_PET=1.35, DENS_PE=0.92, PROD_LAM=110, PROD_REF=83.33;
+
+const OPERARIOS={
+  '1111':'Gabriel Luna',
+  '2222':'Alan Vera',
+  '3333':'Luis Garbia',
+  '4444':'Antonio Zayas',
+  '3080':'Jonathan',
+  '1540':'Matías',
+};
+
+const OBS_PRESETS=[
+  'Empalmada PET','Empalmada PE','Rotura PET','Rotura PE',
+  'Problema adhesivo','Desalineación','Arranque largo','Todo normal',
+];
+
+const CLIENTES=[
+  {n:'Huertas del Pilar',  af:200,ef:450,aPET:430,ePET:400,aPE:450,ePE:50,nT:2},
+  {n:'Dantelli (357-C)',   af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1},
+  {n:'Dantelli (357-N)',   af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1},
+  {n:'Dantelli (323)',     af:323,ef:350,aPET:350,ePET:300,aPE:370,ePE:50,nT:1},
+  {n:'Villa DAgrì (423)', af:423,ef:280,aPET:450,ePET:230,aPE:470,ePE:50,nT:1},
+  {n:'Villa DAgrì (323)', af:323,ef:280,aPET:350,ePET:230,aPE:370,ePE:50,nT:1},
+  {n:'Molinos (421)',      af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1},
+  {n:'Molinos (472)',      af:472,ef:235,aPET:500,ePET:200,aPE:530,ePE:35,nT:1},
+  {n:'Mendia (312)',       af:312,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1},
+  {n:'La Italiana (421×350)',af:421,ef:350,aPET:450,ePET:300,aPE:470,ePE:50,nT:1},
+  {n:'La Italiana (421×500)',af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1},
+  {n:'Don Yeyo (321)',     af:321,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1},
+  {n:'El Artesano (422)', af:422,ef:250,aPET:450,ePET:200,aPE:470,ePE:50,nT:1},
+  {n:'BarielPack (520×400)',af:520,ef:400,aPET:550,ePET:350,aPE:570,ePE:50,nT:1},
+  {n:'BarielPack (520×600)',af:520,ef:600,aPET:550,ePET:550,aPE:570,ePE:50,nT:1},
+  {n:'BarielPack (520×350)',af:520,ef:350,aPET:550,ePET:300,aPE:570,ePE:50,nT:1},
+  {n:'Pespasa (300)',      af:300,ef:93, aPET:330,ePET:13, aPE:350,ePE:80,nT:1},
+];
+
+/* ══ STATE ══ */
+let data={ops:[]};
+let currentView='manager';
+let mTabActive='ops';
+let filterMode='all';
+let currentUser=null;
+let selectedOP=null;
+let tScreen='pin';
+let pinBuffer='';
+let selectedObs=new Set();
+
+/* ══ JSONBin ══ */
+async function loadData(){
+  if(!BIN_ID){data={ops:[]};return;}
+  try{
+    const r=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':'false'}});
+    if(!r.ok)throw new Error();
+    data=await r.json();
+    if(!data.ops)data={ops:[]};
+  }catch{data={ops:[]};}
+}
+async function saveData(){
+  if(!BIN_ID){
+    // Crear nuevo bin
+    try{
+      const r=await fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY,'X-Bin-Name':'op-laminado'},body:JSON.stringify(data)});
+      const d=await r.json();
+      BIN_ID=d.metadata.id;
+      localStorage.setItem('op_lam_bin',BIN_ID);
+    }catch(e){console.error('Error creando bin',e);return;}
+  } else {
+    try{
+      await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},body:JSON.stringify(data)});
+    }catch(e){console.error('Error guardando',e);}
+  }
+}
+
+/* ══ CALCULATIONS ══ */
+function calcTeorico(specs,kgPedidos,merma){
+  const{aPET,ePET,aPE,ePE,af,nT}=specs;
+  const pbPET=aPET*ePET*DENS_PET/1e6;
+  const pbPE =aPE *ePE *DENS_PE /1e6;
+  const pb   =pbPET+pbPE;
+  const pp   =nT*af*(ePET*DENS_PET+ePE*DENS_PE)/1e6;
+  const trim =(pb-pp)/pb*100;
+  const factor=1+merma/100;
+  const metros=kgPedidos/pp*factor;
+  const kgPET =metros*pbPET;
+  const kgPE  =metros*pbPE;
+  const kgScrap=(kgPET+kgPE)-kgPedidos;
+  return{metros,kgPET,kgPE,kgScrap,trim,
+    tiempoLam:(kgPET+kgPE)/PROD_LAM,
+    tiempoRef:kgPedidos/PROD_REF};
+}
+
+function calcReal(corridas){
+  const r={kgPET:0,kgPE:0,kgFin:0,kgScrap:0};
+  corridas.forEach(c=>{r.kgPET+=c.kgPET||0;r.kgPE+=c.kgPE||0;r.kgFin+=c.kgFin||0;r.kgScrap+=c.kgScrap||0;});
+  r.rendimiento=(r.kgPET+r.kgPE)>0?r.kgFin/(r.kgPET+r.kgPE):0;
+  r.mermaReal=(r.kgPET+r.kgPE)>0?(r.kgPET+r.kgPE-r.kgFin)/(r.kgPET+r.kgPE)*100:0;
+  return r;
+}
+
+function desvio(real,teo){
+  if(!teo)return{val:0,pct:0};
+  return{val:real-teo,pct:(real-teo)/teo*100};
+}
+
+function diagnostico(teo,real,kgPedidos){
+  const msgs=[];
+  const dPET=desvio(real.kgPET,teo.kgPET);
+  const dPE =desvio(real.kgPE, teo.kgPE);
+  const dFin=desvio(real.kgFin,kgPedidos);
+  if(real.kgFin===0&&real.kgPET===0)return{lvl:'ok',msgs:['Todavía no hay datos cargados.']};
+  if(Math.abs(dPET.pct)<=3&&Math.abs(dPE.pct)<=3&&Math.abs(dFin.pct)<=3)
+    return{lvl:'ok',msgs:['Producción dentro de parámetros ✓']};
+  if(dPET.pct>5) msgs.push(`Exceso de PET (+${dPET.pct.toFixed(1)}%): posible empalmada, rotura o mayor arranque.`);
+  if(dPE.pct>5)  msgs.push(`Exceso de PE (+${dPE.pct.toFixed(1)}%): posible empalmada, rotura o desalineación.`);
+  if(dFin.pct<-3)msgs.push(`Menor kg finales (${dFin.pct.toFixed(1)}%): mayor trim, rechazos o diferencia de pesaje.`);
+  if(dFin.pct>3) msgs.push(`Más kg finales de lo esperado (+${dFin.pct.toFixed(1)}%): verificar medición.`);
+  if(real.rendimiento<0.85&&real.kgFin>0) msgs.push(`Rendimiento bajo (${(real.rendimiento*100).toFixed(1)}%): revisar fuentes de pérdida.`);
+  return{lvl:msgs.length>1?'bad':'warn',msgs};
+}
+
+/* ══ VIEW SWITCH ══ */
+function switchView(v){
+  currentView=v;
+  document.getElementById('view-manager').style.display=v==='manager'?'':'none';
+  document.getElementById('view-tablet').style.display=v==='tablet'?'':'none';
+  document.getElementById('btn-manager').className='view-btn'+(v==='manager'?' active':'');
+  document.getElementById('btn-tablet').className='view-btn'+(v==='tablet'?' active':'');
+  if(v==='tablet')tShowScreen(tScreen==='carga'?'ops':'pin');
+  if(v==='manager')renderDashboard();
+}
+
+/* ══ MANAGER ══ */
+function mTab(t){
+  mTabActive=t;
+  ['ops','nueva','detail'].forEach(x=>{
+    const el=document.getElementById('m-'+x);
+    if(el)el.style.display=x===t?'':'none';
+  });
+  ['ops','nueva'].forEach(x=>{
+    const el=document.getElementById('mtab-'+x);
+    if(el)el.className='tab'+(x===t?' active':'');
+  });
+  if(t==='ops')renderDashboard();
+  if(t==='nueva'){
+    document.getElementById('new-fecha').value=new Date().toISOString().slice(0,10);
+    document.getElementById('teo-nodata').style.display='';
+    document.getElementById('teo-preview').style.display='none';
+  }
+}
+
+function renderDashboard(){
+  let ops=[...data.ops];
+  if(filterMode==='open')ops=ops.filter(o=>o.estado==='abierta');
+  if(filterMode==='closed')ops=ops.filter(o=>o.estado==='cerrada');
+  ops.sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const open=data.ops.filter(o=>o.estado==='abierta').length;
+  document.getElementById('ops-summary').textContent=`${data.ops.length} OPs · ${open} abiertas`;
+  ['all','open','closed'].forEach(f=>{
+    const b=document.getElementById('filter-'+f);
+    b.style.borderColor=filterMode===f?'var(--amber)':'';
+    b.style.color=filterMode===f?'var(--amber)':'';
+  });
+  const el=document.getElementById('op-list');
+  if(!ops.length){el.innerHTML='<div class="empty">No hay órdenes todavía.<br>Creá una con "+ Nueva OP"</div>';return;}
+  el.innerHTML=ops.map(op=>{
+    const real=calcReal(op.corridas||[]);
+    const pct=op.kgPedidos>0?Math.min(real.kgFin/op.kgPedidos*100,100):0;
+    return`<div class="op-item" onclick="openOP('${op.id}')">
+      <div class="op-item-header">
+        <span class="op-item-id">${op.numero}</span>
+        <span class="op-item-cliente">${op.cliente}</span>
+        <span class="badge ${op.estado==='abierta'?'open':'closed'}">${op.estado}</span>
+      </div>
+      <div class="op-item-meta">${op.fecha} · ${op.kgPedidos} kg pedidos · ${op.corridas?.length||0} corrida(s)</div>
+      <div class="op-item-progress">
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct.toFixed(1)}%"></div></div>
+        <div class="progress-label">${real.kgFin.toFixed(1)} / ${op.kgPedidos} kg finales (${pct.toFixed(0)}%)</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterOPs(f){filterMode=f;renderDashboard();}
+
+function openOP(id){
+  selectedOP=data.ops.find(o=>o.id===id);
+  if(!selectedOP)return;
+  mTabActive='detail';
+  ['ops','nueva'].forEach(x=>document.getElementById('m-'+x).style.display='none');
+  document.getElementById('m-detail').style.display='';
+  renderOPDetail();
+}
+
+function renderOPDetail(){
+  const op=selectedOP;
+  const real=calcReal(op.corridas||[]);
+  const teo=op.teorico;
+  const diag=diagnostico(teo,real,op.kgPedidos);
+  const dPET=desvio(real.kgPET,teo.kgPET);
+  const dPE =desvio(real.kgPE, teo.kgPE);
+  const dFin=desvio(real.kgFin,op.kgPedidos);
+  const dMerma=real.kgFin>0?real.mermaReal-teo.trim:null;
+  const hasData=real.kgFin>0||real.kgPET>0;
+
+  const fmtD=(d,inv=false)=>{
+    if(!hasData)return`<td class="num na">—</td><td class="num na">—</td>`;
+    const bad=(inv?d.pct<-3:d.pct>5)||(inv?false:d.pct<-3);
+    const warn=Math.abs(d.pct)>2;
+    const cls=Math.abs(d.pct)<=2?'ok':warn&&!bad?'warn':'bad';
+    return`<td class="num ${cls}">${d.val>=0?'+':''}${d.val.toFixed(1)} kg</td><td class="num ${cls}">${d.pct>=0?'+':''}${d.pct.toFixed(1)}%</td>`;
+  };
+
+  document.getElementById('detail-content').innerHTML=`
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div style="font-size:12px;color:var(--txt3);margin-bottom:2px">${op.fecha}</div>
+          <div style="font-size:16px;font-weight:600">${op.cliente} <span style="font-size:12px;font-family:var(--mono);color:var(--amber)">${op.numero}</span></div>
+          ${op.notas?`<div style="font-size:12px;color:var(--txt3)">${op.notas}</div>`:''}
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="badge ${op.estado==='abierta'?'open':'closed'}">${op.estado}</span>
+          ${op.estado==='abierta'?`<button class="btn sm danger" onclick="cerrarOP('${op.id}')">Cerrar OP</button>`:''}
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:.75rem">Teórico vs Real acumulado</div>
+        <table class="cmp-table">
+          <thead><tr>
+            <th>Métrica</th><th style="text-align:right">Teórico</th><th style="text-align:right">Real</th><th style="text-align:right" colspan="2">Desvío</th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="metric">kg PET lámina</td>
+              <td class="num">${teo.kgPET.toFixed(1)}</td>
+              <td class="num">${hasData?real.kgPET.toFixed(1):'—'}</td>
+              ${fmtD(dPET)}</tr>
+            <tr><td class="metric">kg PE lámina</td>
+              <td class="num">${teo.kgPE.toFixed(1)}</td>
+              <td class="num">${hasData?real.kgPE.toFixed(1):'—'}</td>
+              ${fmtD(dPE)}</tr>
+            <tr><td class="metric">kg finales producidos</td>
+              <td class="num">${op.kgPedidos}</td>
+              <td class="num">${hasData?real.kgFin.toFixed(1):'—'}</td>
+              ${fmtD(dFin,true)}</tr>
+            <tr><td class="metric">Merma / trim %</td>
+              <td class="num">${teo.trim.toFixed(1)}%</td>
+              <td class="num">${hasData?real.mermaReal.toFixed(1)+'%':'—'}</td>
+              ${hasData?`<td class="num ${Math.abs(dMerma)<2?'ok':dMerma>3?'bad':'warn'}">${dMerma>=0?'+':''}${dMerma.toFixed(1)}%</td><td></td>`:'<td class="na">—</td><td></td>'}</tr>
+            <tr><td class="metric">Rendimiento</td>
+              <td class="num">${(100-teo.trim).toFixed(1)}%</td>
+              <td class="num">${hasData?(real.rendimiento*100).toFixed(1)+'%':'—'}</td>
+              <td colspan="2"></td></tr>
+          </tbody>
+        </table>
+
+        <div class="diag ${diag.lvl}" style="margin-top:.875rem">
+          <div class="diag-title">${diag.lvl==='ok'?'✓ Estado':diag.lvl==='warn'?'⚠ Atención':'⚠ Revisar'}</div>
+          ${diag.msgs.map(m=>`<div>${m}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-title">Corridas registradas (${op.corridas?.length||0})</span></div>
+      <div class="card-body">
+        ${!op.corridas?.length?'<div class="empty" style="padding:1rem 0">Todavía no hay corridas cargadas.</div>':
+          op.corridas.map((c,i)=>`
+          <div class="corrida-item">
+            <div class="corrida-header">
+              <span class="corrida-num">Corrida ${i+1}</span>
+              <span class="corrida-op">${c.operario||'—'} · ${c.fecha||'—'}</span>
+            </div>
+            <div class="corrida-data">
+              <div class="corrida-val">PET: <span>${c.kgPET||0} kg</span></div>
+              <div class="corrida-val">PE: <span>${c.kgPE||0} kg</span></div>
+              <div class="corrida-val">Finales: <span>${c.kgFin||0} kg</span></div>
+              <div class="corrida-val">Scrap: <span>${c.kgScrap||0} kg</span></div>
+            </div>
+            ${c.obs?`<div style="font-size:12px;color:var(--txt2);margin-top:6px;font-style:italic">"${c.obs}"</div>`:''}
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/* ══ NUEVA OP ══ */
+function initNuevaOP(){
+  const sel=document.getElementById('new-cliente');
+  sel.innerHTML='<option value="">— seleccionar —</option>';
+  CLIENTES.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.n;sel.appendChild(o);});
+}
+
+function onClienteSelect(){recalcTeo();}
+
+function recalcTeo(){
+  const idx=parseInt(document.getElementById('new-cliente').value);
+  const kg=parseFloat(document.getElementById('new-kg').value)||0;
+  const merma=parseFloat(document.getElementById('new-merma').value)||2;
+  if(isNaN(idx)||!kg){
+    document.getElementById('teo-preview').style.display='none';
+    document.getElementById('teo-nodata').style.display='';
+    return;
+  }
+  const specs=CLIENTES[idx];
+  const t=calcTeorico(specs,kg,merma);
+  document.getElementById('teo-preview').style.display='';
+  document.getElementById('teo-nodata').style.display='none';
+  document.getElementById('tp-pet').textContent=t.kgPET.toFixed(1)+' kg';
+  document.getElementById('tp-pe').textContent=t.kgPE.toFixed(1)+' kg';
+  document.getElementById('tp-metros').textContent=t.metros.toFixed(1)+' m';
+  document.getElementById('tp-trim').textContent=t.trim.toFixed(1)+'%';
+  document.getElementById('tp-tlam').textContent=t.tiempoLam.toFixed(1)+' h';
+  document.getElementById('tp-tref').textContent=t.tiempoRef.toFixed(1)+' h';
+}
+
+async function crearOP(){
+  const num=document.getElementById('new-num').value.trim();
+  const idx=parseInt(document.getElementById('new-cliente').value);
+  const kg=parseFloat(document.getElementById('new-kg').value)||0;
+  const merma=parseFloat(document.getElementById('new-merma').value)||2;
+  const fecha=document.getElementById('new-fecha').value;
+  const notas=document.getElementById('new-notas').value.trim();
+  if(!num||isNaN(idx)||!kg){alert('Completá número, cliente y kg pedidos.');return;}
+  if(data.ops.find(o=>o.numero===num)){alert('Ya existe una OP con ese número.');return;}
+  const specs=CLIENTES[idx];
+  const teo=calcTeorico(specs,kg,merma);
+  const op={
+    id:'op_'+Date.now(),numero:num,
+    cliente:specs.n,specs,kgPedidos:kg,merma,
+    fecha,notas,estado:'abierta',
+    teorico:teo,corridas:[],
+    createdAt:new Date().toISOString()
+  };
+  data.ops.unshift(op);
+  await saveData();
+  document.getElementById('new-num').value='';
+  document.getElementById('new-cliente').value='';
+  document.getElementById('new-kg').value='1000';
+  document.getElementById('teo-preview').style.display='none';
+  mTab('ops');
+}
+
+async function cerrarOP(id){
+  if(!confirm('¿Cerrar esta OP? No se podrán agregar más corridas.'))return;
+  const op=data.ops.find(o=>o.id===id);
+  if(op)op.estado='cerrada';
+  await saveData();
+  openOP(id);
+}
+
+/* ══ TABLET ══ */
+function tShowScreen(screen){
+  tScreen=screen;
+  ['pin','ops','carga','confirm'].forEach(s=>{
+    const el=document.getElementById('t-'+s);
+    if(el)el.style.display=s===screen?'':'none';
+  });
+}
+
+function initPIN(){
+  const grid=document.getElementById('pin-grid');
+  const keys=['1','2','3','4','5','6','7','8','9','⌫','0','OK'];
+  grid.innerHTML=keys.map(k=>{
+    const cls=k==='OK'?'pin-key enter':k==='⌫'?'pin-key action':'pin-key';
+    return`<div class="${cls}" onclick="pinKey('${k}')">${k}</div>`;
+  }).join('');
+}
+
+function pinKey(k){
+  if(k==='⌫'){pinBuffer=pinBuffer.slice(0,-1);}
+  else if(k==='OK'){checkPIN();}
+  else if(pinBuffer.length<6){pinBuffer+=k;}
+  updatePINDisplay();
+}
+
+function updatePINDisplay(){
+  const d=document.getElementById('pin-display');
+  d.textContent=pinBuffer.split('').map(()=>'●').join('  ')||'·  ·  ·  ·';
+}
+
+function checkPIN(){
+  const op=OPERARIOS[pinBuffer];
+  if(op){
+    currentUser={pin:pinBuffer,nombre:op};
+    pinBuffer='';
+    updatePINDisplay();
+    document.getElementById('pin-error').textContent='';
+    tShowScreen('ops');
+    renderTOPs();
+    document.getElementById('t-username').textContent=op;
+  } else {
+    document.getElementById('pin-error').textContent='PIN incorrecto. Intentá de nuevo.';
+    pinBuffer='';
+    updatePINDisplay();
+  }
+}
+
+function tLogout(){currentUser=null;pinBuffer='';updatePINDisplay();tShowScreen('pin');}
+
+function renderTOPs(){
+  const open=data.ops.filter(o=>o.estado==='abierta');
+  const el=document.getElementById('t-op-list');
+  if(!open.length){el.innerHTML='<div class="empty">No hay OPs abiertas en este momento.</div>';return;}
+  el.innerHTML=open.map(op=>{
+    const real=calcReal(op.corridas||[]);
+    const pct=op.kgPedidos>0?Math.min(real.kgFin/op.kgPedidos*100,100):0;
+    return`<div class="t-op-item" onclick="selectOP('${op.id}')">
+      <div class="t-op-id">${op.numero}</div>
+      <div class="t-op-cliente">${op.cliente}</div>
+      <div class="t-op-meta">${op.kgPedidos} kg pedidos · ${op.corridas?.length||0} corrida(s)</div>
+      <div class="progress-bar" style="margin-top:8px;height:6px"><div class="progress-fill" style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="progress-label">${real.kgFin.toFixed(0)} / ${op.kgPedidos} kg (${pct.toFixed(0)}%)</div>
+    </div>`;
+  }).join('');
+}
+
+function selectOP(id){
+  selectedOP=data.ops.find(o=>o.id===id);
+  if(!selectedOP)return;
+  const real=calcReal(selectedOP.corridas||[]);
+  const teo=selectedOP.teorico;
+  const nCorrida=(selectedOP.corridas?.length||0)+1;
+  // Teórico por corrida (dividido en partes iguales de 4 corridas estimadas)
+  const teoCorr={
+    kgPET:Math.max(0,teo.kgPET-real.kgPET),
+    kgPE :Math.max(0,teo.kgPE -real.kgPE),
+    kgFin:Math.max(0,selectedOP.kgPedidos-real.kgFin)
+  };
+  document.getElementById('t-carga-titulo').textContent=selectedOP.numero+' — '+selectedOP.cliente;
+  document.getElementById('t-carga-sub').textContent=`Corrida ${nCorrida} · Operario: ${currentUser.nombre}`;
+  document.getElementById('t-corrida-num').textContent='Corrida '+nCorrida;
+  document.getElementById('t-kg-pedidos').textContent=selectedOP.kgPedidos+' kg';
+  document.getElementById('t-kg-real').textContent=real.kgFin.toFixed(1)+' kg';
+  document.getElementById('t-pet-real').textContent=real.kgPET.toFixed(1)+' kg';
+  document.getElementById('t-pe-real').textContent=real.kgPE.toFixed(1)+' kg';
+  document.getElementById('t-pet-teo').textContent=teo.kgPET.toFixed(1)+' kg';
+  document.getElementById('t-pe-teo').textContent=teo.kgPE.toFixed(1)+' kg';
+  const pct=selectedOP.kgPedidos>0?Math.min(real.kgFin/selectedOP.kgPedidos*100,100):0;
+  document.getElementById('t-progress-fill').style.width=pct+'%';
+  document.getElementById('t-progress-label').textContent=`${real.kgFin.toFixed(0)} / ${selectedOP.kgPedidos} kg (${pct.toFixed(0)}%)`;
+  document.getElementById('t-teo-pet-corrida').textContent=teoCorr.kgPET.toFixed(1)+' kg';
+  document.getElementById('t-teo-pe-corrida').textContent=teoCorr.kgPE.toFixed(1)+' kg';
+  document.getElementById('t-teo-fin-corrida').textContent=teoCorr.kgFin.toFixed(1)+' kg';
+  // Reset form
+  ['c-pet','c-pe','c-fin','c-scrap'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  document.getElementById('c-obs').value='';
+  selectedObs=new Set();
+  document.getElementById('t-compar').style.display='none';
+  renderObsPresets();
+  tShowScreen('carga');
+}
+
+function renderObsPresets(){
+  document.getElementById('obs-presets').innerHTML=OBS_PRESETS.map(o=>
+    `<div class="obs-chip${selectedObs.has(o)?' sel':''}" onclick="toggleObs('${o}')">${o}</div>`
+  ).join('');
+}
+
+function toggleObs(o){
+  selectedObs.has(o)?selectedObs.delete(o):selectedObs.add(o);
+  renderObsPresets();
+}
+
+function stepKg(id,delta){
+  const e=document.getElementById(id);
+  if(!e)return;
+  e.value=Math.max(0,(parseFloat(e.value)||0)+delta);
+  updateTeoCompar();
+}
+
+function updateTeoCompar(){
+  if(!selectedOP)return;
+  const pet=parseFloat(document.getElementById('c-pet').value)||0;
+  const pe =parseFloat(document.getElementById('c-pe').value)||0;
+  const fin=parseFloat(document.getElementById('c-fin').value)||0;
+  if(!pet&&!pe&&!fin){document.getElementById('t-compar').style.display='none';return;}
+  const teo=selectedOP.teorico;
+  const real=calcReal(selectedOP.corridas||[]);
+  // Acumulado incluyendo esta corrida
+  const accPET=real.kgPET+pet;
+  const accPE =real.kgPE +pe;
+  const accFin=real.kgFin+fin;
+  const dPET=accPET-teo.kgPET;
+  const dPE =accPE -teo.kgPE;
+  const dFin=accFin-selectedOP.kgPedidos;
+  const cls=v=>Math.abs(v/teo.kgPET*100)<3?'color:var(--green-tx)':v>0?'color:var(--red-tx)':'color:var(--amber)';
+  document.getElementById('t-compar').style.display='';
+  document.getElementById('t-compar').innerHTML=`
+    <b>Acumulado después de esta corrida:</b><br>
+    PET: ${accPET.toFixed(0)} kg <span style="${cls(dPET)}">(${dPET>=0?'+':''}${dPET.toFixed(0)} vs teórico)</span><br>
+    PE:  ${accPE.toFixed(0)} kg <span style="${cls(dPE)}">(${dPE>=0?'+':''}${dPE.toFixed(0)} vs teórico)</span><br>
+    Finales: ${accFin.toFixed(0)} / ${selectedOP.kgPedidos} kg <span style="${dFin>=0?'color:var(--green-tx)':'color:var(--amber)'}">(${dFin>=0?'+':''}${dFin.toFixed(0)})</span>
+  `;
+}
+
+async function guardarCorrida(){
+  const kgPET=parseFloat(document.getElementById('c-pet').value)||0;
+  const kgPE =parseFloat(document.getElementById('c-pe').value)||0;
+  const kgFin=parseFloat(document.getElementById('c-fin').value)||0;
+  const kgScrap=parseFloat(document.getElementById('c-scrap').value)||0;
+  const obsCustom=document.getElementById('c-obs').value.trim();
+  const obsArr=[...selectedObs];
+  if(obsCustom)obsArr.push(obsCustom);
+  const obs=obsArr.join(' · ');
+  const corrida={
+    id:'corr_'+Date.now(),
+    operario:currentUser.nombre,
+    fecha:new Date().toLocaleDateString('es-AR'),
+    timestamp:new Date().toISOString(),
+    kgPET,kgPE,kgFin,kgScrap,obs
+  };
+  if(!selectedOP.corridas)selectedOP.corridas=[];
+  selectedOP.corridas.push(corrida);
+  await saveData();
+  const real=calcReal(selectedOP.corridas);
+  document.getElementById('confirm-msg').innerHTML=
+    `Corrida ${selectedOP.corridas.length} guardada.<br>
+    Acumulado: ${real.kgFin.toFixed(0)} / ${selectedOP.kgPedidos} kg finales.`;
+  tShowScreen('confirm');
+}
+
+function tVolverOPs(){
+  tShowScreen('ops');
+  renderTOPs();
+}
+
+/* ══ INIT ══ */
+async function init(){
+  await loadData();
+  initNuevaOP();
+  initPIN();
+  renderDashboard();
+  switchView('manager');
+}
+
+init();
+</script>
+</body>
+</html>
