@@ -162,6 +162,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 .est-btn.sel-parcial{border-color:var(--amber);background:var(--amber-lt);color:var(--amber-dk)}
 .est-btn.sel-bloqueada{border-color:var(--red);background:var(--red-bg);color:var(--red)}
 .est-btn.sel-quebradiza{border-color:#854F0B;background:#FAEEDA;color:#854F0B}
+.est-btn.sel-otro{border-color:#5034B8;background:#F0EEFE;color:#5034B8}
 
 /* PARCIAL FIELDS */
 .bob-parcial{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;background:var(--amber-lt);border-bottom:1px solid var(--bord)}
@@ -260,13 +261,22 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
       <div class="field"><span class="field-name">Notas</span><input type="text" id="n-notas" placeholder="opcional" style="text-align:left;flex:1"/></div>
     </div>
     <div class="card" id="teo-card" style="display:none">
-      <div class="card-head"><span class="card-title">Teórico</span></div>
-      <div class="field"><span class="field-name">PET lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pet" style="font-family:var(--mono);font-weight:700;color:var(--amber)">—</span></div>
-      <div class="field"><span class="field-name">PE lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pe" style="font-family:var(--mono);font-weight:700;color:var(--amber)">—</span></div>
-      <div class="field"><span class="field-name">Metros de corrida</span><span class="field-unit">m</span><span id="tp-m" style="font-family:var(--mono);font-weight:700">—</span></div>
-      <div class="field"><span class="field-name">Trim teórico</span><span class="field-unit">%</span><span id="tp-trim" style="font-family:var(--mono);font-weight:700">—</span></div>
-      <div class="field"><span class="field-name">Producción teórica</span><span class="field-unit">kg fin/h</span><span id="tp-rate" style="font-family:var(--mono);font-weight:700;color:var(--green)">—</span></div>
-      <div class="field"><span class="field-name">Tiempo estimado</span><span class="field-unit">horas</span><span id="tp-t" style="font-family:var(--mono);font-weight:700">—</span></div>
+      <div class="card-head"><span class="card-title">Teórico</span><span style="font-size:11px;color:var(--txt3)">Tocá ℹ para ver el cálculo</span></div>
+      <div class="field"><span class="field-name">PET lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pet" style="font-family:var(--mono);font-weight:700;color:var(--amber)">—</span><button onclick="showTeoModal('pet')" style="font-size:12px;background:none;border:none;cursor:pointer;color:var(--txt3)">ℹ</button></div>
+      <div class="field"><span class="field-name">PE lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pe" style="font-family:var(--mono);font-weight:700;color:var(--amber)">—</span><button onclick="showTeoModal('pe')" style="font-size:12px;background:none;border:none;cursor:pointer;color:var(--txt3)">ℹ</button></div>
+      <div class="field"><span class="field-name">Metros de corrida</span><span class="field-unit">m</span><span id="tp-m" style="font-family:var(--mono);font-weight:700">—</span><button onclick="showTeoModal('metros')" style="font-size:12px;background:none;border:none;cursor:pointer;color:var(--txt3)">ℹ</button></div>
+      <div class="field"><span class="field-name">Trim teórico</span><span class="field-unit">%</span><span id="tp-trim" style="font-family:var(--mono);font-weight:700">—</span><button onclick="showTeoModal('trim')" style="font-size:12px;background:none;border:none;cursor:pointer;color:var(--txt3)">ℹ</button></div>
+      <div class="field"><span class="field-name">Producción teórica</span><span class="field-unit">kg fin/h</span><span id="tp-rate" style="font-family:var(--mono);font-weight:700;color:var(--green)">—</span><button onclick="showTeoModal('rate')" style="font-size:12px;background:none;border:none;cursor:pointer;color:var(--txt3)">ℹ</button></div>
+      <div class="field"><span class="field-name">Tiempo estimado</span><span class="field-unit">horas</span><span id="tp-t" style="font-family:var(--mono);font-weight:700">—</span><button onclick="showTeoModal('tiempo')" style="font-size:12px;background:none;border:none;cursor:pointer;color:var(--txt3)">ℹ</button></div>
+      <div class="field" id="tp-bobs-row" style="display:none"><span class="field-name">Bobinas de salida esperadas</span><span class="field-unit">bobinas</span><span id="tp-bobs" style="font-family:var(--mono);font-weight:700;color:var(--green)">—</span><button onclick="showTeoModal('bobs')" style="font-size:12px;background:none;border:none;cursor:pointer;color:var(--txt3)">ℹ</button></div>
+    </div>
+    <!-- Modal teórico -->
+    <div id="teo-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center">
+      <div style="background:var(--surf);border-radius:var(--r);padding:1.5rem;max-width:420px;width:92%;box-shadow:0 8px 30px rgba(0,0,0,.25)">
+        <div id="teo-modal-title" style="font-size:15px;font-weight:700;margin-bottom:.875rem;color:var(--amber)">—</div>
+        <div id="teo-modal-body" style="font-size:13px;line-height:1.85;color:var(--txt2);font-family:var(--mono)"></div>
+        <button onclick="closeTeoModal()" class="btn" style="width:100%;margin-top:1rem">Cerrar</button>
+      </div>
     </div>
     <div style="display:flex;gap:8px">
       <button class="btn pri" onclick="crearOP()" style="flex:1">Crear OP</button>
@@ -379,15 +389,19 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
         <div class="bob-total-val" id="pe-total">0.0 kg</div>
       </div>
 
-      <!-- PRODUCTO FINAL -->
-      <div class="t-teo" style="border-top:1px solid var(--bord)">✂ Producto final — teórico restante: <span id="tj-teo-fin">—</span></div>
-      <div class="t-row">
-        <div><div class="t-row-lbl">Kg finales producidos</div></div>
-        <div class="big-num">
-          <button class="big-btn" onpointerdown="startStep('tj-fin',-10)">−</button>
-          <input class="big-inp" type="number" id="tj-fin-val" value="0" min="0" step="1" oninput="updateCompar()"/>
-          <button class="big-btn" onpointerdown="startStep('tj-fin',10)">+</button>
+      <!-- PRODUCTO FINAL por bobinas -->
+      <div class="t-teo" style="border-top:1px solid var(--bord)">✂ Producto terminado — teórico restante: <span id="tj-teo-fin">—</span></div>
+      <div class="t-teo" id="tj-teo-bobs-info" style="display:none">Esperadas: <span id="tj-teo-nbobs">—</span> bob · <span id="tj-teo-kgbob">—</span> kg/bob · <span id="tj-teo-mbob">—</span> m/bob</div>
+      <div id="out-bob-list" style="padding:.625rem .875rem .25rem"></div>
+      <div style="padding:.25rem .875rem .75rem">
+        <button class="bob-add" onclick="addOutBob()">＋ Agregar bobina de salida</button>
+      </div>
+      <div class="bob-total" style="border-top:none">
+        <div>
+          <div class="bob-total-lbl">Total producto terminado</div>
+          <div class="bob-total-sub" id="out-count">0 bobinas</div>
         </div>
+        <div class="bob-total-val" id="out-total">0.0 kg</div>
       </div>
 
       <!-- SCRAP -->
@@ -446,33 +460,35 @@ const BOB_ESTADOS=[
   {k:'parcial',    label:'Parcial — pesé resto', cls:'sel-parcial'},
   {k:'bloqueada',  label:'🚫 Bloqueada',   cls:'sel-bloqueada'},
   {k:'quebradiza', label:'⚠ Quebradiza',   cls:'sel-quebradiza'},
+  {k:'otro',       label:'✏ Otro',         cls:'sel-otro'},
 ];
 
 const CLIENTES=[
-  {n:'Huertas del Pilar',   af:200,ef:450,aPET:430,ePET:400,aPE:450,ePE:50,nT:2},
-  {n:'Dantelli (357-C)',    af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1},
-  {n:'Dantelli (357-N)',    af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1},
-  {n:'Dantelli (323)',      af:323,ef:350,aPET:350,ePET:300,aPE:370,ePE:50,nT:1},
-  {n:'Villa DAgrì (423)',  af:423,ef:280,aPET:450,ePET:230,aPE:470,ePE:50,nT:1},
-  {n:'Villa DAgrì (323)',  af:323,ef:280,aPET:350,ePET:230,aPE:370,ePE:50,nT:1},
-  {n:'Molinos (421)',       af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1},
-  {n:'Molinos (472)',       af:472,ef:235,aPET:500,ePET:200,aPE:530,ePE:35,nT:1},
-  {n:'Mendia (312)',        af:312,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1},
-  {n:'La Italiana (350)',   af:421,ef:350,aPET:450,ePET:300,aPE:470,ePE:50,nT:1},
-  {n:'La Italiana (500)',   af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1},
-  {n:'Don Yeyo (321)',      af:321,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1},
-  {n:'El Artesano (422)',   af:422,ef:250,aPET:450,ePET:200,aPE:470,ePE:50,nT:1},
-  {n:'BarielPack (520×400)',af:520,ef:400,aPET:550,ePET:350,aPE:570,ePE:50,nT:1},
-  {n:'BarielPack (520×600)',af:520,ef:600,aPET:550,ePET:550,aPE:570,ePE:50,nT:1},
-  {n:'BarielPack (520×350)',af:520,ef:350,aPET:550,ePET:300,aPE:570,ePE:50,nT:1},
-  {n:'Pespasa (300)',       af:300,ef:93, aPET:330,ePET:13, aPE:350,ePE:80,nT:1},
+  // pBF = peso bobina final (kg) del producto terminado (de ficha técnica)
+  {n:'Huertas del Pilar',   af:200,ef:450,aPET:430,ePET:400,aPE:450,ePE:50,nT:2,pBF:25},
+  {n:'Dantelli (357-C)',    af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1,pBF:30},
+  {n:'Dantelli (357-N)',    af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1,pBF:30},
+  {n:'Dantelli (323)',      af:323,ef:350,aPET:350,ePET:300,aPE:370,ePE:50,nT:1,pBF:30},
+  {n:'Villa DAgrì (423)',  af:423,ef:280,aPET:450,ePET:230,aPE:470,ePE:50,nT:1,pBF:83},
+  {n:'Villa DAgrì (323)',  af:323,ef:280,aPET:350,ePET:230,aPE:370,ePE:50,nT:1,pBF:35},
+  {n:'Molinos (421)',       af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1,pBF:25},
+  {n:'Molinos (472)',       af:472,ef:235,aPET:500,ePET:200,aPE:530,ePE:35,nT:1,pBF:40},
+  {n:'Mendia (312)',        af:312,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1,pBF:31},
+  {n:'La Italiana (350)',   af:421,ef:350,aPET:450,ePET:300,aPE:470,ePE:50,nT:1,pBF:80},
+  {n:'La Italiana (500)',   af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1,pBF:80},
+  {n:'Don Yeyo (321)',      af:321,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1,pBF:35},
+  {n:'El Artesano (422)',   af:422,ef:250,aPET:450,ePET:200,aPE:470,ePE:50,nT:1,pBF:25},
+  {n:'BarielPack (520×400)',af:520,ef:400,aPET:550,ePET:350,aPE:570,ePE:50,nT:1,pBF:31},
+  {n:'BarielPack (520×600)',af:520,ef:600,aPET:550,ePET:550,aPE:570,ePE:50,nT:1,pBF:45},
+  {n:'BarielPack (520×350)',af:520,ef:350,aPET:550,ePET:300,aPE:570,ePE:50,nT:1,pBF:31},
+  {n:'Pespasa (300)',       af:300,ef:93, aPET:330,ePET:13, aPE:350,ePE:80,nT:1,pBF:null},
 ];
 
 /* ══ STATE ══ */
 let data={ops:[]},currentView='mgr',filterMode='all';
 let currentUser=null,selectedOP=null,tScreen='pin';
 let pinBuffer='',selectedObs=new Set();
-let petBobs=[],peBobs=[];  // [{numBobina,partida,kgNetos,metros,estado,pesoRestante}]
+let petBobs=[],peBobs=[],outBobs=[];  // input bobinas PET/PE y bobinas de salida
 let stepTimer=null;
 
 /* ══ JSONBIN ══ */
@@ -513,8 +529,17 @@ function calcTeo(specs,kgPedidos,merma){
   const kgScrap=(kgPET+kgPE)-kgPedidos;
   // Eficiencia teórica: laminadora procesa PROD_LAM kg/h de material → kg finales/h
   const kgFinPorHora=pb>0?PROD_LAM*pp/pb:0;
-  return{metros,kgPET,kgPE,kgScrap,trim,kgFinPorHora,
-    tiempoTotal:kgPedidos/kgFinPorHora};
+  // Bobinas producto final
+  const kgPorBob=specs.pBF||null;
+  const gramajeTot=ePET*DENS_PET+ePE*DENS_PE;  // g/m²
+  const kgPorMetroFin=af*gramajeTot/1e6;
+  const mPorBob=kgPorBob?kgPorBob/kgPorMetroFin:null;
+  const numBobs=kgPorBob?Math.round(kgPedidos/kgPorBob):null;
+  return{metros,kgPET,kgPE,kgScrap,trim,kgFinPorHora,tiempoTotal:kgPedidos/kgFinPorHora,
+    kgPorBob,mPorBob,numBobs,kgPorMetroFin,
+    // Para modal de explicaciones
+    _specs:{aPET,ePET,aPE,ePE,af,nT,pbPET:metros>0?kgPET/metros:0,pbPE:metros>0?kgPE/metros:0,
+      pp:pp,pb:pb,factor}};
 }
 
 function calcReal(jornadas){
@@ -706,7 +731,9 @@ function recalcTeo(){
   const kg=parseFloat(document.getElementById('n-kg').value)||0;
   const merma=parseFloat(document.getElementById('n-merma').value)||2;
   if(isNaN(idx)||!kg){document.getElementById('teo-card').style.display='none';return;}
-  const t=calcTeo(CLIENTES[idx],kg,merma);
+  const specs=CLIENTES[idx];
+  const t=calcTeo(specs,kg,merma);
+  _lastTeo=t;
   document.getElementById('teo-card').style.display='';
   document.getElementById('tp-pet').textContent=t.kgPET.toFixed(1)+' kg';
   document.getElementById('tp-pe').textContent=t.kgPE.toFixed(1)+' kg';
@@ -714,6 +741,11 @@ function recalcTeo(){
   document.getElementById('tp-trim').textContent=t.trim.toFixed(1)+'%';
   document.getElementById('tp-rate').textContent=t.kgFinPorHora.toFixed(1)+' kg fin/h';
   document.getElementById('tp-t').textContent=t.tiempoTotal.toFixed(1)+' h';
+  const bobRow=document.getElementById('tp-bobs-row');
+  if(t.kgPorBob&&t.numBobs){
+    document.getElementById('tp-bobs').textContent=t.numBobs+' bob · '+t.kgPorBob.toFixed(1)+' kg/bob · '+t.mPorBob.toFixed(0)+' m/bob';
+    if(bobRow)bobRow.style.display='';
+  }else{if(bobRow)bobRow.style.display='none';}
 }
 async function crearOP(){
   const num=document.getElementById('n-num').value.trim();
@@ -818,10 +850,19 @@ function selectOP(id){
   document.getElementById('tj-fin').value='';
   // Cono info
   document.getElementById('tj-cono-info').textContent=`PET:${selectedOP.pesoCono_pet||0}kg·PE:${selectedOP.pesoCono_pe||0}kg`;
+  // Info bobinas salida
+  const teoJ=selectedOP.teorico;
+  const tjBobInfo=document.getElementById('tj-teo-bobs-info');
+  if(teoJ.kgPorBob&&tjBobInfo){
+    document.getElementById('tj-teo-nbobs').textContent=Math.round(Math.max(0,selectedOP.kgPedidos-calcReal(selectedOP.jornadas||[]).kgFin)/teoJ.kgPorBob);
+    document.getElementById('tj-teo-kgbob').textContent=teoJ.kgPorBob.toFixed(1);
+    document.getElementById('tj-teo-mbob').textContent=teoJ.mPorBob?teoJ.mPorBob.toFixed(0):'—';
+    tjBobInfo.style.display='';
+  }else if(tjBobInfo){tjBobInfo.style.display='none';}
   // Reset
-  petBobs=[];peBobs=[];
-  renderBobs('pet');renderBobs('pe');
-  ['tj-fin-val','tj-scrap-b'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  petBobs=[];peBobs=[];outBobs=[];
+  renderBobs('pet');renderBobs('pe');renderOutBobs();
+  ['tj-scrap-b'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
   document.getElementById('tj-scrap-neto').textContent='0.0 kg';
   document.getElementById('tj-compar').style.display='none';
   document.getElementById('tj-obs').value='';
@@ -886,6 +927,10 @@ function setBobField(tipo,idx,field,val){
   updBobCons(tipo,idx);
   updBobTotals(tipo);
   updateCompar();
+}
+function setBobEstadoOtro(tipo,idx,texto){
+  const arr=tipo==='pet'?petBobs:peBobs;
+  if(arr[idx])arr[idx].estado='otro:'+(texto||'');
 }
 function setBobEstado(tipo,idx,estado){
   const arr=tipo==='pet'?petBobs:peBobs;
@@ -962,7 +1007,8 @@ function renderBobs(tipo){
       <div class="bob-estado">
         <label>Estado de la bobina</label>
         <div class="bob-estados">
-          ${BOB_ESTADOS.map(e=>`<button class="est-btn${b.estado===e.k?' '+e.cls:''}" onclick="setBobEstado('${tipo}',${i},'${e.k}')">${e.label}</button>`).join('')}
+          ${BOB_ESTADOS.map(e=>`<button class="est-btn${b.estado===e.k||b.estado?.startsWith('otro:')?b.estado===e.k||b.estado?.startsWith('otro:')&&e.k==='otro'?' '+e.cls:'':''}" onclick="setBobEstado('${tipo}',${i},'${e.k}')">${e.label}</button>`).join('')}
+      ${(b.estado==='otro'||b.estado?.startsWith('otro:'))?`<input style="width:100%;margin-top:6px;font-size:14px;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:7px 8px;background:var(--surf2);color:var(--txt);outline:none" type="text" placeholder="Describí el problema…" value="${b.estado?.startsWith('otro:')?b.estado.slice(5):''}" oninput="setBobEstadoOtro('${tipo}',${i},this.value)"/>`:''}`
         </div>
       </div>
       ${b.estado==='parcial'?`<div class="bob-parcial">
@@ -999,7 +1045,7 @@ function updateCompar(){
   if(!selectedOP)return;
   const pet=totalKg(petBobs,'pet');
   const pe=totalKg(peBobs,'pe');
-  const fin=parseFloat(document.getElementById('tj-fin-val').value)||0;
+  const fin=outBobs.reduce((s,b)=>s+(parseFloat(b.kg)||0),0);
   const scrap=parseFloat(document.getElementById('tj-scrap-b').value)||0;
   if(!pet&&!pe&&!fin){document.getElementById('tj-compar').style.display='none';return;}
   const real=calcReal(selectedOP.jornadas||[]);
@@ -1017,6 +1063,126 @@ function updateCompar(){
     Scrap acumulado: <strong>${aS.toFixed(1)}</strong> kg (teo: ${teo.kgScrap.toFixed(1)})
   `;
 }
+
+/* ══ BOBINAS SALIDA ══ */
+function addOutBob(){
+  outBobs.push({numBobina:'',partida:'',kg:0,metros:0});
+  renderOutBobs();
+}
+function removeOutBob(idx){outBobs.splice(idx,1);renderOutBobs();updateCompar();}
+function setOutBobField(idx,field,val){
+  if(!outBobs[idx])return;
+  outBobs[idx][field]=(['kg','metros'].includes(field))?Math.max(0,parseFloat(val)||0):val;
+  updOutBobTotals();updateCompar();
+}
+function updOutBobTotals(){
+  const total=outBobs.reduce((s,b)=>s+(parseFloat(b.kg)||0),0);
+  const el=document.getElementById('out-total');if(el)el.textContent=total.toFixed(1)+' kg';
+  const cnt=document.getElementById('out-count');if(cnt)cnt.textContent=outBobs.length+' bobina'+(outBobs.length!==1?'s':'');
+}
+function renderOutBobs(){
+  const el=document.getElementById('out-bob-list');if(!el)return;
+  if(!outBobs.length){el.innerHTML='';updOutBobTotals();return;}
+  el.innerHTML=outBobs.map((b,i)=>`
+    <div style="background:var(--surf);border:2px solid var(--blue);border-radius:var(--r);overflow:hidden;margin-bottom:.625rem">
+      <div style="display:flex;align-items:center;gap:8px;padding:.5rem .875rem;background:var(--blue-bg)">
+        <span style="font-size:14px;font-weight:700;color:var(--blue);flex:1">Bobina salida ${i+1}</span>
+        <button onclick="removeOutBob(${i})" style="font-size:13px;padding:3px 10px;border:none;background:var(--red-bg);color:var(--red);border-radius:6px;cursor:pointer;font-weight:600">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem">
+        <div class="bob-field"><label>N° Bobina</label>
+          <input type="text" value="${b.numBobina||''}" placeholder="B-0001"
+            onchange="setOutBobField(${i},'numBobina',this.value)"/></div>
+        <div class="bob-field"><label>N° Partida / Lote</label>
+          <input type="text" value="${b.partida||''}" placeholder="L-2026-04"
+            onchange="setOutBobField(${i},'partida',this.value)"/></div>
+        <div class="bob-field"><label>Kg</label>
+          <input type="number" value="${b.kg||''}" min="0" step="0.1" placeholder="0"
+            oninput="setOutBobField(${i},'kg',this.value)"/></div>
+        <div class="bob-field"><label>Metros</label>
+          <input type="number" value="${b.metros||''}" min="0" step="1" placeholder="0"
+            onchange="setOutBobField(${i},'metros',this.value)"/></div>
+      </div>
+    </div>`).join('');
+  updOutBobTotals();
+}
+
+/* ══ MODAL TEÓRICO ══ */
+let _lastTeo=null;
+function showTeoModal(campo){
+  if(!_lastTeo)return;
+  const t=_lastTeo,m={};
+  const f=(v,d=4)=>typeof v==='number'?v.toFixed(d):v;
+  const s=t._specs;
+  if(campo==='pet'){
+    m.title='PET lámina necesaria';
+    m.body=`Metros de corrida × peso PET por metro
+= ${f(t.metros,1)} m × ${f(s.pbPET,5)} kg/m
+= <strong>${f(t.kgPET,1)} kg</strong>
+
+[Peso PET/m = anchoPET × espPET × 1.35 / 1.000.000
+= ${s.aPET}mm × ${s.ePET}µm × 1.35 / 1.000.000
+= ${f(s.pbPET,5)} kg/m]`;
+  }else if(campo==='pe'){
+    m.title='PE lámina necesaria';
+    m.body=`Metros de corrida × peso PE por metro
+= ${f(t.metros,1)} m × ${f(s.pbPE,5)} kg/m
+= <strong>${f(t.kgPE,1)} kg</strong>
+
+[Peso PE/m = anchoPE × espPE × 0.92 / 1.000.000
+= ${s.aPE}mm × ${s.ePE}µm × 0.92 / 1.000.000
+= ${f(s.pbPE,5)} kg/m]`;
+  }else if(campo==='metros'){
+    m.title='Metros de corrida';
+    m.body=`kg pedidos / peso producto/m × factor merma
+= ${f(t.kgPET+t.kgPE+t.kgScrap+t.metros*0,0)} pedidos / ${f(s.pp,5)} kg/m × ${f(s.factor,3)}
+= <strong>${f(t.metros,1)} m</strong>
+
+[Peso producto/m = nTiras × anchoFinal × gramajeTot / 1.000.000
+= ${s.nT} × ${s.af}mm × ${f(s.ePET*1.35+s.ePE*0.92,1)}g/m² / 1.000.000
+= ${f(s.pp,5)} kg/m
+Factor merma = 1 + merma% = ${f(s.factor,3)}]`;
+  }else if(campo==='trim'){
+    m.title='Trim / scrap de recorte';
+    m.body=`(peso bobina/m − peso producto/m) / peso bobina/m × 100
+= (${f(s.pb,5)} − ${f(s.pp,5)}) / ${f(s.pb,5)} × 100
+= <strong>${f(t.trim,1)}%</strong>
+
+[El trim es el material que se pierde
+POR EL RECORTE de anchura.
+No incluye merma de proceso.]`;
+  }else if(campo==='rate'){
+    m.title='Producción teórica (kg finales/h)';
+    m.body=`Laminadora procesa ${110} kg/h de material
+× (peso producto/m ÷ peso bobina/m)
+= ${110} × (${f(s.pp,5)} / ${f(s.pb,5)})
+= <strong>${f(t.kgFinPorHora,1)} kg fin/h</strong>`;
+  }else if(campo==='tiempo'){
+    m.title='Tiempo estimado';
+    m.body=`kg pedidos / producción teórica
+= ${t.kgPET+t.kgPE>0?f(t.kgPET+t.kgPE+t.kgScrap,0):0} / ${f(t.kgFinPorHora,1)}
+= <strong>${f(t.tiempoTotal,1)} horas</strong>`;
+  }else if(campo==='bobs'){
+    m.title='Bobinas de salida esperadas';
+    m.body=`kg pedidos / kg por bobina
+= ${f(t.kgPET+t.kgPE+t.kgScrap,0)} / ${f(t.kgPorBob,1)} kg
+= <strong>${t.numBobs} bobinas</strong>
+
+kg/m producto = anchoFinal × gramajeTot / 1.000.000
+= ${s.af}mm × ${f(s.ePET*1.35+s.ePE*0.92,1)}g/m² / 1.000.000
+= ${f(s.pp,5)} kg/m
+
+Metros/bobina = kg/bob ÷ kg/m
+= ${f(t.kgPorBob,1)} / ${f(s.pp,5)}
+= ${f(t.mPorBob,0)} m/bob`;
+  }
+  const modal=document.getElementById('teo-modal');
+  document.getElementById('teo-modal-title').textContent=m.title;
+  document.getElementById('teo-modal-body').innerHTML=(m.body||'').replace(/\n/g,'<br>');
+  modal.style.display='flex';
+  modal.onclick=(e)=>{if(e.target===modal)closeTeoModal();};
+}
+function closeTeoModal(){document.getElementById('teo-modal').style.display='none';}
 
 /* ══ OBS ══ */
 function renderObsChips(){
@@ -1046,7 +1212,7 @@ function stopStep(){if(stepTimer){clearTimeout(stepTimer);clearInterval(stepTime
 async function guardarJornada(){
   const kgPET=totalKg(petBobs,'pet');
   const kgPE=totalKg(peBobs,'pe');
-  const kgFin=parseFloat(document.getElementById('tj-fin-val').value)||0;
+  const kgFin=outBobs.reduce((s,b)=>s+(parseFloat(b.kg)||0),0);
   const kgScrap=parseFloat(document.getElementById('tj-scrap-b').value)||0;
   const fecha=document.getElementById('tj-fecha').value;
   const horaIni=document.getElementById('tj-ini').value;
@@ -1070,6 +1236,7 @@ async function guardarJornada(){
     kgPET,kgPE,kgFin,kgScrap,obs:obsArr.join(' · '),
     bobinas_pet:petBobs.map(b=>({...b})),
     bobinas_pe:peBobs.map(b=>({...b})),
+    bobinas_out:outBobs.map(b=>({...b})),
     empalmadas_pet:empPET,empalmadas_pe:empPE
   };
   if(!selectedOP.jornadas)selectedOP.jornadas=[];
