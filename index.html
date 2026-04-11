@@ -928,6 +928,24 @@ function setBobField(tipo,idx,field,val){
   updBobTotals(tipo);
   updateCompar();
 }
+function isOtro(estado){return estado==='otro'||(typeof estado==='string'&&estado.startsWith('otro:'));}
+function getEstadoClsFor(b,ek){
+  if(b.estado===ek)return BOB_ESTADOS.find(e=>e.k===ek)?.cls||'';
+  if(ek==='otro'&&isOtro(b.estado))return 'sel-otro';
+  return '';
+}
+function renderEstadoBtns(b,tipo,i){
+  const q=JSON.stringify;
+  const btns=BOB_ESTADOS.map(e=>{
+    const cls=getEstadoClsFor(b,e.k);
+    return ["<button class='est-btn ",cls,"' onclick=\"setBobEstado(",q(tipo),",",i,",",q(e.k),")\">" ,e.label,"</button>"].join('');
+  }).join('');
+  const otroVal=isOtro(b.estado)&&b.estado!=='otro'?b.estado.slice(5):'';
+  const otroInput=isOtro(b.estado)
+    ? "<input style='width:100%;margin-top:6px;font-size:14px;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:7px 8px;background:var(--surf2);color:var(--txt);outline:none' type='text' placeholder='Describí el problema\u2026' value='"+otroVal.replace(/'/g,"&#39;")+"' oninput=\"setBobEstadoOtro("+q(tipo)+","+i+",this.value)\"/>"
+    :'';
+  return btns+otroInput;
+}
 function setBobEstadoOtro(tipo,idx,texto){
   const arr=tipo==='pet'?petBobs:peBobs;
   if(arr[idx])arr[idx].estado='otro:'+(texto||'');
@@ -1007,8 +1025,7 @@ function renderBobs(tipo){
       <div class="bob-estado">
         <label>Estado de la bobina</label>
         <div class="bob-estados">
-          ${BOB_ESTADOS.map(e=>`<button class="est-btn${b.estado===e.k||b.estado?.startsWith('otro:')?b.estado===e.k||b.estado?.startsWith('otro:')&&e.k==='otro'?' '+e.cls:'':''}" onclick="setBobEstado('${tipo}',${i},'${e.k}')">${e.label}</button>`).join('')}
-      ${(b.estado==='otro'||b.estado?.startsWith('otro:'))?`<input style="width:100%;margin-top:6px;font-size:14px;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:7px 8px;background:var(--surf2);color:var(--txt);outline:none" type="text" placeholder="Describí el problema…" value="${b.estado?.startsWith('otro:')?b.estado.slice(5):''}" oninput="setBobEstadoOtro('${tipo}',${i},this.value)"/>`:''}`
+          \${renderEstadoBtns(b,'${tipo}',${i})}
         </div>
       </div>
       ${b.estado==='parcial'?`<div class="bob-parcial">
