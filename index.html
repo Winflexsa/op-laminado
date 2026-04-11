@@ -344,7 +344,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
       <div class="t-sect-head">📅 Jornada — <span id="tj-num" style="color:var(--amber)">1</span></div>
 
       <!-- Fecha y horario -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;border-bottom:1px solid var(--bord)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem">
         <div>
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:5px">Fecha</div>
           <input type="date" id="tj-fecha" style="width:100%;font-size:15px;font-weight:600;border:2px solid var(--bord2);border-radius:var(--rs);padding:9px 8px;background:var(--surf2);color:var(--txt);outline:none"/>
@@ -361,51 +361,63 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
         </div>
       </div>
 
-      <!-- BOBINAS PET -->
-      <div class="t-teo">🎞 PET — teórico restante: <span id="tj-teo-pet">—</span></div>
-      <div id="pet-list" style="padding:.625rem .875rem .25rem"></div>
-      <div style="padding:.25rem .875rem .75rem">
-        <button class="bob-add" onclick="addBobina('pet')">＋ Agregar bobina PET</button>
-      </div>
-      <div class="bob-total">
-        <div>
-          <div class="bob-total-lbl">Total PET esta jornada</div>
-          <div class="bob-total-sub" id="pet-count">0 bobinas</div>
+    </div>
+
+    <!-- GRID 2 COLUMNAS: PET | PE -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:.625rem">
+
+      <!-- COL PET -->
+      <div class="t-sect" style="margin-bottom:0">
+        <div class="t-sect-head" style="background:var(--green-bg);color:var(--green)">
+          🎞 PET
         </div>
-        <div class="bob-total-val" id="pet-total">0.0 kg</div>
+        <div class="t-teo" style="font-size:11px">Restante: <span id="tj-teo-pet">—</span></div>
+        <div id="pet-list" style="padding:.5rem .625rem .25rem"></div>
+        <div style="padding:.25rem .625rem .625rem">
+          <button onclick="addBobina('pet')" style="width:100%;padding:10px 6px;border:2px dashed var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:700;color:var(--green);background:var(--green-bg)">＋ PET</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;border-top:2px solid var(--bord);background:var(--green-bg)">
+          <div style="font-size:11px;color:var(--green);font-weight:600" id="pet-count">0 bob</div>
+          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--green)" id="pet-total">0.0 kg</div>
+        </div>
       </div>
 
-      <!-- BOBINAS PE -->
-      <div class="t-teo" style="border-top:1px solid var(--bord)">🎞 PE — teórico restante: <span id="tj-teo-pe">—</span></div>
-      <div id="pe-list" style="padding:.625rem .875rem .25rem"></div>
-      <div style="padding:.25rem .875rem .75rem">
-        <button class="bob-add" onclick="addBobina('pe')">＋ Agregar bobina PE</button>
-      </div>
-      <div class="bob-total" style="border-top:1px solid var(--bord)">
-        <div>
-          <div class="bob-total-lbl">Total PE esta jornada</div>
-          <div class="bob-total-sub" id="pe-count">0 bobinas</div>
+      <!-- COL PE -->
+      <div class="t-sect" style="margin-bottom:0">
+        <div class="t-sect-head" style="background:var(--blue-bg);color:var(--blue)">
+          🎞 PE
         </div>
-        <div class="bob-total-val" id="pe-total">0.0 kg</div>
+        <div class="t-teo" style="font-size:11px">Restante: <span id="tj-teo-pe">—</span></div>
+        <div id="pe-list" style="padding:.5rem .625rem .25rem"></div>
+        <div style="padding:.25rem .625rem .625rem">
+          <button onclick="addBobina('pe')" style="width:100%;padding:10px 6px;border:2px dashed var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:700;color:var(--blue);background:var(--blue-bg)">＋ PE</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;border-top:2px solid var(--bord);background:var(--blue-bg)">
+          <div style="font-size:11px;color:var(--blue);font-weight:600" id="pe-count">0 bob</div>
+          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--blue)" id="pe-total">0.0 kg</div>
+        </div>
       </div>
+    </div>
 
-      <!-- PRODUCTO FINAL por bobinas -->
-      <div class="t-teo" style="border-top:1px solid var(--bord)">✂ Producto terminado — teórico restante: <span id="tj-teo-fin">—</span></div>
-      <div class="t-teo" id="tj-teo-bobs-info" style="display:none">Esperadas: <span id="tj-teo-nbobs">—</span> bob · <span id="tj-teo-kgbob">—</span> kg/bob · <span id="tj-teo-mbob">—</span> m/bob</div>
-      <div id="out-bob-list" style="padding:.625rem .875rem .25rem"></div>
-      <div style="padding:.25rem .875rem .75rem">
+    <!-- BOBINAS PRODUCTO FINAL (ancho completo) -->
+    <div class="t-sect" style="margin-bottom:.625rem">
+      <div class="t-sect-head">✂ Producto terminado — <span style="color:var(--amber)">restante: <span id="tj-teo-fin">—</span></span></div>
+      <div class="t-teo" id="tj-teo-bobs-info" style="display:none;font-size:11px">
+        Esperadas: <span id="tj-teo-nbobs">—</span> bob · <span id="tj-teo-kgbob">—</span> kg/bob · <span id="tj-teo-mbob">—</span> m/bob
+      </div>
+      <div id="out-bob-list" style="padding:.5rem .875rem .25rem"></div>
+      <div style="padding:.25rem .875rem .625rem">
         <button class="bob-add" onclick="addOutBob()">＋ Agregar bobina de salida</button>
       </div>
-      <div class="bob-total" style="border-top:none">
-        <div>
-          <div class="bob-total-lbl">Total producto terminado</div>
-          <div class="bob-total-sub" id="out-count">0 bobinas</div>
-        </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem;border-top:2px solid var(--bord)">
+        <div><div class="bob-total-lbl">Total producto terminado</div><div class="bob-total-sub" id="out-count">0 bobinas</div></div>
         <div class="bob-total-val" id="out-total">0.0 kg</div>
       </div>
+    </div>
 
-      <!-- SCRAP -->
-      <div style="padding:.5rem .875rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);border-top:1px solid var(--bord)">🗑 Scrap al cerrar la jornada</div>
+    <!-- SCRAP + OBS + COMPAR (en sect separado) -->
+    <div class="t-sect">
+      <div class="t-sect-head">🗑 Scrap · Observaciones</div>
       <div class="t-row">
         <div><div class="t-row-lbl">Peso bruto scrap</div><div class="t-row-sub">Tiras + recortes del día</div></div>
         <div class="big-num">
@@ -414,12 +426,8 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
           <button class="big-btn" onpointerdown="startStep('tj-scrap-b',1)">+</button>
         </div>
       </div>
-      <div class="t-teo">Scrap neto = bruto − cono (<span id="tj-cono-info">—</span>): <span id="tj-scrap-neto">0.0 kg</span></div>
-
-      <!-- COMPARACIÓN -->
+      <div class="t-teo">Neto = bruto − cono (<span id="tj-cono-info">—</span>): <span id="tj-scrap-neto">0.0 kg</span></div>
       <div id="tj-compar" style="display:none;padding:.75rem .875rem;border-top:1px solid var(--bord);font-size:13px;background:var(--surf2);line-height:1.9"></div>
-
-      <!-- OBS -->
       <div style="padding:.5rem .875rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);border-top:1px solid var(--bord)">Observaciones</div>
       <div class="obs-chips" id="obs-chips"></div>
       <div style="padding:.25rem .875rem .875rem">
@@ -427,7 +435,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
       </div>
     </div>
 
-    <button onclick="guardarJornada()" style="width:100%;padding:18px;font-size:17px;font-weight:700;background:var(--amber);color:#fff;border:none;border-radius:var(--r);cursor:pointer;margin-top:.25rem">
+    <button onclick="guardarJornada()" style="width:100%;padding:18px;font-size:17px;font-weight:700;background:var(--amber);color:#fff;border:none;border-radius:var(--r);cursor:pointer;margin-top:.25rem;margin-bottom:2rem">
       ✓ Confirmar jornada
     </button>
   </div>
@@ -596,6 +604,7 @@ function mTab(t){
   if(t==='nueva'){
     document.getElementById('n-fecha').value=new Date().toISOString().slice(0,10);
     document.getElementById('teo-card').style.display='none';
+    window._mgrModalActive=false;
     initClienteSel();
   }
 }
@@ -680,7 +689,21 @@ function renderOpDetail(){
 
   const efLine=real.eficiencia!=null?`<tr><td>Eficiencia total</td><td class="na">${teo.kgFinPorHora.toFixed(1)}</td><td class="${real.eficiencia>90?'ok':real.eficiencia>75?'warn':'bad'}">${real.eficiencia.toFixed(0)}%</td><td colspan="2"></td></tr>`:'';
 
+  // Guardamos el teo para el modal
+  _lastTeo=teo;
+
+  const btnI=(campo)=>`<button onclick="showTeoModal('${campo}')" title="Ver cálculo" style="font-size:13px;background:none;border:1px solid var(--bord2);border-radius:4px;cursor:pointer;color:var(--amber);padding:1px 6px;margin-left:4px">ℹ</button>`;
+
   document.getElementById('detail-content').innerHTML=`
+    <!-- Modal teórico (también en manager) -->
+    <div id="teo-modal-mgr" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center">
+      <div style="background:var(--surf);border-radius:var(--r);padding:1.5rem;max-width:440px;width:92%;box-shadow:0 8px 30px rgba(0,0,0,.25)">
+        <div id="teo-modal-mgr-title" style="font-size:15px;font-weight:700;margin-bottom:.875rem;color:var(--amber)">—</div>
+        <div id="teo-modal-mgr-body" style="font-size:13px;line-height:1.9;color:var(--txt2);font-family:var(--mono);white-space:pre-wrap"></div>
+        <button onclick="document.getElementById('teo-modal-mgr').style.display='none'" class="btn" style="width:100%;margin-top:1rem">Cerrar</button>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-head">
         <div>
@@ -694,17 +717,22 @@ function renderOpDetail(){
         </div>
       </div>
       <div class="card-body">
+        <div style="font-size:11px;color:var(--txt3);margin-bottom:.75rem">Tocá ℹ en cualquier valor para ver cómo se calculó</div>
         <table class="cmp-tbl">
-          <thead><tr><th>Métrica</th><th>Teórico</th><th>Real</th><th>Desvío kg</th><th>Desvío %</th></tr></thead>
+          <thead><tr><th>Métrica</th><th>Teórico</th><th></th><th>Real</th><th>Desvío</th><th>%</th></tr></thead>
           <tbody>
-            <tr><td>kg finales</td><td>${op.kgPedidos}</td><td>${hasData?real.kgFin.toFixed(1):'—'}</td>
+            <tr><td>kg finales pedidos</td><td>${op.kgPedidos}</td><td></td><td>${hasData?real.kgFin.toFixed(1):'—'}</td>
               <td class="${cls(dF.p,true)}">${hasData?(dF.v>=0?'+':'')+dF.v.toFixed(1):'—'}</td><td class="${cls(dF.p,true)}">${hasData?(dF.p>=0?'+':'')+dF.p.toFixed(1)+'%':'—'}</td></tr>
-            <tr><td>PET lámina</td><td>${teo.kgPET.toFixed(1)}</td><td>${hasData?real.kgPET.toFixed(1):'—'}</td>
+            <tr><td>PET lámina</td><td>${teo.kgPET.toFixed(1)} kg</td><td>${btnI('pet')}</td><td>${hasData?real.kgPET.toFixed(1):'—'}</td>
               <td class="${cls(dP.p,false)}">${hasData?(dP.v>=0?'+':'')+dP.v.toFixed(1):'—'}</td><td class="${cls(dP.p,false)}">${hasData?(dP.p>=0?'+':'')+dP.p.toFixed(1)+'%':'—'}</td></tr>
-            <tr><td>PE lámina</td><td>${teo.kgPE.toFixed(1)}</td><td>${hasData?real.kgPE.toFixed(1):'—'}</td>
+            <tr><td>PE lámina</td><td>${teo.kgPE.toFixed(1)} kg</td><td>${btnI('pe')}</td><td>${hasData?real.kgPE.toFixed(1):'—'}</td>
               <td class="${cls(dE.p,false)}">${hasData?(dE.v>=0?'+':'')+dE.v.toFixed(1):'—'}</td><td class="${cls(dE.p,false)}">${hasData?(dE.p>=0?'+':'')+dE.p.toFixed(1)+'%':'—'}</td></tr>
-            <tr><td>Scrap</td><td>${teo.kgScrap.toFixed(1)}</td><td>${hasData?real.kgScrap.toFixed(1):'—'}</td><td colspan="2"></td></tr>
-            <tr><td>Horas trabajadas</td><td>${teo.tiempoTotal.toFixed(1)}</td><td>${real.horas>0?real.horas.toFixed(1):'—'}</td><td colspan="2"></td></tr>
+            <tr><td>Trim teórico</td><td>${teo.trim.toFixed(1)}%</td><td>${btnI('trim')}</td><td colspan="3"></td></tr>
+            <tr><td>Metros de corrida</td><td>${teo.metros.toFixed(0)} m</td><td>${btnI('metros')}</td><td colspan="3"></td></tr>
+            <tr><td>Producción teórica</td><td>${teo.kgFinPorHora.toFixed(1)} kg/h</td><td>${btnI('rate')}</td><td colspan="3"></td></tr>
+            <tr><td>Scrap esperado</td><td>${teo.kgScrap.toFixed(1)} kg</td><td></td><td>${hasData?real.kgScrap.toFixed(1):'—'}</td><td colspan="2"></td></tr>
+            <tr><td>Tiempo estimado</td><td>${teo.tiempoTotal.toFixed(1)} h</td><td>${btnI('tiempo')}</td><td>${real.horas>0?real.horas.toFixed(1):'—'}</td><td colspan="2"></td></tr>
+            ${teo.kgPorBob?`<tr><td>Bobinas de salida</td><td>${teo.numBobs} bob</td><td>${btnI('bobs')}</td><td colspan="3"></td></tr>`:''}
             ${efLine}
           </tbody>
         </table>
@@ -712,6 +740,9 @@ function renderOpDetail(){
     </div>
     ${(op.jornadas||[]).length?`<div class="card"><div class="card-head"><span class="card-title">Jornadas (${op.jornadas.length})</span></div>${jornadasHTML}</div>`:'<div class="empty">Sin jornadas registradas.</div>'}
   `;
+
+  // Redirigir showTeoModal al modal del manager cuando estamos en esa vista
+  window._mgrModalActive=true;
 }
 
 function toggleJorDetail(i){
@@ -1193,13 +1224,25 @@ Metros/bobina = kg/bob ÷ kg/m
 = ${f(t.kgPorBob,1)} / ${f(s.pp,5)}
 = ${f(t.mPorBob,0)} m/bob`;
   }
-  const modal=document.getElementById('teo-modal');
-  document.getElementById('teo-modal-title').textContent=m.title;
-  document.getElementById('teo-modal-body').innerHTML=(m.body||'').replace(/\n/g,'<br>');
-  modal.style.display='flex';
-  modal.onclick=(e)=>{if(e.target===modal)closeTeoModal();};
+  // Use manager modal if in detail view, else use new OP modal
+  const mgrModal=document.getElementById('teo-modal-mgr');
+  if(mgrModal&&window._mgrModalActive){
+    document.getElementById('teo-modal-mgr-title').textContent=m.title;
+    document.getElementById('teo-modal-mgr-body').textContent=(m.body||'').replace(/<strong>/g,'').replace(/<\/strong>/g,'');
+    mgrModal.style.display='flex';
+    mgrModal.onclick=(e)=>{if(e.target===mgrModal)mgrModal.style.display='none';};
+  } else {
+    const modal=document.getElementById('teo-modal');
+    document.getElementById('teo-modal-title').textContent=m.title;
+    document.getElementById('teo-modal-body').innerHTML=(m.body||'').replace(/\n/g,'<br>');
+    modal.style.display='flex';
+    modal.onclick=(e)=>{if(e.target===modal)closeTeoModal();};
+  }
 }
-function closeTeoModal(){document.getElementById('teo-modal').style.display='none';}
+function closeTeoModal(){
+  document.getElementById('teo-modal').style.display='none';
+  const m=document.getElementById('teo-modal-mgr');if(m)m.style.display='none';
+}
 
 /* ══ OBS ══ */
 function renderObsChips(){
