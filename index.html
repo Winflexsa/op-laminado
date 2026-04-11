@@ -953,9 +953,9 @@ function selectOP(id){
   renderBobs('pet');renderBobs('pe');renderOutBobs();
   ['tj-scrap-b','tj-tiras'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
   updateScrapDesglose();
-  document.getElementById('tj-scrap-neto').textContent='0.0 kg';
-  document.getElementById('tj-compar').style.display='none';
-  document.getElementById('tj-obs').value='';
+  const _sn=document.getElementById('tj-scrap-neto');if(_sn)_sn.textContent='0.0 kg';
+  const _tc=document.getElementById('tj-compar');if(_tc)_tc.style.display='none';
+  const _to=document.getElementById('tj-obs');if(_to)_to.value='';
   selectedObs=new Set();renderObsChips();
   updateResumen();
   tShowScreen('jornada');
@@ -1344,7 +1344,7 @@ function startStep(id,delta){
   document.addEventListener('pointerup',stopStep,{once:true});
 }
 function doStep(id,delta){
-  const realId=id==='tj-fin'?'tj-fin-val':id;
+  const realId=id;
   const e=document.getElementById(realId);
   if(!e)return;
   e.value=Math.max(0,(parseFloat(e.value)||0)+delta);
