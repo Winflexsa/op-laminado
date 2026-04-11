@@ -869,6 +869,7 @@ async function cerrarOP(id){
 
 /* ══ TABLET ══ */
 function tShowScreen(s){
+  console.log('tShowScreen called with:',s);
   tScreen=s;
   ['pin','ops','jornada','confirm'].forEach(x=>{
     const e=document.getElementById('t-'+x);if(e)e.style.display=x===s?'':'none';
@@ -926,8 +927,11 @@ function renderTOPs(){
 }
 
 function selectOP(id){
+  console.log('selectOP called, id=',id);
+  try{
   selectedOP=data.ops.find(o=>o.id===id);
-  if(!selectedOP)return;
+  console.log('selectedOP=',selectedOP?.numero);
+  if(!selectedOP){console.log('OP not found');return;}
   const nJ=(selectedOP.jornadas?.length||0)+1;
   document.getElementById('tj-titulo').textContent=selectedOP.numero+' — '+selectedOP.cliente;
   document.getElementById('tj-sub').textContent=currentUser.nombre+' · '+new Date().toLocaleDateString('es-AR');
@@ -958,7 +962,10 @@ function selectOP(id){
   const _to=document.getElementById('tj-obs');if(_to)_to.value='';
   selectedObs=new Set();renderObsChips();
   updateResumen();
+  console.log('about to call tShowScreen jornada');
   tShowScreen('jornada');
+  console.log('tShowScreen done');
+  }catch(err){console.error('selectOP ERROR:',err.message,err.stack);}
 }
 
 /* ══ RESUMEN ACUMULADO ══ */
