@@ -869,7 +869,6 @@ async function cerrarOP(id){
 
 /* ══ TABLET ══ */
 function tShowScreen(s){
-  console.log('tShowScreen called with:',s);
   tScreen=s;
   ['pin','ops','jornada','confirm'].forEach(x=>{
     const e=document.getElementById('t-'+x);if(e)e.style.display=x===s?'':'none';
@@ -927,45 +926,39 @@ function renderTOPs(){
 }
 
 function selectOP(id){
-  console.log('selectOP called, id=',id);
-  try{
   selectedOP=data.ops.find(o=>o.id===id);
-  console.log('selectedOP=',selectedOP?.numero);
-  if(!selectedOP){console.log('OP not found');return;}
+  if(!selectedOP)return;
+  // Safe setter — silently skips missing elements
+  const set=(elId,val,prop='textContent')=>{const e=document.getElementById(elId);if(e)e[prop]=val;};
   const nJ=(selectedOP.jornadas?.length||0)+1;
-  document.getElementById('tj-titulo').textContent=selectedOP.numero+' — '+selectedOP.cliente;
-  document.getElementById('tj-sub').textContent=currentUser.nombre+' · '+new Date().toLocaleDateString('es-AR');
-  document.getElementById('tj-num').textContent=nJ;
-  // Auto-fill fecha e inicio
+  set('tj-titulo',selectedOP.numero+' — '+selectedOP.cliente);
+  set('tj-sub',currentUser.nombre+' · '+new Date().toLocaleDateString('es-AR'));
+  set('tj-num',nJ);
   const now=new Date();
-  document.getElementById('tj-fecha').value=now.toISOString().slice(0,10);
-  document.getElementById('tj-ini').value=now.toTimeString().slice(0,5);
-  document.getElementById('tj-fin').value='';
-  // Cono info
-  document.getElementById('tj-cono-info').textContent=`PET:${selectedOP.pesoCono_pet||0}kg·PE:${selectedOP.pesoCono_pe||0}kg`;
-  // Info bobinas salida
+  set('tj-fecha',now.toISOString().slice(0,10),'value');
+  set('tj-ini',now.toTimeString().slice(0,5),'value');
+  set('tj-fin','','value');
+  // Bobinas salida info
   const teoJ=selectedOP.teorico;
   const tjBobInfo=document.getElementById('tj-teo-bobs-info');
   if(teoJ.kgPorBob&&tjBobInfo){
-    document.getElementById('tj-teo-nbobs').textContent=Math.round(Math.max(0,selectedOP.kgPedidos-calcReal(selectedOP.jornadas||[]).kgFin)/teoJ.kgPorBob);
-    document.getElementById('tj-teo-kgbob').textContent=teoJ.kgPorBob.toFixed(1);
-    document.getElementById('tj-teo-mbob').textContent=teoJ.mPorBob?teoJ.mPorBob.toFixed(0):'—';
+    const realAcc=calcReal(selectedOP.jornadas||[]);
+    set('tj-teo-nbobs',Math.round(Math.max(0,selectedOP.kgPedidos-realAcc.kgFin)/teoJ.kgPorBob));
+    set('tj-teo-kgbob',teoJ.kgPorBob.toFixed(1));
+    set('tj-teo-mbob',teoJ.mPorBob?teoJ.mPorBob.toFixed(0):'—');
     tjBobInfo.style.display='';
   }else if(tjBobInfo){tjBobInfo.style.display='none';}
-  // Reset
+  // Reset bobinas y form
   petBobs=[];peBobs=[];outBobs=[];
   renderBobs('pet');renderBobs('pe');renderOutBobs();
-  ['tj-scrap-b','tj-tiras'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  ['tj-scrap-b','tj-tiras'].forEach(fid=>{set(fid,0,'value');});
   updateScrapDesglose();
-  const _sn=document.getElementById('tj-scrap-neto');if(_sn)_sn.textContent='0.0 kg';
+  set('tj-compar',undefined);
   const _tc=document.getElementById('tj-compar');if(_tc)_tc.style.display='none';
-  const _to=document.getElementById('tj-obs');if(_to)_to.value='';
+  set('tj-obs','','value');
   selectedObs=new Set();renderObsChips();
   updateResumen();
-  console.log('about to call tShowScreen jornada');
   tShowScreen('jornada');
-  console.log('tShowScreen done');
-  }catch(err){console.error('selectOP ERROR:',err.message,err.stack);}
 }
 
 /* ══ RESUMEN ACUMULADO ══ */
