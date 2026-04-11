@@ -133,21 +133,23 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 .big-inp::-webkit-inner-spin-button,.big-inp::-webkit-outer-spin-button{-webkit-appearance:none}
 
 /* BOBINA CARD */
-.bob-card{border:2.5px solid var(--bord2);border-radius:var(--r);overflow:hidden;background:var(--surf);margin-bottom:.75rem}
+.bob-card{border:2.5px solid var(--bord2);border-radius:var(--r);overflow:hidden;background:var(--surf);margin-bottom:.625rem;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 .bob-card.completa{border-color:var(--green)}
 .bob-card.parcial{border-color:var(--amber)}
 .bob-card.bloqueada{border-color:var(--red)}
-.bob-head{display:flex;align-items:center;gap:8px;padding:.625rem .875rem;border-bottom:1px solid var(--bord)}
+.bob-card.quebradiza{border-color:#854F0B}
+.bob-card.otro{border-color:#5034B8}
+.bob-head{display:flex;align-items:center;gap:6px;padding:.5rem .75rem;border-bottom:1px solid var(--bord)}
 .bob-head.pet-head{background:var(--green-bg)}
 .bob-head.pe-head{background:var(--blue-bg)}
-.bob-num-lbl{font-size:14px;font-weight:700;flex:1}
+.bob-num-lbl{font-size:13px;font-weight:700;flex:1}
 .bob-num-lbl.pet-lbl{color:var(--green)}
 .bob-num-lbl.pe-lbl{color:var(--blue)}
-.bob-emp{font-size:11px;background:var(--amber-lt);color:var(--amber-dk);padding:2px 8px;border-radius:10px;font-weight:600}
-.bob-del{font-size:13px;padding:4px 10px;border:none;background:var(--red-bg);color:var(--red);border-radius:6px;cursor:pointer;font-weight:600}
-.bob-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;border-bottom:1px solid var(--bord)}
-.bob-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);display:block;margin-bottom:4px}
-.bob-field input{width:100%;font-size:16px;font-weight:700;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:8px 8px;background:var(--surf2);color:var(--txt);outline:none}
+.bob-emp{font-size:10px;background:var(--amber-lt);color:var(--amber-dk);padding:1px 6px;border-radius:8px;font-weight:700}
+.bob-del{font-size:11px;padding:3px 8px;border:none;background:var(--red-bg);color:var(--red);border-radius:5px;cursor:pointer;font-weight:700}
+.bob-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:.625rem .75rem;border-bottom:1px solid var(--bord)}
+.bob-field label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);display:block;margin-bottom:3px}
+.bob-field input{width:100%;font-size:14px;font-weight:700;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:7px 6px;background:var(--surf2);color:var(--txt);outline:none}
 .bob-field input:focus{border-color:var(--amber)}
 .bob-field input[type=number]{text-align:right;-moz-appearance:textfield}
 .bob-field input::-webkit-inner-spin-button{-webkit-appearance:none}
@@ -156,7 +158,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 .bob-estado{padding:.625rem .875rem;border-bottom:1px solid var(--bord)}
 .bob-estado label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);display:block;margin-bottom:6px}
 .bob-estados{display:flex;flex-wrap:wrap;gap:6px}
-.est-btn{font-size:13px;font-weight:600;padding:8px 12px;border-radius:var(--rs);border:2px solid var(--bord2);background:var(--surf2);color:var(--txt2);cursor:pointer;transition:all .15s}
+.est-btn{font-size:12px;font-weight:600;padding:7px 8px;border-radius:var(--rs);border:2px solid var(--bord2);background:var(--surf2);color:var(--txt2);cursor:pointer;transition:all .15s;text-align:center}
 .est-btn:active{transform:scale(.96)}
 .est-btn.sel-completa{border-color:var(--green);background:var(--green-bg);color:var(--green)}
 .est-btn.sel-parcial{border-color:var(--amber);background:var(--amber-lt);color:var(--amber-dk)}
@@ -418,15 +420,54 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
     <!-- SCRAP + OBS + COMPAR (en sect separado) -->
     <div class="t-sect">
       <div class="t-sect-head">🗑 Scrap · Observaciones</div>
-      <div class="t-row">
-        <div><div class="t-row-lbl">Peso bruto scrap</div><div class="t-row-sub">Tiras + recortes del día</div></div>
-        <div class="big-num">
-          <button class="big-btn" onpointerdown="startStep('tj-scrap-b',-1)">−</button>
-          <input class="big-inp" type="number" id="tj-scrap-b" value="0" min="0" step="0.5" oninput="updateScrapNeto()"/>
-          <button class="big-btn" onpointerdown="startStep('tj-scrap-b',1)">+</button>
+
+      <!-- SCRAP AUTOMÁTICO DE BOBINAS -->
+      <div style="padding:.5rem .875rem .375rem;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3)">Scrap automático (calculado de bobinas)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:.25rem .875rem .75rem;border-bottom:1px solid var(--bord)">
+        <div style="background:var(--green-bg);border-radius:var(--rs);padding:.625rem .75rem;text-align:center">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--green);margin-bottom:3px">PET sobrante</div>
+          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--green)" id="scrap-pet-bobs">0.0 kg</div>
+          <div style="font-size:10px;color:var(--txt3)" id="scrap-pet-detail">—</div>
+        </div>
+        <div style="background:var(--blue-bg);border-radius:var(--rs);padding:.625rem .75rem;text-align:center">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:3px">PE sobrante</div>
+          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--blue)" id="scrap-pe-bobs">0.0 kg</div>
+          <div style="font-size:10px;color:var(--txt3)" id="scrap-pe-detail">—</div>
+        </div>
+        <div style="background:var(--surf2);border-radius:var(--rs);padding:.625rem .75rem;text-align:center">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:3px">Total bobinas</div>
+          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--txt)" id="scrap-bobs-total">0.0 kg</div>
+          <div style="font-size:10px;color:var(--txt3)">resto-cono</div>
         </div>
       </div>
-      <div class="t-teo">Neto = bruto − cono (<span id="tj-cono-info">—</span>): <span id="tj-scrap-neto">0.0 kg</span></div>
+
+      <!-- TIRAS (manual) -->
+      <div style="padding:.5rem .875rem .375rem;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3)">Tiras de recorte — pesaje manual</div>
+      <div class="t-row">
+        <div>
+          <div class="t-row-lbl">Peso tiras</div>
+          <div class="t-row-sub">Recortes laterales del refilado</div>
+        </div>
+        <div class="big-num">
+          <button class="big-btn" onpointerdown="startStep('tj-tiras',-0.5)">−</button>
+          <input class="big-inp" type="number" id="tj-tiras" value="0" min="0" step="0.5" oninput="updateScrapDesglose()"/>
+          <button class="big-btn" onpointerdown="startStep('tj-tiras',0.5)">+</button>
+        </div>
+      </div>
+
+      <!-- TOTAL SCRAP -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem .875rem;background:var(--surf2);border-top:2px solid var(--bord)">
+        <div>
+          <div style="font-size:13px;font-weight:700">Scrap total esta jornada</div>
+          <div style="font-size:11px;color:var(--txt3)">Sobrante bobinas + tiras recorte</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--red)" id="scrap-total-disp">0.0 kg</div>
+          <div style="font-size:11px;color:var(--txt3)" id="scrap-teo-comp">teo: — kg</div>
+        </div>
+      </div>
+      <!-- hidden for compat -->
+      <input type="hidden" id="tj-scrap-b" value="0"/>
       <div id="tj-compar" style="display:none;padding:.75rem .875rem;border-top:1px solid var(--bord);font-size:13px;background:var(--surf2);line-height:1.9"></div>
       <div style="padding:.5rem .875rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);border-top:1px solid var(--bord)">Observaciones</div>
       <div class="obs-chips" id="obs-chips"></div>
@@ -582,6 +623,22 @@ function kgConsumido(b,tipo){
   if(b.estado==='bloqueada')return 0;
   return 0;
 }
+function scrapBobina(b,tipo){
+  // kg que NO se usaron de esta bobina (queda en el depósito para usar luego)
+  if(b.estado==='parcial'){
+    const rest=parseFloat(b.pesoRestante)||0;
+    const cono=tipo==='pet'?(selectedOP?.pesoCono_pet||0):(selectedOP?.pesoCono_pe||0);
+    return Math.max(0,rest-cono);
+  }
+  if(b.estado==='bloqueada')return parseFloat(b.kgNetos)||0;
+  return 0;
+}
+function calcScrapDesglose(){
+  const scrapPetBobs=petBobs.reduce((s,b)=>s+scrapBobina(b,'pet'),0);
+  const scrapPeBobs =peBobs.reduce((s,b) =>s+scrapBobina(b,'pe'),0);
+  const tiras=parseFloat(document.getElementById('tj-tiras')?.value)||0;
+  return{scrapPetBobs,scrapPeBobs,tiras,total:scrapPetBobs+scrapPeBobs+tiras};
+}
 
 function totalKg(arr,tipo){return arr.reduce((s,b)=>s+kgConsumido(b,tipo),0);}
 
@@ -676,6 +733,7 @@ function renderOpDetail(){
     const bobsDetail=`
       ${j.bobinas_pet?.length?`<div style="margin-top:4px;color:var(--txt2)"><b>PET:</b> ${j.bobinas_pet.map(b=>`#${b.numBobina||'—'} ${b.partida?'P:'+b.partida:''} ${b.kgNetos}kg${b.metros?'/'+b.metros+'m':''} [${b.estado||'—'}]${b.estado==='parcial'?` resto:${b.pesoRestante}kg`:''}`).join(', ')}</div>`:''}
       ${j.bobinas_pe?.length?`<div style="margin-top:2px;color:var(--txt2)"><b>PE:</b> ${j.bobinas_pe.map(b=>`#${b.numBobina||'—'} ${b.partida?'P:'+b.partida:''} ${b.kgNetos}kg${b.metros?'/'+b.metros+'m':''} [${b.estado||'—'}]${b.estado==='parcial'?` resto:${b.pesoRestante}kg`:''}`).join(', ')}</div>`:''}
+      ${j.scrapPetBobs!=null?`<div style="margin-top:4px;color:var(--txt2);font-size:11px">Scrap: PET sobrante:${(j.scrapPetBobs||0).toFixed(1)}kg · PE sobrante:${(j.scrapPeBobs||0).toFixed(1)}kg · Tiras:${(j.scrapTiras||0).toFixed(1)}kg · Total:${(j.kgScrap||0).toFixed(1)}kg</div>`:''}
       ${j.obs?`<div style="margin-top:4px;font-style:italic;color:var(--txt3)">"${j.obs}"</div>`:''}`;
     return`<div class="jornada-row" onclick="toggleJorDetail(${i})">
       <div style="flex:1">
@@ -893,7 +951,8 @@ function selectOP(id){
   // Reset
   petBobs=[];peBobs=[];outBobs=[];
   renderBobs('pet');renderBobs('pe');renderOutBobs();
-  ['tj-scrap-b'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  ['tj-scrap-b','tj-tiras'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  updateScrapDesglose();
   document.getElementById('tj-scrap-neto').textContent='0.0 kg';
   document.getElementById('tj-compar').style.display='none';
   document.getElementById('tj-obs').value='';
@@ -987,12 +1046,14 @@ function setBobEstado(tipo,idx,estado){
   arr[idx].estado=estado;
   // Full re-render needed for estado change (shows/hides parcial fields)
   renderBobs(tipo);
+  updateScrapDesglose();
   updateCompar();
 }
 function updBobCons(tipo,idx){
   const arr=tipo==='pet'?petBobs:peBobs;
   const b=arr[idx];if(!b)return;
   const cons=kgConsumido(b,tipo);
+  updateScrapDesglose();  // refresh scrap totals
   const el=document.getElementById(`bc-${tipo}-${idx}`);
   if(el){
     el.textContent=b.estado&&b.estado!=='bloqueada'?cons.toFixed(1)+' kg':'— kg';
@@ -1053,10 +1114,10 @@ function renderBobs(tipo){
             onchange="setBobField('${tipo}',${i},'metros',this.value)"/>
         </div>
       </div>
-      <div class="bob-estado">
-        <label>Estado de la bobina</label>
+      <div class="bob-estado" style="padding:.5rem .75rem;border-bottom:1px solid var(--bord)">
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:5px">Estado</div>
         <div class="bob-estados">
-          \${renderEstadoBtns(b,'${tipo}',${i})}
+          ${renderEstadoBtns(b,tipo,i)}
         </div>
       </div>
       ${b.estado==='parcial'?`<div class="bob-parcial">
@@ -1071,9 +1132,9 @@ function renderBobs(tipo){
         </div>
         <div class="bob-cono-note" id="bc-note-${tipo}-${i}">= ${b.kgNetos||0}kg − (${b.pesoRestante||0}kg − ${cono}kg cono)</div>
       </div>`:''}
-      <div class="bob-cons" style="background:${b.estado&&b.estado!=='bloqueada'?tipo==='pet'?'var(--green-bg)':'var(--blue-bg)':'var(--surf2)'}">
-        <span class="bob-cons-lbl">Consumido esta jornada</span>
-        <span class="bob-cons-val" id="bc-${tipo}-${i}" style="color:${b.estado&&b.estado!=='bloqueada'?ac:'var(--txt3)'}">${b.estado&&b.estado!=='bloqueada'?cons.toFixed(1)+' kg':'— kg'}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;background:${b.estado&&b.estado!=='bloqueada'?tipo==='pet'?'var(--green-bg)':'var(--blue-bg)':'var(--surf2)'}">
+        <span style="font-size:12px;font-weight:600;color:${ac}">Consumido</span>
+        <span style="font-size:17px;font-weight:700;font-family:var(--mono);color:${b.estado&&b.estado!=='bloqueada'?ac:'var(--txt3)'}" id="bc-${tipo}-${i}">${b.estado&&b.estado!=='bloqueada'?cons.toFixed(1)+' kg':'— kg'}</span>
       </div>
     </div>`;
   }).join('');
@@ -1081,12 +1142,36 @@ function renderBobs(tipo){
 }
 
 /* ══ SCRAP ══ */
-function updateScrapNeto(){
-  const bruto=parseFloat(document.getElementById('tj-scrap-b').value)||0;
-  // El cono del scrap ya está descontado en las bobinas parciales, acá el bruto es solo tiras
-  document.getElementById('tj-scrap-neto').textContent=bruto.toFixed(1)+' kg';
+function updateScrapDesglose(){
+  const d=calcScrapDesglose();
+  const s=v=>v.toFixed(1)+' kg';
+  const petDetail=petBobs.filter(b=>b.estado==='parcial'||b.estado==='bloqueada').map((b,_)=>{
+    const v=scrapBobina(b,'pet');return v>0?s(v):'';
+  }).filter(Boolean).join(' + ')||'—';
+  const peDetail=peBobs.filter(b=>b.estado==='parcial'||b.estado==='bloqueada').map((b,_)=>{
+    const v=scrapBobina(b,'pe');return v>0?s(v):'';
+  }).filter(Boolean).join(' + ')||'—';
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set('scrap-pet-bobs',s(d.scrapPetBobs));
+  set('scrap-pe-bobs', s(d.scrapPeBobs));
+  set('scrap-bobs-total',s(d.scrapPetBobs+d.scrapPeBobs));
+  set('scrap-pet-detail',petDetail);
+  set('scrap-pe-detail',peDetail);
+  set('scrap-total-disp',s(d.total));
+  if(selectedOP){
+    const teo=selectedOP.teorico.kgScrap;
+    const diff=d.total-teo;
+    const el=document.getElementById('scrap-teo-comp');
+    if(el){el.textContent='teo: '+teo.toFixed(1)+' kg · dif: '+(diff>=0?'+':'')+diff.toFixed(1);
+      el.style.color=Math.abs(diff/teo)<0.1?'var(--green)':diff>teo*0.3?'var(--red)':'var(--amber)';
+    }
+  }
+  // sync hidden for guardarJornada compat
+  const hidden=document.getElementById('tj-scrap-b');if(hidden)hidden.value=d.total;
   updateCompar();
 }
+// alias
+function updateScrapNeto(){updateScrapDesglose();}
 
 /* ══ COMPARACIÓN ══ */
 function updateCompar(){
@@ -1094,7 +1179,7 @@ function updateCompar(){
   const pet=totalKg(petBobs,'pet');
   const pe=totalKg(peBobs,'pe');
   const fin=outBobs.reduce((s,b)=>s+(parseFloat(b.kg)||0),0);
-  const scrap=parseFloat(document.getElementById('tj-scrap-b').value)||0;
+  const _dsg=calcScrapDesglose();const scrap=_dsg.total;
   if(!pet&&!pe&&!fin){document.getElementById('tj-compar').style.display='none';return;}
   const real=calcReal(selectedOP.jornadas||[]);
   const teo=selectedOP.teorico;
@@ -1259,12 +1344,12 @@ function startStep(id,delta){
   document.addEventListener('pointerup',stopStep,{once:true});
 }
 function doStep(id,delta){
-  // For tj-fin → tj-fin-val
   const realId=id==='tj-fin'?'tj-fin-val':id;
   const e=document.getElementById(realId);
   if(!e)return;
   e.value=Math.max(0,(parseFloat(e.value)||0)+delta);
-  if(realId.includes('scrap'))updateScrapNeto();else updateCompar();
+  if(realId==='tj-tiras'||realId.includes('scrap'))updateScrapDesglose();
+  else updateCompar();
 }
 function stopStep(){if(stepTimer){clearTimeout(stepTimer);clearInterval(stepTimer);stepTimer=null;}}
 
