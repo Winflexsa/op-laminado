@@ -2,473 +2,429 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
 <title>OP Laminado — Winflex</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --amber:#C07A10;--amber-lt:#FDF0D8;--amber-dk:#7A4D06;
   --bg:#F2F1ED;--surf:#FFF;--surf2:#ECEAE4;
-  --bord:rgba(0,0,0,.10);--bord2:rgba(0,0,0,.18);
+  --bord:rgba(0,0,0,.10);--bord2:rgba(0,0,0,.20);
   --txt:#181815;--txt2:#5C5B55;--txt3:#9E9C94;
-  --green-bg:#E6F3DA;--green-tx:#2E6B0E;
-  --red-bg:#FDEAEA;--red-tx:#A32020;
-  --blue-bg:#E6F0FB;--blue-tx:#1558A0;
-  --r:10px;--rs:6px;--mono:'Courier New',Courier,monospace;
-  --shadow:0 2px 8px rgba(0,0,0,.07)
+  --green:#2E6B0E;--green-bg:#E6F3DA;
+  --red:#A32020;--red-bg:#FDEAEA;
+  --blue:#1558A0;--blue-bg:#E6F0FB;
+  --r:12px;--rs:8px;
+  --mono:'Courier New',Courier,monospace;
+  --shadow:0 2px 10px rgba(0,0,0,.09)
 }
 @media(prefers-color-scheme:dark){:root{
   --amber:#E8A030;--amber-lt:#3D2800;--amber-dk:#FAC86A;
   --bg:#18181A;--surf:#222224;--surf2:#2A2A2C;
-  --bord:rgba(255,255,255,.08);--bord2:rgba(255,255,255,.16);
+  --bord:rgba(255,255,255,.08);--bord2:rgba(255,255,255,.18);
   --txt:#EDECEA;--txt2:#9E9C94;--txt3:#5C5B55;
-  --green-bg:#162B08;--green-tx:#9DD96A;
-  --red-bg:#2B0A0A;--red-tx:#F49090;
-  --blue-bg:#0C1E36;--blue-tx:#7AB8F5;
-  --shadow:0 2px 12px rgba(0,0,0,.3)
+  --green:#9DD96A;--green-bg:#162B08;
+  --red:#F49090;--red-bg:#2B0A0A;
+  --blue:#7AB8F5;--blue-bg:#0C1E36;
+  --shadow:0 2px 14px rgba(0,0,0,.35)
 }}
-body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:14px;min-height:100vh}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;min-height:100vh;-webkit-tap-highlight-color:transparent}
 
-/* HEADER */
-.header{background:var(--txt);color:white;padding:0 1.5rem;display:flex;align-items:center;gap:1rem;height:52px;position:sticky;top:0;z-index:100}
-.header-logo{width:28px;height:28px;background:var(--amber);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.header-logo svg{width:14px;height:14px;fill:white}
-.header-title{font-size:14px;font-weight:600}
-.header-sub{font-size:11px;opacity:.4}
-.header-sep{flex:1}
-.view-toggle{display:flex;gap:4px;background:rgba(255,255,255,.08);border-radius:20px;padding:3px}
-.view-btn{font-size:11px;font-weight:500;padding:4px 12px;border-radius:16px;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,.6);transition:all .15s}
-.view-btn.active{background:var(--amber);color:white}
+/* ── HEADER ── */
+.hdr{background:var(--txt);color:#fff;padding:0 1.25rem;display:flex;align-items:center;gap:.875rem;height:52px;position:sticky;top:0;z-index:200}
+.hdr-logo{width:28px;height:28px;background:var(--amber);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-logo svg{width:14px;height:14px;fill:#fff}
+.hdr-title{font-size:14px;font-weight:600;white-space:nowrap}
+.hdr-sub{font-size:10px;opacity:.4}
+.hdr-sep{flex:1}
+.view-toggle{display:flex;gap:3px;background:rgba(255,255,255,.08);border-radius:20px;padding:3px}
+.vbtn{font-size:11px;font-weight:600;padding:4px 12px;border-radius:16px;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,.55);transition:all .15s}
+.vbtn.on{background:var(--amber);color:#fff}
 
-/* LAYOUT */
+/* ── MANAGER ── */
 .page{max-width:960px;margin:0 auto;padding:1.25rem 1rem}
-
-/* TABS */
 .tabs{display:flex;gap:4px;margin-bottom:1.25rem}
-.tab{font-size:13px;font-weight:500;padding:6px 14px;border:1px solid var(--bord);border-radius:20px;cursor:pointer;background:var(--surf);color:var(--txt2);transition:all .15s}
-.tab.active{background:var(--txt);color:white;border-color:var(--txt)}
-.tab:hover:not(.active){border-color:var(--bord2);color:var(--txt)}
-
-/* CARDS */
+.tab{font-size:13px;font-weight:500;padding:7px 15px;border:1px solid var(--bord);border-radius:20px;cursor:pointer;background:var(--surf);color:var(--txt2);transition:all .15s}
+.tab.on{background:var(--txt);color:#fff;border-color:var(--txt)}
+.tab:hover:not(.on){border-color:var(--bord2);color:var(--txt)}
 .card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);margin-bottom:1rem}
 .card-head{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--bord)}
-.card-title{font-size:13px;font-weight:600;color:var(--txt)}
+.card-title{font-size:13px;font-weight:600}
 .card-body{padding:1rem}
-
-/* FIELD */
-.field{display:flex;align-items:center;padding:8px 1rem;border-bottom:1px solid var(--bord);gap:8px}
+.field{display:flex;align-items:center;padding:9px 1rem;border-bottom:1px solid var(--bord);gap:8px}
 .field:last-child{border-bottom:none}
-.field-name{flex:1;font-size:13px;color:var(--txt)}
+.field-name{flex:1;font-size:13px}
 .field-unit{font-size:11px;color:var(--txt3);white-space:nowrap}
-.field input,.field select{font-family:var(--mono);font-size:13px;font-weight:600;border:1px solid var(--bord2);border-radius:var(--rs);padding:5px 8px;background:var(--surf2);color:var(--txt);text-align:right;outline:none;transition:border .15s;width:120px}
-.field input:focus,.field select:focus{border-color:var(--amber)}
-.field select{text-align:left;width:auto;flex:1;max-width:260px}
-.field textarea{font-size:13px;border:1px solid var(--bord2);border-radius:var(--rs);padding:6px 8px;background:var(--surf2);color:var(--txt);outline:none;transition:border .15s;width:100%;resize:vertical;min-height:60px}
-.field textarea:focus{border-color:var(--amber)}
-
-/* BADGE */
-.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
-.badge.open{background:var(--green-bg);color:var(--green-tx)}
-.badge.closed{background:var(--surf2);color:var(--txt3)}
-.badge.warn{background:var(--amber-lt);color:var(--amber-dk)}
-
-/* BUTTONS */
+.field input,.field select{font-family:var(--mono);font-size:13px;font-weight:600;border:1px solid var(--bord2);border-radius:var(--rs);padding:6px 8px;background:var(--surf2);color:var(--txt);text-align:right;outline:none;width:130px}
+.field input[type=text],.field select{text-align:left}
+.field select{width:auto;flex:1;max-width:260px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:500;padding:7px 14px;border-radius:var(--rs);border:1px solid var(--bord2);cursor:pointer;background:var(--surf);color:var(--txt);transition:all .15s;white-space:nowrap}
 .btn:hover{background:var(--surf2)}
-.btn.primary{background:var(--amber);color:white;border-color:var(--amber)}
-.btn.primary:hover{background:var(--amber-dk)}
-.btn.danger{color:var(--red-tx);border-color:transparent}
-.btn.danger:hover{background:var(--red-bg)}
+.btn.pri{background:var(--amber);color:#fff;border-color:var(--amber)}
+.btn.pri:hover{background:var(--amber-dk)}
 .btn.sm{font-size:11px;padding:4px 10px}
-
-/* OP LIST */
-.op-list{display:flex;flex-direction:column;gap:8px}
-.op-item{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:.875rem 1rem;cursor:pointer;transition:border-color .15s;box-shadow:var(--shadow)}
+.btn.danger{color:var(--red);border-color:transparent}
+.btn.danger:hover{background:var(--red-bg)}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.badge.open{background:var(--green-bg);color:var(--green)}
+.badge.closed{background:var(--surf2);color:var(--txt3)}
+.op-item{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:.875rem 1rem;cursor:pointer;box-shadow:var(--shadow);margin-bottom:8px;transition:border-color .15s}
 .op-item:hover{border-color:var(--amber)}
-.op-item-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.op-item-id{font-size:12px;font-weight:600;font-family:var(--mono);color:var(--amber)}
-.op-item-cliente{font-size:14px;font-weight:500}
-.op-item-meta{font-size:12px;color:var(--txt3)}
-.op-item-progress{margin-top:8px}
-.progress-bar{height:5px;background:var(--surf2);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;background:var(--green-tx);border-radius:3px;transition:width .3s}
-.progress-label{font-size:11px;color:var(--txt3);margin-top:3px}
-
-/* COMPARISON TABLE */
-.cmp-table{width:100%;border-collapse:collapse;font-size:13px}
-.cmp-table th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);padding:8px 10px;border-bottom:2px solid var(--bord)}
-.cmp-table td{padding:8px 10px;border-bottom:1px solid var(--bord)}
-.cmp-table tr:last-child td{border-bottom:none}
-.cmp-table .metric{color:var(--txt2)}
-.cmp-table .num{font-family:var(--mono);font-weight:600;text-align:right}
-.cmp-table .ok{color:var(--green-tx)}
-.cmp-table .warn{color:var(--amber)}
-.cmp-table .bad{color:var(--red-tx)}
-.cmp-table .na{color:var(--txt3)}
-
-/* DIAGNOSTIC */
+.pbar{height:5px;background:var(--surf2);border-radius:3px;overflow:hidden;margin-top:6px}
+.pfill{height:100%;background:var(--green);border-radius:3px;transition:width .3s}
+.plabel{font-size:11px;color:var(--txt3);margin-top:3px}
+.cmp-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.cmp-tbl th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);padding:7px 10px;border-bottom:2px solid var(--bord);text-align:right}
+.cmp-tbl th:first-child{text-align:left}
+.cmp-tbl td{padding:7px 10px;border-bottom:1px solid var(--bord);text-align:right;font-family:var(--mono);font-weight:600}
+.cmp-tbl td:first-child{text-align:left;font-family:inherit;font-weight:400;color:var(--txt2)}
+.cmp-tbl tr:last-child td{border-bottom:none}
+.ok{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}.na{color:var(--txt3)}
 .diag{border-radius:var(--r);padding:.875rem 1rem;margin-top:.75rem;font-size:13px;line-height:1.6}
-.diag.ok{background:var(--green-bg);color:var(--green-tx)}
+.diag.ok{background:var(--green-bg);color:var(--green)}
 .diag.warn{background:var(--amber-lt);color:var(--amber-dk)}
-.diag.bad{background:var(--red-bg);color:var(--red-tx)}
-.diag-title{font-weight:600;margin-bottom:4px}
+.diag.bad{background:var(--red-bg);color:var(--red)}
+.jornada-row{display:flex;align-items:center;gap:8px;padding:.75rem 1rem;border-bottom:1px solid var(--bord);cursor:pointer;transition:background .15s}
+.jornada-row:last-child{border-bottom:none}
+.jornada-row:hover{background:var(--surf2)}
+.jornada-detail{padding:.875rem 1rem;background:var(--surf2);border-bottom:1px solid var(--bord);font-size:12px;display:none}
+.empty{text-align:center;padding:3rem 1rem;color:var(--txt3);font-size:14px}
 
-/* CORRIDA LIST */
-.corrida-item{background:var(--surf2);border:1px solid var(--bord);border-radius:var(--rs);padding:.75rem 1rem;margin-bottom:6px}
-.corrida-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.corrida-num{font-size:11px;font-family:var(--mono);color:var(--amber);font-weight:600}
-.corrida-op{font-size:12px;color:var(--txt2)}
-.corrida-data{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:4px;margin-top:6px}
-.corrida-val{font-size:11px;color:var(--txt3)} .corrida-val span{color:var(--txt);font-weight:600;font-family:var(--mono)}
-
-/* GRID */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-@media(max-width:600px){.grid-2{grid-template-columns:1fr}}
-
-/* ══ TABLET VIEW ══ */
-.tablet-screen{min-height:calc(100vh - 52px);display:flex;flex-direction:column}
-.tablet-page{padding:1.25rem 1rem;flex:1}
+/* ── TABLET ── */
+.t-screen{min-height:calc(100vh - 52px)}
+.t-page{padding:1rem}
 
 /* PIN */
-.pin-wrap{max-width:320px;margin:2rem auto;text-align:center}
-.pin-title{font-size:18px;font-weight:600;margin-bottom:.5rem}
-.pin-sub{font-size:13px;color:var(--txt3);margin-bottom:1.5rem}
-.pin-display{font-size:32px;font-family:var(--mono);font-weight:700;letter-spacing:.3em;min-height:48px;color:var(--amber);margin-bottom:1rem;min-width:160px}
+.pin-wrap{max-width:340px;margin:1.5rem auto;text-align:center}
+.pin-title{font-size:22px;font-weight:700;margin-bottom:.25rem}
+.pin-sub{font-size:14px;color:var(--txt3);margin-bottom:1.5rem}
+.pin-dots{font-size:36px;font-family:var(--mono);font-weight:700;letter-spacing:.4em;min-height:54px;color:var(--amber);margin-bottom:1rem}
 .pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
-.pin-key{font-size:22px;font-weight:500;padding:16px;border:1px solid var(--bord2);border-radius:var(--r);cursor:pointer;background:var(--surf);transition:all .15s;text-align:center}
-.pin-key:hover{background:var(--surf2)}
-.pin-key:active{transform:scale(.95)}
-.pin-key.action{font-size:14px;background:var(--surf2);color:var(--txt2)}
-.pin-key.enter{background:var(--amber);color:white;border-color:var(--amber)}
+.pkey{font-size:24px;font-weight:600;padding:18px 8px;border:1.5px solid var(--bord2);border-radius:var(--r);cursor:pointer;background:var(--surf);transition:all .15s;text-align:center;user-select:none}
+.pkey:active{transform:scale(.94);background:var(--surf2)}
+.pkey.act{background:var(--surf2);font-size:16px}
+.pkey.ok{background:var(--amber);color:#fff;border-color:var(--amber)}
 
-/* TABLET OP LIST */
-.t-op-item{background:var(--surf);border:2px solid var(--bord);border-radius:var(--r);padding:1rem;cursor:pointer;margin-bottom:.75rem;transition:border-color .15s}
+/* OP LIST TABLET */
+.t-op-item{background:var(--surf);border:2.5px solid var(--bord);border-radius:var(--r);padding:1rem 1.125rem;cursor:pointer;margin-bottom:.875rem;transition:all .15s;box-shadow:var(--shadow)}
+.t-op-item:active{transform:scale(.99)}
 .t-op-item:hover{border-color:var(--amber)}
-.t-op-id{font-size:12px;font-family:var(--mono);color:var(--amber);font-weight:600}
-.t-op-cliente{font-size:18px;font-weight:600;margin:.25rem 0}
+.t-op-id{font-size:12px;font-family:var(--mono);color:var(--amber);font-weight:700}
+.t-op-cliente{font-size:20px;font-weight:700;margin:.2rem 0 .1rem}
 .t-op-meta{font-size:13px;color:var(--txt2)}
 
-/* TABLET FORM */
-.t-section{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;margin-bottom:.875rem;box-shadow:var(--shadow)}
-.t-section-head{padding:.75rem 1rem;border-bottom:1px solid var(--bord);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3)}
-.t-field{display:flex;align-items:center;padding:10px 1rem;border-bottom:1px solid var(--bord);gap:8px}
-.t-field:last-child{border-bottom:none}
-.t-field-name{flex:1;font-size:14px;color:var(--txt);font-weight:500}
-.t-field-unit{font-size:12px;color:var(--txt3);white-space:nowrap}
-.t-field-val{font-size:13px;font-family:var(--mono);color:var(--amber);font-weight:600;white-space:nowrap}
-.t-input-wrap{display:flex;align-items:center;gap:4px}
-.t-step-btn{width:36px;height:36px;border:1px solid var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:18px;background:var(--surf2);color:var(--txt);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
-.t-step-btn:hover{background:var(--amber);color:white;border-color:var(--amber)}
-.t-kg-input{font-family:var(--mono);font-size:16px;font-weight:700;width:90px;border:1px solid var(--bord2);border-radius:var(--rs);padding:6px 8px;background:var(--surf2);color:var(--txt);text-align:right;outline:none}
-.t-kg-input:focus{border-color:var(--amber)}
-.t-obs-input{font-size:13px;border:1px solid var(--bord2);border-radius:var(--rs);padding:8px;background:var(--surf2);color:var(--txt);outline:none;width:100%;resize:none;min-height:70px}
-.t-obs-input:focus{border-color:var(--amber)}
-.t-teo-row{display:flex;align-items:center;padding:6px 1rem;gap:8px;background:var(--surf2);font-size:12px;color:var(--txt3)}
-.t-teo-row span{font-family:var(--mono);font-weight:600;color:var(--amber)}
-.confirm-box{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:1.25rem;text-align:center;box-shadow:var(--shadow)}
-.confirm-icon{font-size:36px;margin-bottom:.5rem}
-.confirm-title{font-size:18px;font-weight:600;margin-bottom:.25rem}
-.confirm-sub{font-size:13px;color:var(--txt2);margin-bottom:1rem}
-.obs-presets{display:flex;flex-wrap:wrap;gap:6px;padding:.75rem 1rem}
-/* BOBINAS */
-.bob-list{padding:.5rem 1rem;display:flex;flex-direction:column;gap:8px}
-.bob-row{background:var(--surf2);border:1px solid var(--bord);border-radius:var(--rs);padding:.625rem .75rem}
-.bob-row-head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.bob-num{font-size:11px;font-weight:600;color:var(--amber);font-family:var(--mono);flex:1}
-.bob-del{font-size:12px;padding:2px 8px;border:none;background:none;color:var(--red-tx);cursor:pointer;border-radius:4px}
-.bob-del:hover{background:var(--red-bg)}
-.bob-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.bob-field{display:flex;flex-direction:column;gap:3px}
-.bob-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3)}
-.bob-input{font-family:var(--mono);font-size:15px;font-weight:700;border:1px solid var(--bord2);border-radius:var(--rs);padding:7px 8px;background:var(--surf);color:var(--txt);text-align:right;outline:none;width:100%}
-.bob-input:focus{border-color:var(--amber)}
-.bob-consumido{display:flex;align-items:center;justify-content:space-between;margin-top:6px;padding-top:6px;border-top:1px solid var(--bord)}
-.bob-consumido-label{font-size:12px;color:var(--txt2)}
-.bob-consumido-val{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--green-tx)}
-.bob-add{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:2px dashed var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:500;color:var(--txt3);background:none;width:100%;transition:all .15s}
-.bob-add:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-lt)}
-.bob-total-bar{display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem;border-top:1px solid var(--bord);background:var(--surf2)}
-.bob-total-label{font-size:12px;color:var(--txt2)}
-.bob-total-val{font-size:16px;font-weight:700;font-family:var(--mono);color:var(--amber)}
-.bob-total-info{font-size:11px;color:var(--txt3)}
-.obs-chip{font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--bord2);cursor:pointer;background:var(--surf2);color:var(--txt2);transition:all .15s}
-.obs-chip:hover,.obs-chip.sel{background:var(--amber);color:white;border-color:var(--amber)}
-.empty{text-align:center;padding:3rem 1rem;color:var(--txt3);font-size:14px}
+/* JORNADA FORM */
+.t-sect{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;margin-bottom:.875rem;box-shadow:var(--shadow)}
+.t-sect-head{padding:.625rem 1rem;border-bottom:1px solid var(--bord);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);display:flex;align-items:center;gap:6px}
+.t-row{display:flex;align-items:center;padding:10px 1rem;border-bottom:1px solid var(--bord);gap:10px}
+.t-row:last-child{border-bottom:none}
+.t-row-lbl{flex:1;font-size:15px;font-weight:500}
+.t-row-sub{font-size:12px;color:var(--txt3);font-weight:400}
+.t-row-val{font-size:13px;font-family:var(--mono);color:var(--amber);font-weight:700;white-space:nowrap}
+.t-teo{background:var(--surf2);padding:.375rem 1rem;font-size:12px;color:var(--txt3);border-bottom:1px solid var(--bord);display:flex;align-items:center;gap:6px}
+.t-teo span{color:var(--amber);font-weight:700;font-family:var(--mono)}
+
+/* BIG INPUT */
+.big-num{display:flex;align-items:center;gap:6px}
+.big-btn{width:44px;height:44px;border:1.5px solid var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:22px;background:var(--surf2);color:var(--txt);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;user-select:none}
+.big-btn:active{transform:scale(.9);background:var(--amber);color:#fff;border-color:var(--amber)}
+.big-inp{font-family:var(--mono);font-size:20px;font-weight:700;width:90px;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:8px 8px;background:var(--surf2);color:var(--txt);text-align:right;outline:none;-moz-appearance:textfield}
+.big-inp:focus{border-color:var(--amber)}
+.big-inp::-webkit-inner-spin-button,.big-inp::-webkit-outer-spin-button{-webkit-appearance:none}
+
+/* BOBINA CARD */
+.bob-card{border:2.5px solid var(--bord2);border-radius:var(--r);overflow:hidden;background:var(--surf);margin-bottom:.75rem}
+.bob-card.completa{border-color:var(--green)}
+.bob-card.parcial{border-color:var(--amber)}
+.bob-card.bloqueada{border-color:var(--red)}
+.bob-head{display:flex;align-items:center;gap:8px;padding:.625rem .875rem;border-bottom:1px solid var(--bord)}
+.bob-head.pet-head{background:var(--green-bg)}
+.bob-head.pe-head{background:var(--blue-bg)}
+.bob-num-lbl{font-size:14px;font-weight:700;flex:1}
+.bob-num-lbl.pet-lbl{color:var(--green)}
+.bob-num-lbl.pe-lbl{color:var(--blue)}
+.bob-emp{font-size:11px;background:var(--amber-lt);color:var(--amber-dk);padding:2px 8px;border-radius:10px;font-weight:600}
+.bob-del{font-size:13px;padding:4px 10px;border:none;background:var(--red-bg);color:var(--red);border-radius:6px;cursor:pointer;font-weight:600}
+.bob-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;border-bottom:1px solid var(--bord)}
+.bob-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);display:block;margin-bottom:4px}
+.bob-field input{width:100%;font-size:16px;font-weight:700;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:8px 8px;background:var(--surf2);color:var(--txt);outline:none}
+.bob-field input:focus{border-color:var(--amber)}
+.bob-field input[type=number]{text-align:right;-moz-appearance:textfield}
+.bob-field input::-webkit-inner-spin-button{-webkit-appearance:none}
+
+/* ESTADO BOBINA */
+.bob-estado{padding:.625rem .875rem;border-bottom:1px solid var(--bord)}
+.bob-estado label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);display:block;margin-bottom:6px}
+.bob-estados{display:flex;flex-wrap:wrap;gap:6px}
+.est-btn{font-size:13px;font-weight:600;padding:8px 12px;border-radius:var(--rs);border:2px solid var(--bord2);background:var(--surf2);color:var(--txt2);cursor:pointer;transition:all .15s}
+.est-btn:active{transform:scale(.96)}
+.est-btn.sel-completa{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.est-btn.sel-parcial{border-color:var(--amber);background:var(--amber-lt);color:var(--amber-dk)}
+.est-btn.sel-bloqueada{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.est-btn.sel-quebradiza{border-color:#854F0B;background:#FAEEDA;color:#854F0B}
+
+/* PARCIAL FIELDS */
+.bob-parcial{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;background:var(--amber-lt);border-bottom:1px solid var(--bord)}
+.bob-parcial label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--amber-dk);display:block;margin-bottom:4px}
+.bob-parcial input{width:100%;font-size:16px;font-weight:700;border:1.5px solid var(--amber);border-radius:var(--rs);padding:8px 8px;background:var(--surf);color:var(--txt);text-align:right;outline:none;-moz-appearance:textfield}
+.bob-parcial input:focus{border-color:var(--amber-dk)}
+.bob-parcial input::-webkit-inner-spin-button{-webkit-appearance:none}
+.bob-cono-note{font-size:11px;color:var(--amber-dk);grid-column:span 2;padding-top:2px}
+
+/* CONSUMIDO */
+.bob-cons{display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem}
+.bob-cons-lbl{font-size:13px;font-weight:500}
+.bob-cons-val{font-size:22px;font-weight:700;font-family:var(--mono)}
+
+/* ADD BOBINA */
+.bob-add{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2.5px dashed var(--bord2);border-radius:var(--r);cursor:pointer;font-size:15px;font-weight:600;color:var(--txt3);background:none;width:100%;transition:all .15s}
+.bob-add:hover,.bob-add:active{border-color:var(--amber);color:var(--amber);background:var(--amber-lt)}
+.bob-total{display:flex;align-items:center;justify-content:space-between;padding:.625rem 1rem;border-top:2px solid var(--bord)}
+.bob-total-lbl{font-size:13px;color:var(--txt2)}
+.bob-total-val{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--amber)}
+.bob-total-sub{font-size:11px;color:var(--txt3)}
+
+/* OBS */
+.obs-chips{display:flex;flex-wrap:wrap;gap:7px;padding:.75rem 1rem}
+.obs-chip{font-size:13px;font-weight:500;padding:8px 12px;border-radius:20px;border:1.5px solid var(--bord2);cursor:pointer;background:var(--surf2);color:var(--txt2);transition:all .15s}
+.obs-chip:active{transform:scale(.96)}
+.obs-chip.sel{background:var(--amber);color:#fff;border-color:var(--amber)}
+.obs-area{width:100%;font-size:14px;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:10px;background:var(--surf2);color:var(--txt);outline:none;resize:none;min-height:70px}
+.obs-area:focus{border-color:var(--amber)}
+
+/* RESUMEN TOP */
+.resumen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:.75rem;border-bottom:1px solid var(--bord)}
+@media(max-width:600px){.resumen-grid{grid-template-columns:repeat(2,1fr)}}
+.res-cell{background:var(--surf2);border-radius:var(--rs);padding:.625rem .75rem;text-align:center}
+.res-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:3px}
+.res-teo{font-size:11px;color:var(--txt3);font-family:var(--mono)}
+.res-real{font-size:17px;font-weight:700;font-family:var(--mono);color:var(--txt)}
+.res-dev{font-size:11px;font-family:var(--mono);font-weight:600}
+
+/* CONFIRM */
+.confirm-box{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:2rem 1.5rem;text-align:center;box-shadow:var(--shadow);margin:1rem 0}
+.confirm-icon{font-size:42px;margin-bottom:.5rem}
+.confirm-title{font-size:20px;font-weight:700;margin-bottom:.375rem}
+.confirm-sub{font-size:14px;color:var(--txt2);line-height:1.6;margin-bottom:1.25rem}
+
+@media print{.hdr,.btn,.tab{display:none!important}.page{padding:0}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-logo"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5.5" height="5.5" rx="1.2"/><rect x="8.5" y="2" width="5.5" height="5.5" rx="1.2"/><rect x="2" y="8.5" width="5.5" height="5.5" rx="1.2"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1.2"/></svg></div>
-  <div><div class="header-title">OP Laminado</div><div class="header-sub">Winflex S.A.</div></div>
-  <div class="header-sep"></div>
+<div class="hdr">
+  <div class="hdr-logo"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5.5" height="5.5" rx="1.2"/><rect x="8.5" y="2" width="5.5" height="5.5" rx="1.2"/><rect x="2" y="8.5" width="5.5" height="5.5" rx="1.2"/><rect x="8.5" y="8.5" width="5.5" height="5.5" rx="1.2"/></svg></div>
+  <div><div class="hdr-title">OP Laminado</div><div class="hdr-sub">Winflex S.A.</div></div>
+  <div class="hdr-sep"></div>
   <div class="view-toggle">
-    <button class="view-btn active" id="btn-manager" onclick="switchView('manager')">Gestión</button>
-    <button class="view-btn" id="btn-tablet" onclick="switchView('tablet')">Tablet</button>
+    <button class="vbtn on" id="vbtn-mgr" onclick="switchView('mgr')">Gestión</button>
+    <button class="vbtn" id="vbtn-tab" onclick="switchView('tab')">Tablet</button>
   </div>
 </div>
 
-<!-- ══════════════ MANAGER VIEW ══════════════ -->
-<div id="view-manager">
+<!-- ══════ MANAGER ══════ -->
+<div id="view-mgr">
 <div class="page">
-
   <div class="tabs">
-    <button class="tab active" id="mtab-ops" onclick="mTab('ops')">📋 Órdenes</button>
-    <button class="tab" id="mtab-nueva" onclick="mTab('nueva')">+ Nueva OP</button>
+    <button class="tab on" id="mtab-ops" onclick="mTab('ops')">📋 Órdenes</button>
+    <button class="tab" id="mtab-nueva" onclick="mTab('nueva')">＋ Nueva OP</button>
   </div>
 
-  <!-- OPs list -->
+  <!-- Lista OPs -->
   <div id="m-ops">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <div style="font-size:13px;color:var(--txt2)" id="ops-summary">Cargando…</div>
-      <div style="display:flex;gap:6px">
-        <button class="btn sm" onclick="filterOPs('all')" id="filter-all" style="border-color:var(--amber);color:var(--amber)">Todas</button>
-        <button class="btn sm" onclick="filterOPs('open')" id="filter-open">Abiertas</button>
-        <button class="btn sm" onclick="filterOPs('closed')" id="filter-closed">Cerradas</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem">
+      <span style="font-size:13px;color:var(--txt2)" id="ops-summary">—</span>
+      <div style="display:flex;gap:5px">
+        <button class="btn sm" id="f-all" onclick="setFilter('all')">Todas</button>
+        <button class="btn sm" id="f-open" onclick="setFilter('open')">Abiertas</button>
+        <button class="btn sm" id="f-closed" onclick="setFilter('closed')">Cerradas</button>
       </div>
     </div>
-    <div class="op-list" id="op-list"></div>
+    <div id="op-list"></div>
   </div>
 
-  <!-- Nueva OP form -->
+  <!-- Nueva OP -->
   <div id="m-nueva" style="display:none">
     <div class="card">
       <div class="card-head"><span class="card-title">Nueva Orden de Producción</span></div>
-      <div class="field"><span class="field-name">N° de OP</span><input type="text" id="new-num" placeholder="LAM-001" style="text-align:left;width:160px"/></div>
+      <div class="field"><span class="field-name">N° de OP</span><input type="text" id="n-num" placeholder="LAM-001" style="text-align:left"/></div>
       <div class="field"><span class="field-name">Cliente / producto</span>
-        <select id="new-cliente" onchange="onClienteSelect()" style="text-align:left;flex:1;max-width:280px">
-          <option value="">— seleccionar —</option>
-        </select>
+        <select id="n-cliente" onchange="onClienteSel()" style="text-align:left;flex:1;max-width:300px"><option value="">— seleccionar —</option></select>
       </div>
-      <div class="field"><span class="field-name">Kg finales pedidos</span><span class="field-unit">kg</span><input type="number" id="new-kg" value="1000" step="50" min="1" oninput="recalcTeo()"/></div>
-      <div class="field"><span class="field-name">Merma proceso</span><span class="field-unit">%</span><input type="number" id="new-merma" value="2" step="0.5" min="0" oninput="recalcTeo()"/></div>
-      <div class="field"><span class="field-name">Fecha</span><input type="date" id="new-fecha" style="text-align:left;width:160px"/></div>
-      <div class="field"><span class="field-name">Notas</span><input type="text" id="new-notas" placeholder="opcional" style="text-align:left;flex:1"/></div>
+      <div class="field"><span class="field-name">Kg finales pedidos</span><span class="field-unit">kg</span><input type="number" id="n-kg" value="1000" step="50" min="1" oninput="recalcTeo()"/></div>
+      <div class="field"><span class="field-name">Merma proceso</span><span class="field-unit">%</span><input type="number" id="n-merma" value="2" step="0.5" min="0" oninput="recalcTeo()"/></div>
+      <div class="field"><span class="field-name">Fecha inicio</span><input type="date" id="n-fecha" style="text-align:left"/></div>
+      <div class="card-head" style="margin-top:.5rem"><span class="card-title" style="font-size:12px;color:var(--txt3)">Pesos de cono (se aplican en bobinas parciales)</span></div>
+      <div class="field"><span class="field-name">Peso cono PET</span><span class="field-unit">kg</span><input type="number" id="n-cono-pet" value="1.5" step="0.1" min="0"/></div>
+      <div class="field"><span class="field-name">Peso cono PE</span><span class="field-unit">kg</span><input type="number" id="n-cono-pe" value="0.8" step="0.1" min="0"/></div>
+      <div class="field"><span class="field-name">Notas</span><input type="text" id="n-notas" placeholder="opcional" style="text-align:left;flex:1"/></div>
     </div>
-
-    <!-- Teórico preview -->
-    <div class="card" id="teo-preview" style="display:none">
-      <div class="card-head"><span class="card-title">Teórico calculado</span></div>
-      <div class="field"><span class="field-name">PET lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pet" style="font-family:var(--mono);font-weight:600;color:var(--amber)">—</span></div>
-      <div class="field"><span class="field-name">PE lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pe" style="font-family:var(--mono);font-weight:600;color:var(--amber)">—</span></div>
-      <div class="field"><span class="field-name">Metros de corrida</span><span class="field-unit">m</span><span id="tp-metros" style="font-family:var(--mono);font-weight:600">—</span></div>
-      <div class="field"><span class="field-name">Trim teórico</span><span class="field-unit">%</span><span id="tp-trim" style="font-family:var(--mono);font-weight:600">—</span></div>
-      <div class="field"><span class="field-name">Tiempo laminado est.</span><span class="field-unit">horas</span><span id="tp-tlam" style="font-family:var(--mono);font-weight:600">—</span></div>
-      <div class="field"><span class="field-name">Tiempo refilado est.</span><span class="field-unit">horas</span><span id="tp-tref" style="font-family:var(--mono);font-weight:600">—</span></div>
+    <div class="card" id="teo-card" style="display:none">
+      <div class="card-head"><span class="card-title">Teórico</span></div>
+      <div class="field"><span class="field-name">PET lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pet" style="font-family:var(--mono);font-weight:700;color:var(--amber)">—</span></div>
+      <div class="field"><span class="field-name">PE lámina necesaria</span><span class="field-unit">kg</span><span id="tp-pe" style="font-family:var(--mono);font-weight:700;color:var(--amber)">—</span></div>
+      <div class="field"><span class="field-name">Metros de corrida</span><span class="field-unit">m</span><span id="tp-m" style="font-family:var(--mono);font-weight:700">—</span></div>
+      <div class="field"><span class="field-name">Trim teórico</span><span class="field-unit">%</span><span id="tp-trim" style="font-family:var(--mono);font-weight:700">—</span></div>
+      <div class="field"><span class="field-name">Producción teórica</span><span class="field-unit">kg fin/h</span><span id="tp-rate" style="font-family:var(--mono);font-weight:700;color:var(--green)">—</span></div>
+      <div class="field"><span class="field-name">Tiempo estimado</span><span class="field-unit">horas</span><span id="tp-t" style="font-family:var(--mono);font-weight:700">—</span></div>
     </div>
-    <div id="teo-nodata" class="empty" style="display:none">Seleccioná un cliente para ver el teórico</div>
-
-    <div style="display:flex;gap:8px;margin-top:.5rem">
-      <button class="btn primary" onclick="crearOP()" style="flex:1">Crear OP</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn pri" onclick="crearOP()" style="flex:1">Crear OP</button>
       <button class="btn" onclick="mTab('ops')">Cancelar</button>
     </div>
   </div>
 
-  <!-- OP Detail -->
+  <!-- Detalle OP -->
   <div id="m-detail" style="display:none">
     <button class="btn sm" onclick="mTab('ops')" style="margin-bottom:1rem">← Volver</button>
     <div id="detail-content"></div>
   </div>
-
 </div>
 </div>
 
-<!-- ══════════════ TABLET VIEW ══════════════ -->
-<div id="view-tablet" style="display:none">
-<div class="tablet-screen">
+<!-- ══════ TABLET ══════ -->
+<div id="view-tab" style="display:none">
+<div class="t-screen">
 
-  <!-- PIN screen -->
-  <div id="t-pin" class="tablet-page">
+  <!-- PIN -->
+  <div id="t-pin" class="t-page">
     <div class="pin-wrap">
       <div class="pin-title">Identificación</div>
       <div class="pin-sub">Ingresá tu PIN de operario</div>
-      <div class="pin-display" id="pin-display">·  ·  ·  ·</div>
+      <div class="pin-dots" id="pin-dots">·  ·  ·  ·</div>
       <div class="pin-grid" id="pin-grid"></div>
-      <div id="pin-error" style="color:var(--red-tx);font-size:13px;margin-top:.5rem"></div>
+      <div id="pin-err" style="color:var(--red);font-size:14px;margin-top:.5rem"></div>
     </div>
   </div>
 
-  <!-- OP list -->
-  <div id="t-ops" class="tablet-page" style="display:none">
+  <!-- OP List tablet -->
+  <div id="t-ops" class="t-page" style="display:none">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
       <div style="flex:1">
-        <div style="font-size:18px;font-weight:600" id="t-username">Operario</div>
-        <div style="font-size:12px;color:var(--txt3)">Seleccioná una OP para cargar datos</div>
+        <div style="font-size:20px;font-weight:700" id="t-username">—</div>
+        <div style="font-size:13px;color:var(--txt3)">Seleccioná una OP para cargar</div>
       </div>
       <button class="btn sm" onclick="tLogout()">Salir</button>
     </div>
     <div id="t-op-list"></div>
   </div>
 
-  <!-- Cargar corrida -->
-  <div id="t-carga" class="tablet-page" style="display:none">
-
-    <!-- HEADER OP -->
+  <!-- Jornada form -->
+  <div id="t-jornada" class="t-page" style="display:none">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">
-      <button class="btn sm" onclick="tVolverOPs()">←</button>
+      <button class="btn sm" onclick="tBackToOPs()">←</button>
       <div style="flex:1">
-        <div style="font-size:15px;font-weight:700" id="t-carga-titulo">OP</div>
-        <div style="font-size:12px;color:var(--txt3)" id="t-carga-sub"></div>
+        <div style="font-size:16px;font-weight:700" id="tj-titulo">—</div>
+        <div style="font-size:12px;color:var(--txt3)" id="tj-sub">—</div>
       </div>
     </div>
 
-    <!-- PANEL TEÓRICO + ACUMULADO -->
-    <div class="t-section" style="margin-bottom:.75rem">
-      <div class="t-section-head" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Resumen OP</span>
-        <span style="font-size:11px;color:var(--txt3)" id="t-corrida-badge">Corrida 1</span>
-      </div>
-      <!-- tabla comparativa -->
-      <div style="overflow-x:auto">
-        <table style="width:100%;border-collapse:collapse;font-size:13px">
-          <thead>
-            <tr style="background:var(--surf2)">
-              <th style="padding:6px 10px;text-align:left;font-weight:600;color:var(--txt3);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Métrica</th>
-              <th style="padding:6px 10px;text-align:right;font-weight:600;color:var(--txt3);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Teórico</th>
-              <th style="padding:6px 10px;text-align:right;font-weight:600;color:var(--txt3);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Acumulado</th>
-              <th style="padding:6px 10px;text-align:right;font-weight:600;color:var(--txt3);font-size:11px;text-transform:uppercase;letter-spacing:.06em">Desvío</th>
-            </tr>
-          </thead>
-          <tbody id="t-resumen-body">
-            <tr><td colspan="4" style="padding:10px;text-align:center;color:var(--txt3)">Sin datos aún</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div style="padding:.5rem 1rem .625rem">
-        <div class="progress-bar" style="height:7px"><div class="progress-fill" id="t-progress-fill" style="width:0%"></div></div>
-        <div class="progress-label" id="t-progress-label"></div>
+    <!-- Resumen OP acumulado -->
+    <div class="t-sect" style="margin-bottom:.75rem">
+      <div class="t-sect-head">Resumen OP — acumulado vs teórico</div>
+      <div class="resumen-grid" id="t-resumen"></div>
+      <div style="padding:.5rem .875rem .75rem">
+        <div class="pbar" style="height:8px"><div class="pfill" id="t-pfill" style="width:0%"></div></div>
+        <div class="plabel" id="t-plabel"></div>
       </div>
     </div>
 
-    <!-- NUEVA CORRIDA -->
-    <div class="t-section">
-      <div class="t-section-head">Nueva corrida — <span id="t-corrida-num">1</span></div>
+    <!-- JORNADA -->
+    <div class="t-sect">
+      <div class="t-sect-head">📅 Jornada — <span id="tj-num" style="color:var(--amber)">1</span></div>
 
-      <!-- TURNO Y HORARIO -->
-      <div style="padding:.625rem 1rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;border-bottom:1px solid var(--bord)">
+      <!-- Fecha y horario -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;border-bottom:1px solid var(--bord)">
         <div>
-          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:4px">Turno</div>
-          <select id="c-turno" style="width:100%;font-size:14px;font-weight:600;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:8px 6px;background:var(--surf2);color:var(--txt);outline:none">
-            <option value="Mañana">☀ Mañana</option>
-            <option value="Tarde">🌤 Tarde</option>
-            <option value="Noche">🌙 Noche</option>
-          </select>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:5px">Fecha</div>
+          <input type="date" id="tj-fecha" style="width:100%;font-size:15px;font-weight:600;border:2px solid var(--bord2);border-radius:var(--rs);padding:9px 8px;background:var(--surf2);color:var(--txt);outline:none"/>
         </div>
-        <div>
-          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:4px">Hora inicio</div>
-          <input type="time" id="c-hora-ini" style="width:100%;font-size:14px;font-weight:600;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:8px 6px;background:var(--surf2);color:var(--txt);outline:none"/>
-        </div>
-        <div>
-          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:4px">Hora fin</div>
-          <input type="time" id="c-hora-fin" style="width:100%;font-size:14px;font-weight:600;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:8px 6px;background:var(--surf2);color:var(--txt);outline:none"/>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;grid-column:span 1">
+          <div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:5px">Inicio</div>
+            <input type="time" id="tj-ini" style="width:100%;font-size:15px;font-weight:600;border:2px solid var(--bord2);border-radius:var(--rs);padding:9px 6px;background:var(--surf2);color:var(--txt);outline:none"/>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:5px">Fin</div>
+            <input type="time" id="tj-fin" style="width:100%;font-size:15px;font-weight:600;border:2px solid var(--bord2);border-radius:var(--rs);padding:9px 6px;background:var(--surf2);color:var(--txt);outline:none"/>
+          </div>
         </div>
       </div>
 
       <!-- BOBINAS PET -->
-      <div style="padding:.5rem 1rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber-dk);background:var(--amber-lt);border-bottom:1px solid var(--bord)">
-        🎞 Bobinas PET — <span style="font-weight:400">teórico restante: <strong id="t-teo-pet-corrida">—</strong></span>
-      </div>
-      <div id="pet-bobinas-list" style="padding:.5rem .75rem;display:flex;flex-direction:column;gap:.625rem"></div>
-      <div style="padding:.25rem .75rem .75rem">
+      <div class="t-teo">🎞 PET — teórico restante: <span id="tj-teo-pet">—</span></div>
+      <div id="pet-list" style="padding:.625rem .875rem .25rem"></div>
+      <div style="padding:.25rem .875rem .75rem">
         <button class="bob-add" onclick="addBobina('pet')">＋ Agregar bobina PET</button>
       </div>
-      <div class="bob-total-bar">
-        <span class="bob-total-label">Total PET esta corrida</span>
-        <div style="text-align:right">
-          <div class="bob-total-val" id="pet-total">0 kg</div>
-          <div class="bob-total-info" id="pet-count">0 bobinas</div>
+      <div class="bob-total">
+        <div>
+          <div class="bob-total-lbl">Total PET esta jornada</div>
+          <div class="bob-total-sub" id="pet-count">0 bobinas</div>
         </div>
+        <div class="bob-total-val" id="pet-total">0.0 kg</div>
       </div>
 
       <!-- BOBINAS PE -->
-      <div style="padding:.5rem 1rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber-dk);background:var(--amber-lt);border-bottom:1px solid var(--bord)">
-        🎞 Bobinas PE — <span style="font-weight:400">teórico restante: <strong id="t-teo-pe-corrida">—</strong></span>
-      </div>
-      <div id="pe-bobinas-list" style="padding:.5rem .75rem;display:flex;flex-direction:column;gap:.625rem"></div>
-      <div style="padding:.25rem .75rem .75rem">
+      <div class="t-teo" style="border-top:1px solid var(--bord)">🎞 PE — teórico restante: <span id="tj-teo-pe">—</span></div>
+      <div id="pe-list" style="padding:.625rem .875rem .25rem"></div>
+      <div style="padding:.25rem .875rem .75rem">
         <button class="bob-add" onclick="addBobina('pe')">＋ Agregar bobina PE</button>
       </div>
-      <div class="bob-total-bar">
-        <span class="bob-total-label">Total PE esta corrida</span>
-        <div style="text-align:right">
-          <div class="bob-total-val" id="pe-total">0 kg</div>
-          <div class="bob-total-info" id="pe-count">0 bobinas</div>
+      <div class="bob-total" style="border-top:1px solid var(--bord)">
+        <div>
+          <div class="bob-total-lbl">Total PE esta jornada</div>
+          <div class="bob-total-sub" id="pe-count">0 bobinas</div>
+        </div>
+        <div class="bob-total-val" id="pe-total">0.0 kg</div>
+      </div>
+
+      <!-- PRODUCTO FINAL -->
+      <div class="t-teo" style="border-top:1px solid var(--bord)">✂ Producto final — teórico restante: <span id="tj-teo-fin">—</span></div>
+      <div class="t-row">
+        <div><div class="t-row-lbl">Kg finales producidos</div></div>
+        <div class="big-num">
+          <button class="big-btn" onpointerdown="startStep('tj-fin',-10)">−</button>
+          <input class="big-inp" type="number" id="tj-fin-val" value="0" min="0" step="1" oninput="updateCompar()"/>
+          <button class="big-btn" onpointerdown="startStep('tj-fin',10)">+</button>
         </div>
       </div>
 
-      <!-- REFILADO -->
-      <div style="padding:.5rem 1rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue-tx);background:var(--blue-bg);border-bottom:1px solid var(--bord)">
-        ✂ Producto final — <span style="font-weight:400">teórico restante: <strong id="t-teo-fin-corrida">—</strong></span>
-      </div>
-      <div class="t-field">
-        <span class="t-field-name">Kg finales producidos</span>
-        <span class="t-field-unit">kg</span>
-        <div class="t-input-wrap">
-          <button class="t-step-btn" onclick="stepKg('c-fin',-10)">−</button>
-          <input class="t-kg-input" type="number" id="c-fin" value="0" min="0" step="1" oninput="updateTeoCompar()"/>
-          <button class="t-step-btn" onclick="stepKg('c-fin',10)">+</button>
+      <!-- SCRAP -->
+      <div style="padding:.5rem .875rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);border-top:1px solid var(--bord)">🗑 Scrap al cerrar la jornada</div>
+      <div class="t-row">
+        <div><div class="t-row-lbl">Peso bruto scrap</div><div class="t-row-sub">Tiras + recortes del día</div></div>
+        <div class="big-num">
+          <button class="big-btn" onpointerdown="startStep('tj-scrap-b',-1)">−</button>
+          <input class="big-inp" type="number" id="tj-scrap-b" value="0" min="0" step="0.5" oninput="updateScrapNeto()"/>
+          <button class="big-btn" onpointerdown="startStep('tj-scrap-b',1)">+</button>
         </div>
       </div>
+      <div class="t-teo">Scrap neto = bruto − cono (<span id="tj-cono-info">—</span>): <span id="tj-scrap-neto">0.0 kg</span></div>
 
-      <!-- SCRAP DEL TURNO -->
-      <div style="padding:.5rem 1rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);background:var(--surf2);border-bottom:1px solid var(--bord)">
-        🗑 Scrap al finalizar turno
-      </div>
-      <div class="t-field">
-        <div style="flex:1">
-          <div style="font-size:14px;font-weight:500">Peso bruto scrap</div>
-          <div style="font-size:11px;color:var(--txt3)">Tiras + recortes del turno</div>
-        </div>
-        <span class="t-field-unit">kg</span>
-        <div class="t-input-wrap">
-          <button class="t-step-btn" onclick="stepKg('c-scrap-bruto',-1)">−</button>
-          <input class="t-kg-input" type="number" id="c-scrap-bruto" value="0" min="0" step="0.5" oninput="updateScrap()"/>
-          <button class="t-step-btn" onclick="stepKg('c-scrap-bruto',1)">+</button>
-        </div>
-      </div>
-      <div class="t-field">
-        <div style="flex:1">
-          <div style="font-size:14px;font-weight:500">Peso del cono / núcleo</div>
-          <div style="font-size:11px;color:var(--txt3)">A descontar del bruto</div>
-        </div>
-        <span class="t-field-unit">kg</span>
-        <div class="t-input-wrap">
-          <button class="t-step-btn" onclick="stepKg('c-scrap-cono',-0.1)">−</button>
-          <input class="t-kg-input" type="number" id="c-scrap-cono" value="0" min="0" step="0.1" oninput="updateScrap()"/>
-          <button class="t-step-btn" onclick="stepKg('c-scrap-cono',0.1)">+</button>
-        </div>
-      </div>
-      <div class="bob-total-bar">
-        <span class="bob-total-label">Scrap neto del turno</span>
-        <div class="bob-total-val" id="c-scrap-neto-display">0.0 kg</div>
-      </div>
+      <!-- COMPARACIÓN -->
+      <div id="tj-compar" style="display:none;padding:.75rem .875rem;border-top:1px solid var(--bord);font-size:13px;background:var(--surf2);line-height:1.9"></div>
 
-      <!-- COMPARACIÓN ACUMULADA -->
-      <div id="t-compar" style="display:none;padding:.75rem 1rem;font-size:13px;border-top:1px solid var(--bord);line-height:1.9;background:var(--surf2)"></div>
-
-      <!-- OBSERVACIONES -->
-      <div style="padding:.5rem 1rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);border-top:1px solid var(--bord)">
-        Observaciones
-      </div>
-      <div class="obs-presets" id="obs-presets"></div>
-      <div style="padding:.25rem 1rem .875rem">
-        <textarea class="t-obs-input" id="c-obs" placeholder="Detalles adicionales…"></textarea>
+      <!-- OBS -->
+      <div style="padding:.5rem .875rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);border-top:1px solid var(--bord)">Observaciones</div>
+      <div class="obs-chips" id="obs-chips"></div>
+      <div style="padding:.25rem .875rem .875rem">
+        <textarea class="obs-area" id="tj-obs" placeholder="Detalles adicionales…"></textarea>
       </div>
     </div>
 
-    <button class="btn primary" onclick="guardarCorrida()" style="width:100%;padding:16px;font-size:16px;margin-top:.25rem;border-radius:var(--r)">
-      ✓ Confirmar corrida
+    <button onclick="guardarJornada()" style="width:100%;padding:18px;font-size:17px;font-weight:700;background:var(--amber);color:#fff;border:none;border-radius:var(--r);cursor:pointer;margin-top:.25rem">
+      ✓ Confirmar jornada
     </button>
   </div>
 
   <!-- Confirmación -->
-  <div id="t-confirm" class="tablet-page" style="display:none">
+  <div id="t-confirm" class="t-page" style="display:none">
     <div class="confirm-box">
       <div class="confirm-icon">✓</div>
-      <div class="confirm-title">Corrida registrada</div>
-      <div class="confirm-sub" id="confirm-msg"></div>
-      <button class="btn primary" onclick="tVolverOPs()" style="width:100%;margin-top:.5rem">Volver a OPs</button>
+      <div class="confirm-title">Jornada registrada</div>
+      <div class="confirm-sub" id="confirm-msg">—</div>
+      <button class="btn pri" onclick="tBackToOPs()" style="width:100%;padding:14px;font-size:15px">Volver a OPs</button>
     </div>
   </div>
 
@@ -477,431 +433,373 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 
 <script>
 /* ══ CONFIG ══ */
-const API_KEY = '$2a$10$8p4t41BnTv.9Ls.4kFLhouDMqJGQEd5LQlBYEz8n1y6nH/3dFq27G';
-let BIN_ID = localStorage.getItem('op_lam_bin') || '';
-const DENS_PET=1.35, DENS_PE=0.92, PROD_LAM=110, PROD_REF=83.33;
+const API_KEY='$2a$10$8p4t41BnTv.9Ls.4kFLhouDMqJGQEd5LQlBYEz8n1y6nH/3dFq27G';
+let BIN_ID=localStorage.getItem('op_lam_bin_v2')||'';
+const DENS_PET=1.35,DENS_PE=0.92,PROD_LAM=110;
 
-const OPERARIOS={
-  '1111':'Gabriel Luna',
-  '2222':'Alan Vera',
-  '3333':'Luis Garbia',
-  '4444':'Antonio Zayas',
-  '3080':'Jonathan',
-  '1540':'Matías',
-};
+const OPERARIOS={'1111':'Gabriel Luna','2222':'Alan Vera','3333':'Luis Garbia','4444':'Antonio Zayas','3080':'Jonathan','1540':'Matías'};
 
-const OBS_PRESETS=[
-  'Rotura PET','Rotura PE',
-  'Problema adhesivo','Desalineación',
-  'Arranque largo','Bobina defectuosa',
-  'Problema máquina','Todo normal',
+const OBS_OPTS=['Rotura PET','Rotura PE','Bobina bloqueada','Problema adhesivo','Desalineación','Arranque largo','Bobina corta','Todo normal'];
+
+const BOB_ESTADOS=[
+  {k:'completa',   label:'✓ Completa',     cls:'sel-completa'},
+  {k:'parcial',    label:'Parcial — pesé resto', cls:'sel-parcial'},
+  {k:'bloqueada',  label:'🚫 Bloqueada',   cls:'sel-bloqueada'},
+  {k:'quebradiza', label:'⚠ Quebradiza',   cls:'sel-quebradiza'},
 ];
 
 const CLIENTES=[
-  {n:'Huertas del Pilar',  af:200,ef:450,aPET:430,ePET:400,aPE:450,ePE:50,nT:2},
-  {n:'Dantelli (357-C)',   af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1},
-  {n:'Dantelli (357-N)',   af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1},
-  {n:'Dantelli (323)',     af:323,ef:350,aPET:350,ePET:300,aPE:370,ePE:50,nT:1},
-  {n:'Villa DAgrì (423)', af:423,ef:280,aPET:450,ePET:230,aPE:470,ePE:50,nT:1},
-  {n:'Villa DAgrì (323)', af:323,ef:280,aPET:350,ePET:230,aPE:370,ePE:50,nT:1},
-  {n:'Molinos (421)',      af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1},
-  {n:'Molinos (472)',      af:472,ef:235,aPET:500,ePET:200,aPE:530,ePE:35,nT:1},
-  {n:'Mendia (312)',       af:312,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1},
-  {n:'La Italiana (421×350)',af:421,ef:350,aPET:450,ePET:300,aPE:470,ePE:50,nT:1},
-  {n:'La Italiana (421×500)',af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1},
-  {n:'Don Yeyo (321)',     af:321,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1},
-  {n:'El Artesano (422)', af:422,ef:250,aPET:450,ePET:200,aPE:470,ePE:50,nT:1},
+  {n:'Huertas del Pilar',   af:200,ef:450,aPET:430,ePET:400,aPE:450,ePE:50,nT:2},
+  {n:'Dantelli (357-C)',    af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1},
+  {n:'Dantelli (357-N)',    af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1},
+  {n:'Dantelli (323)',      af:323,ef:350,aPET:350,ePET:300,aPE:370,ePE:50,nT:1},
+  {n:'Villa DAgrì (423)',  af:423,ef:280,aPET:450,ePET:230,aPE:470,ePE:50,nT:1},
+  {n:'Villa DAgrì (323)',  af:323,ef:280,aPET:350,ePET:230,aPE:370,ePE:50,nT:1},
+  {n:'Molinos (421)',       af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1},
+  {n:'Molinos (472)',       af:472,ef:235,aPET:500,ePET:200,aPE:530,ePE:35,nT:1},
+  {n:'Mendia (312)',        af:312,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1},
+  {n:'La Italiana (350)',   af:421,ef:350,aPET:450,ePET:300,aPE:470,ePE:50,nT:1},
+  {n:'La Italiana (500)',   af:421,ef:500,aPET:450,ePET:450,aPE:470,ePE:50,nT:1},
+  {n:'Don Yeyo (321)',      af:321,ef:300,aPET:350,ePET:250,aPE:370,ePE:50,nT:1},
+  {n:'El Artesano (422)',   af:422,ef:250,aPET:450,ePET:200,aPE:470,ePE:50,nT:1},
   {n:'BarielPack (520×400)',af:520,ef:400,aPET:550,ePET:350,aPE:570,ePE:50,nT:1},
   {n:'BarielPack (520×600)',af:520,ef:600,aPET:550,ePET:550,aPE:570,ePE:50,nT:1},
   {n:'BarielPack (520×350)',af:520,ef:350,aPET:550,ePET:300,aPE:570,ePE:50,nT:1},
-  {n:'Pespasa (300)',      af:300,ef:93, aPET:330,ePET:13, aPE:350,ePE:80,nT:1},
+  {n:'Pespasa (300)',       af:300,ef:93, aPET:330,ePET:13, aPE:350,ePE:80,nT:1},
 ];
 
 /* ══ STATE ══ */
-let data={ops:[]};
-let currentView='manager';
-let mTabActive='ops';
-let filterMode='all';
-let currentUser=null;
-let selectedOP=null;
-let tScreen='pin';
-let pinBuffer='';
-let selectedObs=new Set();
-let petBobinas=[]; // [{total: 92, sobrante: 0}, ...]
-let peBobinas=[];
+let data={ops:[]},currentView='mgr',filterMode='all';
+let currentUser=null,selectedOP=null,tScreen='pin';
+let pinBuffer='',selectedObs=new Set();
+let petBobs=[],peBobs=[];  // [{numBobina,partida,kgNetos,metros,estado,pesoRestante}]
+let stepTimer=null;
 
-/* ══ JSONBin ══ */
+/* ══ JSONBIN ══ */
 async function loadData(){
   if(!BIN_ID){data={ops:[]};return;}
   try{
     const r=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':'false'}});
-    if(!r.ok)throw new Error();
+    if(!r.ok)throw 0;
     data=await r.json();
     if(!data.ops)data={ops:[]};
   }catch{data={ops:[]};}
 }
 async function saveData(){
   if(!BIN_ID){
-    // Crear nuevo bin
     try{
-      const r=await fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY,'X-Bin-Name':'op-laminado'},body:JSON.stringify(data)});
-      const d=await r.json();
-      BIN_ID=d.metadata.id;
-      localStorage.setItem('op_lam_bin',BIN_ID);
-    }catch(e){console.error('Error creando bin',e);return;}
-  } else {
-    try{
-      await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},body:JSON.stringify(data)});
-    }catch(e){console.error('Error guardando',e);}
+      const r=await fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY,'X-Bin-Name':'op-laminado-v2'},body:JSON.stringify(data)});
+      const d=await r.json();BIN_ID=d.metadata.id;
+      localStorage.setItem('op_lam_bin_v2',BIN_ID);
+    }catch(e){console.error(e);return;}
+  }else{
+    try{await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},body:JSON.stringify(data)});}
+    catch(e){console.error(e);}
   }
 }
 
 /* ══ CALCULATIONS ══ */
-function calcTeorico(specs,kgPedidos,merma){
+function calcTeo(specs,kgPedidos,merma){
   const{aPET,ePET,aPE,ePE,af,nT}=specs;
   const pbPET=aPET*ePET*DENS_PET/1e6;
   const pbPE =aPE *ePE *DENS_PE /1e6;
-  const pb   =pbPET+pbPE;
-  const pp   =nT*af*(ePET*DENS_PET+ePE*DENS_PE)/1e6;
-  const trim =(pb-pp)/pb*100;
+  const pb=pbPET+pbPE;
+  const pp=nT*af*(ePET*DENS_PET+ePE*DENS_PE)/1e6;
+  const trim=(pb-pp)/pb*100;
   const factor=1+merma/100;
   const metros=kgPedidos/pp*factor;
-  const kgPET =metros*pbPET;
-  const kgPE  =metros*pbPE;
+  const kgPET=metros*pbPET;
+  const kgPE=metros*pbPE;
   const kgScrap=(kgPET+kgPE)-kgPedidos;
-  return{metros,kgPET,kgPE,kgScrap,trim,
-    tiempoLam:(kgPET+kgPE)/PROD_LAM,
-    tiempoRef:kgPedidos/PROD_REF};
+  // Eficiencia teórica: laminadora procesa PROD_LAM kg/h de material → kg finales/h
+  const kgFinPorHora=pb>0?PROD_LAM*pp/pb:0;
+  return{metros,kgPET,kgPE,kgScrap,trim,kgFinPorHora,
+    tiempoTotal:kgPedidos/kgFinPorHora};
 }
 
-function calcReal(corridas){
-  const r={kgPET:0,kgPE:0,kgFin:0,kgScrap:0};
-  corridas.forEach(c=>{r.kgPET+=c.kgPET||0;r.kgPE+=c.kgPE||0;r.kgFin+=c.kgFin||0;r.kgScrap+=c.kgScrap||0;});
-  r.rendimiento=(r.kgPET+r.kgPE)>0?r.kgFin/(r.kgPET+r.kgPE):0;
-  r.mermaReal=(r.kgPET+r.kgPE)>0?(r.kgPET+r.kgPE-r.kgFin)/(r.kgPET+r.kgPE)*100:0;
+function calcReal(jornadas){
+  const r={kgPET:0,kgPE:0,kgFin:0,kgScrap:0,horas:0};
+  (jornadas||[]).forEach(j=>{
+    r.kgPET+=j.kgPET||0;r.kgPE+=j.kgPE||0;
+    r.kgFin+=j.kgFin||0;r.kgScrap+=j.kgScrap||0;
+    r.horas+=j.horas||0;
+  });
+  r.eficiencia=r.horas>0&&selectedOP?.teorico?.kgFinPorHora>0
+    ?(r.kgFin/r.horas)/selectedOP.teorico.kgFinPorHora*100:null;
   return r;
 }
 
-function desvio(real,teo){
-  if(!teo)return{val:0,pct:0};
-  return{val:real-teo,pct:(real-teo)/teo*100};
+function horasDiff(ini,fin){
+  if(!ini||!fin)return 0;
+  const [hi,mi]=ini.split(':').map(Number);
+  const [hf,mf]=fin.split(':').map(Number);
+  let d=(hf*60+mf)-(hi*60+mi);
+  if(d<0)d+=24*60;
+  return Math.round(d)/60;
 }
 
-function diagnostico(teo,real,kgPedidos){
-  const msgs=[];
-  const dPET=desvio(real.kgPET,teo.kgPET);
-  const dPE =desvio(real.kgPE, teo.kgPE);
-  const dFin=desvio(real.kgFin,kgPedidos);
-  if(real.kgFin===0&&real.kgPET===0)return{lvl:'ok',msgs:['Todavía no hay datos cargados.']};
-  if(Math.abs(dPET.pct)<=3&&Math.abs(dPE.pct)<=3&&Math.abs(dFin.pct)<=3)
-    return{lvl:'ok',msgs:['Producción dentro de parámetros ✓']};
-  if(dPET.pct>5) msgs.push(`Exceso de PET (+${dPET.pct.toFixed(1)}%): posible empalmada, rotura o mayor arranque.`);
-  if(dPE.pct>5)  msgs.push(`Exceso de PE (+${dPE.pct.toFixed(1)}%): posible empalmada, rotura o desalineación.`);
-  if(dFin.pct<-3)msgs.push(`Menor kg finales (${dFin.pct.toFixed(1)}%): mayor trim, rechazos o diferencia de pesaje.`);
-  if(dFin.pct>3) msgs.push(`Más kg finales de lo esperado (+${dFin.pct.toFixed(1)}%): verificar medición.`);
-  if(real.rendimiento<0.85&&real.kgFin>0) msgs.push(`Rendimiento bajo (${(real.rendimiento*100).toFixed(1)}%): revisar fuentes de pérdida.`);
-  return{lvl:msgs.length>1?'bad':'warn',msgs};
+function kgConsumido(b,tipo){
+  if(b.estado==='completa'||b.estado==='quebradiza')return parseFloat(b.kgNetos)||0;
+  if(b.estado==='parcial'){
+    const neto=parseFloat(b.kgNetos)||0;
+    const rest=parseFloat(b.pesoRestante)||0;
+    const cono=tipo==='pet'?(selectedOP?.pesoCono_pet||0):(selectedOP?.pesoCono_pe||0);
+    return Math.max(0,neto-(rest-cono));
+  }
+  if(b.estado==='bloqueada')return 0;
+  return 0;
 }
+
+function totalKg(arr,tipo){return arr.reduce((s,b)=>s+kgConsumido(b,tipo),0);}
 
 /* ══ VIEW SWITCH ══ */
 function switchView(v){
   currentView=v;
-  document.getElementById('view-manager').style.display=v==='manager'?'':'none';
-  document.getElementById('view-tablet').style.display=v==='tablet'?'':'none';
-  document.getElementById('btn-manager').className='view-btn'+(v==='manager'?' active':'');
-  document.getElementById('btn-tablet').className='view-btn'+(v==='tablet'?' active':'');
-  if(v==='tablet')tShowScreen(tScreen==='carga'?'ops':'pin');
-  if(v==='manager')renderDashboard();
+  document.getElementById('view-mgr').style.display=v==='mgr'?'':'none';
+  document.getElementById('view-tab').style.display=v==='tab'?'':'none';
+  document.getElementById('vbtn-mgr').className='vbtn'+(v==='mgr'?' on':'');
+  document.getElementById('vbtn-tab').className='vbtn'+(v==='tab'?' on':'');
+  if(v==='mgr')renderDash();
+  if(v==='tab'&&tScreen!=='jornada')tShowScreen('pin');
 }
 
 /* ══ MANAGER ══ */
 function mTab(t){
-  mTabActive=t;
-  ['ops','nueva','detail'].forEach(x=>{
-    const el=document.getElementById('m-'+x);
-    if(el)el.style.display=x===t?'':'none';
-  });
-  ['ops','nueva'].forEach(x=>{
-    const el=document.getElementById('mtab-'+x);
-    if(el)el.className='tab'+(x===t?' active':'');
-  });
-  if(t==='ops')renderDashboard();
+  ['ops','nueva','detail'].forEach(x=>{const e=document.getElementById('m-'+x);if(e)e.style.display=x===t?'':'none';});
+  ['ops','nueva'].forEach(x=>{const e=document.getElementById('mtab-'+x);if(e)e.className='tab'+(x===t?' on':'');});
+  if(t==='ops')renderDash();
   if(t==='nueva'){
-    document.getElementById('new-fecha').value=new Date().toISOString().slice(0,10);
-    document.getElementById('teo-nodata').style.display='';
-    document.getElementById('teo-preview').style.display='none';
+    document.getElementById('n-fecha').value=new Date().toISOString().slice(0,10);
+    document.getElementById('teo-card').style.display='none';
+    initClienteSel();
   }
 }
 
-function renderDashboard(){
+function setFilter(f){
+  filterMode=f;
+  ['all','open','closed'].forEach(x=>{
+    const b=document.getElementById('f-'+x);
+    b.style.borderColor=f===x?'var(--amber)':'';
+    b.style.color=f===x?'var(--amber)':'';
+  });
+  renderDash();
+}
+
+function renderDash(){
   let ops=[...data.ops];
   if(filterMode==='open')ops=ops.filter(o=>o.estado==='abierta');
   if(filterMode==='closed')ops=ops.filter(o=>o.estado==='cerrada');
   ops.sort((a,b)=>b.fecha.localeCompare(a.fecha));
   const open=data.ops.filter(o=>o.estado==='abierta').length;
   document.getElementById('ops-summary').textContent=`${data.ops.length} OPs · ${open} abiertas`;
-  ['all','open','closed'].forEach(f=>{
-    const b=document.getElementById('filter-'+f);
-    b.style.borderColor=filterMode===f?'var(--amber)':'';
-    b.style.color=filterMode===f?'var(--amber)':'';
-  });
   const el=document.getElementById('op-list');
-  if(!ops.length){el.innerHTML='<div class="empty">No hay órdenes todavía.<br>Creá una con "+ Nueva OP"</div>';return;}
+  if(!ops.length){el.innerHTML='<div class="empty">No hay OPs todavía.</div>';return;}
   el.innerHTML=ops.map(op=>{
-    const real=calcReal(op.corridas||[]);
+    const real=calcRealForOP(op);
     const pct=op.kgPedidos>0?Math.min(real.kgFin/op.kgPedidos*100,100):0;
+    const efStr=real.eficiencia!=null?` · Ef: ${real.eficiencia.toFixed(0)}%`:'';
     return`<div class="op-item" onclick="openOP('${op.id}')">
-      <div class="op-item-header">
-        <span class="op-item-id">${op.numero}</span>
-        <span class="op-item-cliente">${op.cliente}</span>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+        <span style="font-family:var(--mono);font-size:12px;color:var(--amber);font-weight:700">${op.numero}</span>
+        <span style="font-size:14px;font-weight:600;flex:1">${op.cliente}</span>
         <span class="badge ${op.estado==='abierta'?'open':'closed'}">${op.estado}</span>
       </div>
-      <div class="op-item-meta">${op.fecha} · ${op.kgPedidos} kg pedidos · ${op.corridas?.length||0} corrida(s)</div>
-      <div class="op-item-progress">
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct.toFixed(1)}%"></div></div>
-        <div class="progress-label">${real.kgFin.toFixed(1)} / ${op.kgPedidos} kg finales (${pct.toFixed(0)}%)</div>
-      </div>
+      <div style="font-size:12px;color:var(--txt3)">${op.fecha} · ${op.kgPedidos} kg · ${op.jornadas?.length||0} jornada(s)${efStr}</div>
+      <div class="pbar"><div class="pfill" style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="plabel">${real.kgFin.toFixed(0)} / ${op.kgPedidos} kg (${pct.toFixed(0)}%)</div>
     </div>`;
   }).join('');
 }
 
-function filterOPs(f){filterMode=f;renderDashboard();}
+function calcRealForOP(op){
+  const savedOP=selectedOP;
+  selectedOP=op; // temporariamente para kgConsumido
+  const r=calcReal(op.jornadas||[]);
+  selectedOP=savedOP;
+  return r;
+}
 
 function openOP(id){
   selectedOP=data.ops.find(o=>o.id===id);
   if(!selectedOP)return;
-  mTabActive='detail';
   ['ops','nueva'].forEach(x=>document.getElementById('m-'+x).style.display='none');
   document.getElementById('m-detail').style.display='';
-  renderOPDetail();
+  document.getElementById('mtab-ops').className='tab on';
+  renderOpDetail();
 }
 
-function renderOPDetail(){
+function renderOpDetail(){
   const op=selectedOP;
-  const real=calcReal(op.corridas||[]);
+  const real=calcReal(op.jornadas||[]);
   const teo=op.teorico;
-  const diag=diagnostico(teo,real,op.kgPedidos);
-  const dPET=desvio(real.kgPET,teo.kgPET);
-  const dPE =desvio(real.kgPE, teo.kgPE);
-  const dFin=desvio(real.kgFin,op.kgPedidos);
-  const dMerma=real.kgFin>0?real.mermaReal-teo.trim:null;
   const hasData=real.kgFin>0||real.kgPET>0;
+  const dv=(r,t)=>{const v=r-t;const p=t>0?v/t*100:0;return{v,p};};
+  const dP=dv(real.kgPET,teo.kgPET),dE=dv(real.kgPE,teo.kgPE),dF=dv(real.kgFin,op.kgPedidos);
+  const cls=(v,inv)=>{const b=inv?v<-3:v>5;const ok=Math.abs(v)<3;return!hasData?'na':ok?'ok':b?'bad':'warn';};
 
-  const fmtD=(d,inv=false)=>{
-    if(!hasData)return`<td class="num na">—</td><td class="num na">—</td>`;
-    const bad=(inv?d.pct<-3:d.pct>5)||(inv?false:d.pct<-3);
-    const warn=Math.abs(d.pct)>2;
-    const cls=Math.abs(d.pct)<=2?'ok':warn&&!bad?'warn':'bad';
-    return`<td class="num ${cls}">${d.val>=0?'+':''}${d.val.toFixed(1)} kg</td><td class="num ${cls}">${d.pct>=0?'+':''}${d.pct.toFixed(1)}%</td>`;
-  };
+  const jornadasHTML=(op.jornadas||[]).map((j,i)=>{
+    const efStr=j.horas>0&&teo.kgFinPorHora>0?` · Ef: ${((j.kgFin/j.horas)/teo.kgFinPorHora*100).toFixed(0)}%`:'';
+    const bobsDetail=`
+      ${j.bobinas_pet?.length?`<div style="margin-top:4px;color:var(--txt2)"><b>PET:</b> ${j.bobinas_pet.map(b=>`#${b.numBobina||'—'} ${b.partida?'P:'+b.partida:''} ${b.kgNetos}kg${b.metros?'/'+b.metros+'m':''} [${b.estado||'—'}]${b.estado==='parcial'?` resto:${b.pesoRestante}kg`:''}`).join(', ')}</div>`:''}
+      ${j.bobinas_pe?.length?`<div style="margin-top:2px;color:var(--txt2)"><b>PE:</b> ${j.bobinas_pe.map(b=>`#${b.numBobina||'—'} ${b.partida?'P:'+b.partida:''} ${b.kgNetos}kg${b.metros?'/'+b.metros+'m':''} [${b.estado||'—'}]${b.estado==='parcial'?` resto:${b.pesoRestante}kg`:''}`).join(', ')}</div>`:''}
+      ${j.obs?`<div style="margin-top:4px;font-style:italic;color:var(--txt3)">"${j.obs}"</div>`:''}`;
+    return`<div class="jornada-row" onclick="toggleJorDetail(${i})">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">${j.fecha||'—'} ${j.horaIni?j.horaIni+'-'+j.horaFin:''}</div>
+        <div style="font-size:12px;color:var(--txt3)">${j.operario||'—'} · PET:${(j.kgPET||0).toFixed(1)} · PE:${(j.kgPE||0).toFixed(1)} · Fin:${j.kgFin||0} kg · Scrap:${(j.kgScrap||0).toFixed(1)}${efStr}</div>
+      </div>
+      <span style="color:var(--txt3);font-size:16px">›</span>
+    </div>
+    <div class="jornada-detail" id="jd-${i}">${bobsDetail}</div>`;
+  }).join('');
+
+  const efLine=real.eficiencia!=null?`<tr><td>Eficiencia total</td><td class="na">${teo.kgFinPorHora.toFixed(1)}</td><td class="${real.eficiencia>90?'ok':real.eficiencia>75?'warn':'bad'}">${real.eficiencia.toFixed(0)}%</td><td colspan="2"></td></tr>`:'';
 
   document.getElementById('detail-content').innerHTML=`
     <div class="card">
       <div class="card-head">
         <div>
-          <div style="font-size:12px;color:var(--txt3);margin-bottom:2px">${op.fecha}</div>
-          <div style="font-size:16px;font-weight:600">${op.cliente} <span style="font-size:12px;font-family:var(--mono);color:var(--amber)">${op.numero}</span></div>
-          ${op.notas?`<div style="font-size:12px;color:var(--txt3)">${op.notas}</div>`:''}
+          <div style="font-size:11px;color:var(--txt3)">${op.fecha}</div>
+          <div style="font-size:16px;font-weight:700">${op.cliente} <span style="font-size:12px;font-family:var(--mono);color:var(--amber)">${op.numero}</span></div>
+          <div style="font-size:12px;color:var(--txt3)">Cono PET: ${op.pesoCono_pet||0}kg · Cono PE: ${op.pesoCono_pe||0}kg${op.notas?' · '+op.notas:''}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
           <span class="badge ${op.estado==='abierta'?'open':'closed'}">${op.estado}</span>
           ${op.estado==='abierta'?`<button class="btn sm danger" onclick="cerrarOP('${op.id}')">Cerrar OP</button>`:''}
         </div>
       </div>
-
       <div class="card-body">
-        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:.75rem">Teórico vs Real acumulado</div>
-        <table class="cmp-table">
-          <thead><tr>
-            <th>Métrica</th><th style="text-align:right">Teórico</th><th style="text-align:right">Real</th><th style="text-align:right" colspan="2">Desvío</th>
-          </tr></thead>
+        <table class="cmp-tbl">
+          <thead><tr><th>Métrica</th><th>Teórico</th><th>Real</th><th>Desvío kg</th><th>Desvío %</th></tr></thead>
           <tbody>
-            <tr><td class="metric">kg PET lámina</td>
-              <td class="num">${teo.kgPET.toFixed(1)}</td>
-              <td class="num">${hasData?real.kgPET.toFixed(1):'—'}</td>
-              ${fmtD(dPET)}</tr>
-            <tr><td class="metric">kg PE lámina</td>
-              <td class="num">${teo.kgPE.toFixed(1)}</td>
-              <td class="num">${hasData?real.kgPE.toFixed(1):'—'}</td>
-              ${fmtD(dPE)}</tr>
-            <tr><td class="metric">kg finales producidos</td>
-              <td class="num">${op.kgPedidos}</td>
-              <td class="num">${hasData?real.kgFin.toFixed(1):'—'}</td>
-              ${fmtD(dFin,true)}</tr>
-            <tr><td class="metric">Merma / trim %</td>
-              <td class="num">${teo.trim.toFixed(1)}%</td>
-              <td class="num">${hasData?real.mermaReal.toFixed(1)+'%':'—'}</td>
-              ${hasData?`<td class="num ${Math.abs(dMerma)<2?'ok':dMerma>3?'bad':'warn'}">${dMerma>=0?'+':''}${dMerma.toFixed(1)}%</td><td></td>`:'<td class="na">—</td><td></td>'}</tr>
-            <tr><td class="metric">Rendimiento</td>
-              <td class="num">${(100-teo.trim).toFixed(1)}%</td>
-              <td class="num">${hasData?(real.rendimiento*100).toFixed(1)+'%':'—'}</td>
-              <td colspan="2"></td></tr>
+            <tr><td>kg finales</td><td>${op.kgPedidos}</td><td>${hasData?real.kgFin.toFixed(1):'—'}</td>
+              <td class="${cls(dF.p,true)}">${hasData?(dF.v>=0?'+':'')+dF.v.toFixed(1):'—'}</td><td class="${cls(dF.p,true)}">${hasData?(dF.p>=0?'+':'')+dF.p.toFixed(1)+'%':'—'}</td></tr>
+            <tr><td>PET lámina</td><td>${teo.kgPET.toFixed(1)}</td><td>${hasData?real.kgPET.toFixed(1):'—'}</td>
+              <td class="${cls(dP.p,false)}">${hasData?(dP.v>=0?'+':'')+dP.v.toFixed(1):'—'}</td><td class="${cls(dP.p,false)}">${hasData?(dP.p>=0?'+':'')+dP.p.toFixed(1)+'%':'—'}</td></tr>
+            <tr><td>PE lámina</td><td>${teo.kgPE.toFixed(1)}</td><td>${hasData?real.kgPE.toFixed(1):'—'}</td>
+              <td class="${cls(dE.p,false)}">${hasData?(dE.v>=0?'+':'')+dE.v.toFixed(1):'—'}</td><td class="${cls(dE.p,false)}">${hasData?(dE.p>=0?'+':'')+dE.p.toFixed(1)+'%':'—'}</td></tr>
+            <tr><td>Scrap</td><td>${teo.kgScrap.toFixed(1)}</td><td>${hasData?real.kgScrap.toFixed(1):'—'}</td><td colspan="2"></td></tr>
+            <tr><td>Horas trabajadas</td><td>${teo.tiempoTotal.toFixed(1)}</td><td>${real.horas>0?real.horas.toFixed(1):'—'}</td><td colspan="2"></td></tr>
+            ${efLine}
           </tbody>
         </table>
-
-        <div class="diag ${diag.lvl}" style="margin-top:.875rem">
-          <div class="diag-title">${diag.lvl==='ok'?'✓ Estado':diag.lvl==='warn'?'⚠ Atención':'⚠ Revisar'}</div>
-          ${diag.msgs.map(m=>`<div>${m}</div>`).join('')}
-        </div>
       </div>
     </div>
-
-    <div class="card">
-      <div class="card-head"><span class="card-title">Corridas registradas (${op.corridas?.length||0})</span></div>
-      <div class="card-body">
-        ${!op.corridas?.length?'<div class="empty" style="padding:1rem 0">Todavía no hay corridas cargadas.</div>':
-          op.corridas.map((c,i)=>`
-          <div class="corrida-item">
-            <div class="corrida-header">
-              <span class="corrida-num">Corrida ${i+1}</span>
-              <span class="corrida-op">${c.operario||'—'} · ${c.fecha||'—'}</span>
-            </div>
-            <div class="corrida-data">
-              <div class="corrida-val">PET: <span>${c.kgPET.toFixed(1)||0} kg</span></div>
-              <div class="corrida-val">PE: <span>${c.kgPE.toFixed(1)||0} kg</span></div>
-              <div class="corrida-val">Finales: <span>${c.kgFin||0} kg</span></div>
-              <div class="corrida-val">Scrap: <span>${c.kgScrap||0} kg</span></div>
-            </div>
-            ${c.bobinas_pet?.length?`<div style="font-size:11px;color:var(--txt3);margin-top:6px">
-              PET: ${c.bobinas_pet.map((b,j)=>`B${j+1} #${b.numBobina||'—'} / P:${b.partida||'—'} · ${b.kgNetos}kg · ${b.metros||'—'}m`).join(' | ')}
-            </div>`:''}
-            ${c.bobinas_pe?.length?`<div style="font-size:11px;color:var(--txt3);margin-top:2px">
-              PE: ${c.bobinas_pe.map((b,j)=>`B${j+1} #${b.numBobina||'—'} / P:${b.partida||'—'} · ${b.kgNetos}kg · ${b.metros||'—'}m`).join(' | ')}
-            </div>`:''}
-            ${c.obs?`<div style="font-size:12px;color:var(--txt2);margin-top:5px;font-style:italic">"${c.obs}"</div>`:''}
-          </div>`).join('')}
-      </div>
-    </div>
+    ${(op.jornadas||[]).length?`<div class="card"><div class="card-head"><span class="card-title">Jornadas (${op.jornadas.length})</span></div>${jornadasHTML}</div>`:'<div class="empty">Sin jornadas registradas.</div>'}
   `;
 }
 
-/* ══ NUEVA OP ══ */
-function initNuevaOP(){
-  const sel=document.getElementById('new-cliente');
-  sel.innerHTML='<option value="">— seleccionar —</option>';
-  CLIENTES.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.n;sel.appendChild(o);});
+function toggleJorDetail(i){
+  const el=document.getElementById('jd-'+i);
+  if(el)el.style.display=el.style.display==='none'||!el.style.display?'block':'none';
 }
 
-function onClienteSelect(){recalcTeo();}
-
+/* ══ NUEVA OP ══ */
+function initClienteSel(){
+  const s=document.getElementById('n-cliente');
+  s.innerHTML='<option value="">— seleccionar —</option>';
+  CLIENTES.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.n;s.appendChild(o);});
+}
+function onClienteSel(){recalcTeo();}
 function recalcTeo(){
-  const idx=parseInt(document.getElementById('new-cliente').value);
-  const kg=parseFloat(document.getElementById('new-kg').value)||0;
-  const merma=parseFloat(document.getElementById('new-merma').value)||2;
-  if(isNaN(idx)||!kg){
-    document.getElementById('teo-preview').style.display='none';
-    document.getElementById('teo-nodata').style.display='';
-    return;
-  }
-  const specs=CLIENTES[idx];
-  const t=calcTeorico(specs,kg,merma);
-  document.getElementById('teo-preview').style.display='';
-  document.getElementById('teo-nodata').style.display='none';
+  const idx=parseInt(document.getElementById('n-cliente').value);
+  const kg=parseFloat(document.getElementById('n-kg').value)||0;
+  const merma=parseFloat(document.getElementById('n-merma').value)||2;
+  if(isNaN(idx)||!kg){document.getElementById('teo-card').style.display='none';return;}
+  const t=calcTeo(CLIENTES[idx],kg,merma);
+  document.getElementById('teo-card').style.display='';
   document.getElementById('tp-pet').textContent=t.kgPET.toFixed(1)+' kg';
   document.getElementById('tp-pe').textContent=t.kgPE.toFixed(1)+' kg';
-  document.getElementById('tp-metros').textContent=t.metros.toFixed(1)+' m';
+  document.getElementById('tp-m').textContent=t.metros.toFixed(0)+' m';
   document.getElementById('tp-trim').textContent=t.trim.toFixed(1)+'%';
-  document.getElementById('tp-tlam').textContent=t.tiempoLam.toFixed(1)+' h';
-  document.getElementById('tp-tref').textContent=t.tiempoRef.toFixed(1)+' h';
+  document.getElementById('tp-rate').textContent=t.kgFinPorHora.toFixed(1)+' kg fin/h';
+  document.getElementById('tp-t').textContent=t.tiempoTotal.toFixed(1)+' h';
 }
-
 async function crearOP(){
-  const num=document.getElementById('new-num').value.trim();
-  const idx=parseInt(document.getElementById('new-cliente').value);
-  const kg=parseFloat(document.getElementById('new-kg').value)||0;
-  const merma=parseFloat(document.getElementById('new-merma').value)||2;
-  const fecha=document.getElementById('new-fecha').value;
-  const notas=document.getElementById('new-notas').value.trim();
-  if(!num||isNaN(idx)||!kg){alert('Completá número, cliente y kg pedidos.');return;}
-  if(data.ops.find(o=>o.numero===num)){alert('Ya existe una OP con ese número.');return;}
+  const num=document.getElementById('n-num').value.trim();
+  const idx=parseInt(document.getElementById('n-cliente').value);
+  const kg=parseFloat(document.getElementById('n-kg').value)||0;
+  const merma=parseFloat(document.getElementById('n-merma').value)||2;
+  const fecha=document.getElementById('n-fecha').value;
+  const conoPET=parseFloat(document.getElementById('n-cono-pet').value)||0;
+  const conoPE =parseFloat(document.getElementById('n-cono-pe').value)||0;
+  const notas=document.getElementById('n-notas').value.trim();
+  if(!num||isNaN(idx)||!kg){alert('Completá número, cliente y kg.');return;}
+  if(data.ops.find(o=>o.numero===num)){alert('Ya existe esa OP.');return;}
   const specs=CLIENTES[idx];
-  const teo=calcTeorico(specs,kg,merma);
-  const op={
-    id:'op_'+Date.now(),numero:num,
-    cliente:specs.n,specs,kgPedidos:kg,merma,
-    fecha,notas,estado:'abierta',
-    teorico:teo,corridas:[],
-    createdAt:new Date().toISOString()
-  };
+  const teo=calcTeo(specs,kg,merma);
+  const op={id:'op_'+Date.now(),numero:num,cliente:specs.n,specs,kgPedidos:kg,merma,
+    fecha,notas,estado:'abierta',teorico:teo,jornadas:[],
+    pesoCono_pet:conoPET,pesoCono_pe:conoPE,createdAt:new Date().toISOString()};
   data.ops.unshift(op);
   await saveData();
-  document.getElementById('new-num').value='';
-  document.getElementById('new-cliente').value='';
-  document.getElementById('new-kg').value='1000';
-  document.getElementById('teo-preview').style.display='none';
+  ['n-num','n-notas'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('n-cliente').value='';
+  document.getElementById('teo-card').style.display='none';
   mTab('ops');
 }
-
 async function cerrarOP(id){
-  if(!confirm('¿Cerrar esta OP? No se podrán agregar más corridas.'))return;
+  if(!confirm('¿Cerrar esta OP?'))return;
   const op=data.ops.find(o=>o.id===id);
   if(op)op.estado='cerrada';
   await saveData();
-  openOP(id);
+  renderOpDetail();
 }
 
 /* ══ TABLET ══ */
-function tShowScreen(screen){
-  tScreen=screen;
-  ['pin','ops','carga','confirm'].forEach(s=>{
-    const el=document.getElementById('t-'+s);
-    if(el)el.style.display=s===screen?'':'none';
+function tShowScreen(s){
+  tScreen=s;
+  ['pin','ops','jornada','confirm'].forEach(x=>{
+    const e=document.getElementById('t-'+x);if(e)e.style.display=x===s?'':'none';
   });
 }
+function tLogout(){currentUser=null;pinBuffer='';updPinDots();tShowScreen('pin');}
+function tBackToOPs(){tShowScreen('ops');renderTOPs();}
 
+/* PIN */
 function initPIN(){
   const grid=document.getElementById('pin-grid');
-  const keys=['1','2','3','4','5','6','7','8','9','⌫','0','OK'];
-  grid.innerHTML=keys.map(k=>{
-    const cls=k==='OK'?'pin-key enter':k==='⌫'?'pin-key action':'pin-key';
-    return`<div class="${cls}" onclick="pinKey('${k}')">${k}</div>`;
-  }).join('');
+  ['1','2','3','4','5','6','7','8','9','⌫','0','✓'].forEach(k=>{
+    const d=document.createElement('div');
+    d.className='pkey'+(k==='✓'?' ok':k==='⌫'?' act':'');
+    d.textContent=k;d.onclick=()=>pinKey(k);
+    grid.appendChild(d);
+  });
 }
-
 function pinKey(k){
-  if(k==='⌫'){pinBuffer=pinBuffer.slice(0,-1);}
-  else if(k==='OK'){checkPIN();}
-  else if(pinBuffer.length<6){pinBuffer+=k;}
-  updatePINDisplay();
+  if(k==='⌫')pinBuffer=pinBuffer.slice(0,-1);
+  else if(k==='✓')checkPIN();
+  else if(pinBuffer.length<6)pinBuffer+=k;
+  updPinDots();
 }
-
-function updatePINDisplay(){
-  const d=document.getElementById('pin-display');
-  d.textContent=pinBuffer.split('').map(()=>'●').join('  ')||'·  ·  ·  ·';
+function updPinDots(){
+  document.getElementById('pin-dots').textContent=pinBuffer.split('').map(()=>'●').join('  ')||'·  ·  ·  ·';
 }
-
 function checkPIN(){
   const op=OPERARIOS[pinBuffer];
-  if(op){
-    currentUser={pin:pinBuffer,nombre:op};
-    pinBuffer='';
-    updatePINDisplay();
-    document.getElementById('pin-error').textContent='';
-    tShowScreen('ops');
-    renderTOPs();
+  if(op){currentUser={pin:pinBuffer,nombre:op};pinBuffer='';updPinDots();
+    document.getElementById('pin-err').textContent='';
     document.getElementById('t-username').textContent=op;
-  } else {
-    document.getElementById('pin-error').textContent='PIN incorrecto. Intentá de nuevo.';
-    pinBuffer='';
-    updatePINDisplay();
+    tShowScreen('ops');renderTOPs();
+  }else{
+    document.getElementById('pin-err').textContent='PIN incorrecto';
+    pinBuffer='';updPinDots();
   }
 }
-
-function tLogout(){currentUser=null;pinBuffer='';updatePINDisplay();tShowScreen('pin');}
 
 function renderTOPs(){
   const open=data.ops.filter(o=>o.estado==='abierta');
   const el=document.getElementById('t-op-list');
-  if(!open.length){el.innerHTML='<div class="empty">No hay OPs abiertas en este momento.</div>';return;}
+  if(!open.length){el.innerHTML='<div class="empty">No hay OPs abiertas.</div>';return;}
   el.innerHTML=open.map(op=>{
-    const real=calcReal(op.corridas||[]);
+    const real=calcRealForOP(op);
     const pct=op.kgPedidos>0?Math.min(real.kgFin/op.kgPedidos*100,100):0;
     return`<div class="t-op-item" onclick="selectOP('${op.id}')">
       <div class="t-op-id">${op.numero}</div>
       <div class="t-op-cliente">${op.cliente}</div>
-      <div class="t-op-meta">${op.kgPedidos} kg pedidos · ${op.corridas?.length||0} corrida(s)</div>
-      <div class="progress-bar" style="margin-top:8px;height:6px"><div class="progress-fill" style="width:${pct.toFixed(1)}%"></div></div>
-      <div class="progress-label">${real.kgFin.toFixed(0)} / ${op.kgPedidos} kg (${pct.toFixed(0)}%)</div>
+      <div class="t-op-meta">${op.kgPedidos} kg · ${op.jornadas?.length||0} jornada(s)</div>
+      <div class="pbar" style="margin-top:8px;height:6px"><div class="pfill" style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="plabel">${real.kgFin.toFixed(0)} / ${op.kgPedidos} kg (${pct.toFixed(0)}%)</div>
     </div>`;
   }).join('');
 }
@@ -909,266 +807,291 @@ function renderTOPs(){
 function selectOP(id){
   selectedOP=data.ops.find(o=>o.id===id);
   if(!selectedOP)return;
-  const nCorrida=(selectedOP.corridas?.length||0)+1;
-  document.getElementById('t-carga-titulo').textContent=selectedOP.numero+' — '+selectedOP.cliente;
-  document.getElementById('t-carga-sub').textContent=currentUser.nombre+' · '+new Date().toLocaleDateString('es-AR');
-  document.getElementById('t-corrida-num').textContent=nCorrida;
-  document.getElementById('t-corrida-badge').textContent='Corrida '+nCorrida;
+  const nJ=(selectedOP.jornadas?.length||0)+1;
+  document.getElementById('tj-titulo').textContent=selectedOP.numero+' — '+selectedOP.cliente;
+  document.getElementById('tj-sub').textContent=currentUser.nombre+' · '+new Date().toLocaleDateString('es-AR');
+  document.getElementById('tj-num').textContent=nJ;
+  // Auto-fill fecha e inicio
   const now=new Date();
-  document.getElementById('c-hora-ini').value=now.toTimeString().slice(0,5);
-  document.getElementById('c-hora-fin').value='';
-  const h=now.getHours();
-  document.getElementById('c-turno').value=h>=6&&h<14?'Mañana':h>=14&&h<22?'Tarde':'Noche';
-  petBobinas=[];peBobinas=[];
-  renderBobinas('pet');renderBobinas('pe');
-  ['c-fin','c-scrap-bruto','c-scrap-cono'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
-  const snd=document.getElementById('c-scrap-neto-display');if(snd)snd.textContent='0.0 kg';
-  document.getElementById('c-obs').value='';
-  document.getElementById('t-compar').style.display='none';
-  selectedObs=new Set();renderObsPresets();
-  updateResumenOP();
-  tShowScreen('carga');
+  document.getElementById('tj-fecha').value=now.toISOString().slice(0,10);
+  document.getElementById('tj-ini').value=now.toTimeString().slice(0,5);
+  document.getElementById('tj-fin').value='';
+  // Cono info
+  document.getElementById('tj-cono-info').textContent=`PET:${selectedOP.pesoCono_pet||0}kg·PE:${selectedOP.pesoCono_pe||0}kg`;
+  // Reset
+  petBobs=[];peBobs=[];
+  renderBobs('pet');renderBobs('pe');
+  ['tj-fin-val','tj-scrap-b'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  document.getElementById('tj-scrap-neto').textContent='0.0 kg';
+  document.getElementById('tj-compar').style.display='none';
+  document.getElementById('tj-obs').value='';
+  selectedObs=new Set();renderObsChips();
+  updateResumen();
+  tShowScreen('jornada');
 }
 
-function updateScrap(){
-  const bruto=parseFloat(document.getElementById('c-scrap-bruto').value)||0;
-  const cono =parseFloat(document.getElementById('c-scrap-cono').value)||0;
-  document.getElementById('c-scrap-neto-display').textContent=Math.max(0,bruto-cono).toFixed(1)+' kg';
-  updateTeoCompar();
-}
-
-function updateResumenOP(){
+/* ══ RESUMEN ACUMULADO ══ */
+function updateResumen(){
   if(!selectedOP)return;
-  const real=calcReal(selectedOP.corridas||[]);
+  const real=calcReal(selectedOP.jornadas||[]);
   const teo=selectedOP.teorico;
-  const kgPedidos=selectedOP.kgPedidos;
-  const pct=kgPedidos>0?Math.min(real.kgFin/kgPedidos*100,100):0;
-  document.getElementById('t-progress-fill').style.width=pct+'%';
-  document.getElementById('t-progress-label').textContent=`${real.kgFin.toFixed(0)} / ${kgPedidos} kg (${pct.toFixed(0)}%)`;
-  document.getElementById('t-teo-pet-corrida').textContent=(Math.max(0,teo.kgPET-real.kgPET)).toFixed(1)+' kg';
-  document.getElementById('t-teo-pe-corrida').textContent=(Math.max(0,teo.kgPE-real.kgPE)).toFixed(1)+' kg';
-  document.getElementById('t-teo-fin-corrida').textContent=(Math.max(0,kgPedidos-real.kgFin)).toFixed(1)+' kg';
+  const kg=selectedOP.kgPedidos;
+  const pct=kg>0?Math.min(real.kgFin/kg*100,100):0;
+  document.getElementById('t-pfill').style.width=pct+'%';
+  document.getElementById('t-plabel').textContent=`${real.kgFin.toFixed(0)} / ${kg} kg finales (${pct.toFixed(0)}%)`;
+
+  // Teórico restante para esta jornada
+  document.getElementById('tj-teo-pet').textContent=Math.max(0,teo.kgPET-real.kgPET).toFixed(1)+' kg';
+  document.getElementById('tj-teo-pe').textContent=Math.max(0,teo.kgPE-real.kgPE).toFixed(1)+' kg';
+  document.getElementById('tj-teo-fin').textContent=Math.max(0,kg-real.kgFin).toFixed(1)+' kg';
+
   const hasData=real.kgFin>0||real.kgPET>0;
-  const rows=[
-    {m:'Kg finales',teo:kgPedidos,real:real.kgFin,inv:true},
-    {m:'PET lámina',teo:teo.kgPET,real:real.kgPET,inv:false},
-    {m:'PE lámina',teo:teo.kgPE,real:real.kgPE,inv:false},
-    {m:'Scrap',teo:teo.kgScrap,real:real.kgScrap,inv:false},
+  const cells=[
+    {l:'Kg finales',teo:kg,real:real.kgFin,inv:true},
+    {l:'PET',teo:teo.kgPET,real:real.kgPET,inv:false},
+    {l:'PE',teo:teo.kgPE,real:real.kgPE,inv:false},
+    {l:'Scrap',teo:teo.kgScrap,real:real.kgScrap,inv:false},
   ];
-  document.getElementById('t-resumen-body').innerHTML=rows.map(r=>{
-    const d=r.real-r.teo;const p=r.teo>0?d/r.teo*100:0;
-    const ok=Math.abs(p)<3;const bad=r.inv?p<-3:p>5;
-    const cls=!hasData?'color:var(--txt3)':ok?'color:var(--green-tx)':bad?'color:var(--red-tx)':'color:var(--amber)';
-    return`<tr style="border-bottom:1px solid var(--bord)">
-      <td style="padding:7px 10px;font-size:13px;color:var(--txt2)">${r.m}</td>
-      <td style="padding:7px 10px;text-align:right;font-family:var(--mono);font-weight:600">${r.teo.toFixed(1)}</td>
-      <td style="padding:7px 10px;text-align:right;font-family:var(--mono);font-weight:600">${hasData?r.real.toFixed(1):'—'}</td>
-      <td style="padding:7px 10px;text-align:right;font-family:var(--mono);font-weight:700;${cls}">${hasData?(d>=0?'+':'')+d.toFixed(1):'—'}</td>
-    </tr>`;
+  document.getElementById('t-resumen').innerHTML=cells.map(c=>{
+    const d=c.real-c.teo,p=c.teo>0?d/c.teo*100:0;
+    const ok=Math.abs(p)<3,bad=c.inv?p<-3:p>5;
+    const dcls=!hasData?'var(--txt3)':ok?'var(--green)':bad?'var(--red)':'var(--amber)';
+    return`<div class="res-cell">
+      <div class="res-label">${c.l}</div>
+      <div class="res-teo">Teo: ${c.teo.toFixed(0)}</div>
+      <div class="res-real">${hasData?c.real.toFixed(1):'—'}</div>
+      <div class="res-dev" style="color:${dcls}">${hasData?(d>=0?'+':'')+d.toFixed(1):'—'}</div>
+    </div>`;
   }).join('');
 }
 
-function renderObsPresets(){
-  document.getElementById('obs-presets').innerHTML=OBS_PRESETS.map(o=>
-    `<div class="obs-chip${selectedObs.has(o)?' sel':''}" onclick="toggleObs('${o}')">${o}</div>`
-  ).join('');
+/* ══ BOBINAS ══ */
+function addBobina(tipo){
+  const arr=tipo==='pet'?petBobs:peBobs;
+  arr.push({numBobina:'',partida:'',kgNetos:0,metros:0,estado:null,pesoRestante:0});
+  renderBobs(tipo);
 }
-function toggleObs(o){selectedObs.has(o)?selectedObs.delete(o):selectedObs.add(o);renderObsPresets();}
-
-function stepKg(id,delta){
-  const e=document.getElementById(id);
-  if(!e)return;
-  e.value=Math.max(0,(parseFloat(e.value)||0)+delta);
-  if(id.includes('scrap'))updateScrap();else updateTeoCompar();
+function removeBobina(tipo,idx){
+  const arr=tipo==='pet'?petBobs:peBobs;
+  arr.splice(idx,1);renderBobs(tipo);updateCompar();
 }
 
-function updateTeoCompar(){
+// Key fix: update data without re-rendering the whole list
+function setBobField(tipo,idx,field,val){
+  const arr=tipo==='pet'?petBobs:peBobs;
+  if(!arr[idx])return;
+  if(['kgNetos','metros','pesoRestante'].includes(field))arr[idx][field]=Math.max(0,parseFloat(val)||0);
+  else arr[idx][field]=val;
+  // Only update the consumido display and totals — no full re-render
+  updBobCons(tipo,idx);
+  updBobTotals(tipo);
+  updateCompar();
+}
+function setBobEstado(tipo,idx,estado){
+  const arr=tipo==='pet'?petBobs:peBobs;
+  if(!arr[idx])return;
+  arr[idx].estado=estado;
+  // Full re-render needed for estado change (shows/hides parcial fields)
+  renderBobs(tipo);
+  updateCompar();
+}
+function updBobCons(tipo,idx){
+  const arr=tipo==='pet'?petBobs:peBobs;
+  const b=arr[idx];if(!b)return;
+  const cons=kgConsumido(b,tipo);
+  const el=document.getElementById(`bc-${tipo}-${idx}`);
+  if(el){
+    el.textContent=b.estado&&b.estado!=='bloqueada'?cons.toFixed(1)+' kg':'— kg';
+    const ac=tipo==='pet'?'var(--green)':'var(--blue)';
+    el.style.color=b.estado&&b.estado!=='bloqueada'?ac:'var(--txt3)';
+  }
+  // Also update parcial consumido note
+  if(b.estado==='parcial'){
+    const ne=document.getElementById(`bc-note-${tipo}-${idx}`);
+    const cono=tipo==='pet'?(selectedOP?.pesoCono_pet||0):(selectedOP?.pesoCono_pe||0);
+    if(ne)ne.textContent=`= ${b.kgNetos||0}kg − (${b.pesoRestante||0}kg − ${cono}kg cono)`;
+  }
+}
+function updBobTotals(tipo){
+  const arr=tipo==='pet'?petBobs:peBobs;
+  const total=totalKg(arr,tipo);
+  const emp=Math.max(0,arr.length-1);
+  document.getElementById(tipo+'-total').textContent=total.toFixed(1)+' kg';
+  document.getElementById(tipo+'-count').textContent=`${arr.length} bobina${arr.length!==1?'s':''}${emp?' · '+emp+' empalmada'+(emp>1?'s':''):''}`;
+}
+
+function renderBobs(tipo){
+  const arr=tipo==='pet'?petBobs:peBobs;
+  const el=document.getElementById(tipo+'-list');
+  if(!el)return;
+  const ac=tipo==='pet'?'var(--green)':'var(--blue)';
+  const headCls=tipo+'-head';const lblCls=tipo+'-lbl';
+  const emp=Math.max(0,arr.length-1);
+  el.innerHTML=arr.map((b,i)=>{
+    const cons=kgConsumido(b,tipo);
+    const borderCls=b.estado?b.estado:'';
+    const cono=tipo==='pet'?(selectedOP?.pesoCono_pet||0):(selectedOP?.pesoCono_pe||0);
+    return`<div class="bob-card ${borderCls}" id="bob-${tipo}-${i}">
+      <div class="bob-head ${headCls}">
+        <span class="bob-num-lbl ${lblCls}">${tipo.toUpperCase()} — Bobina ${i+1}</span>
+        ${emp>0&&i>0?`<span class="bob-emp">Empalmada</span>`:''}
+        <button class="bob-del" onclick="removeBobina('${tipo}',${i})">✕</button>
+      </div>
+      <div class="bob-fields">
+        <div class="bob-field">
+          <label>N° Bobina</label>
+          <input type="text" value="${b.numBobina||''}" placeholder="B-0042"
+            onchange="setBobField('${tipo}',${i},'numBobina',this.value)"/>
+        </div>
+        <div class="bob-field">
+          <label>N° Partida</label>
+          <input type="text" value="${b.partida||''}" placeholder="P-2026-04"
+            onchange="setBobField('${tipo}',${i},'partida',this.value)"/>
+        </div>
+        <div class="bob-field">
+          <label>Kg netos</label>
+          <input type="number" value="${b.kgNetos||''}" min="0" step="0.1" placeholder="0"
+            oninput="setBobField('${tipo}',${i},'kgNetos',this.value)"/>
+        </div>
+        <div class="bob-field">
+          <label>Metros</label>
+          <input type="number" value="${b.metros||''}" min="0" step="1" placeholder="0"
+            onchange="setBobField('${tipo}',${i},'metros',this.value)"/>
+        </div>
+      </div>
+      <div class="bob-estado">
+        <label>Estado de la bobina</label>
+        <div class="bob-estados">
+          ${BOB_ESTADOS.map(e=>`<button class="est-btn${b.estado===e.k?' '+e.cls:''}" onclick="setBobEstado('${tipo}',${i},'${e.k}')">${e.label}</button>`).join('')}
+        </div>
+      </div>
+      ${b.estado==='parcial'?`<div class="bob-parcial">
+        <div>
+          <label>Peso restante bruto (kg)</label>
+          <input type="number" value="${b.pesoRestante||''}" min="0" step="0.1" placeholder="0"
+            oninput="setBobField('${tipo}',${i},'pesoRestante',this.value)"/>
+        </div>
+        <div>
+          <label>Peso cono (de la OP)</label>
+          <input type="number" value="${cono}" readonly style="opacity:.6;cursor:default"/>
+        </div>
+        <div class="bob-cono-note" id="bc-note-${tipo}-${i}">= ${b.kgNetos||0}kg − (${b.pesoRestante||0}kg − ${cono}kg cono)</div>
+      </div>`:''}
+      <div class="bob-cons" style="background:${b.estado&&b.estado!=='bloqueada'?tipo==='pet'?'var(--green-bg)':'var(--blue-bg)':'var(--surf2)'}">
+        <span class="bob-cons-lbl">Consumido esta jornada</span>
+        <span class="bob-cons-val" id="bc-${tipo}-${i}" style="color:${b.estado&&b.estado!=='bloqueada'?ac:'var(--txt3)'}">${b.estado&&b.estado!=='bloqueada'?cons.toFixed(1)+' kg':'— kg'}</span>
+      </div>
+    </div>`;
+  }).join('');
+  updBobTotals(tipo);
+}
+
+/* ══ SCRAP ══ */
+function updateScrapNeto(){
+  const bruto=parseFloat(document.getElementById('tj-scrap-b').value)||0;
+  // El cono del scrap ya está descontado en las bobinas parciales, acá el bruto es solo tiras
+  document.getElementById('tj-scrap-neto').textContent=bruto.toFixed(1)+' kg';
+  updateCompar();
+}
+
+/* ══ COMPARACIÓN ══ */
+function updateCompar(){
   if(!selectedOP)return;
-  const pet=totalBobinas(petBobinas);
-  const pe=totalBobinas(peBobinas);
-  const fin=parseFloat(document.getElementById('c-fin').value)||0;
-  const bruto=parseFloat(document.getElementById('c-scrap-bruto')?.value)||0;
-  const cono=parseFloat(document.getElementById('c-scrap-cono')?.value)||0;
-  const scrap=Math.max(0,bruto-cono);
-  if(!pet&&!pe&&!fin){document.getElementById('t-compar').style.display='none';return;}
+  const pet=totalKg(petBobs,'pet');
+  const pe=totalKg(peBobs,'pe');
+  const fin=parseFloat(document.getElementById('tj-fin-val').value)||0;
+  const scrap=parseFloat(document.getElementById('tj-scrap-b').value)||0;
+  if(!pet&&!pe&&!fin){document.getElementById('tj-compar').style.display='none';return;}
+  const real=calcReal(selectedOP.jornadas||[]);
   const teo=selectedOP.teorico;
-  const real=calcReal(selectedOP.corridas||[]);
-  const accPET=real.kgPET+pet;const accPE=real.kgPE+pe;
-  const accFin=real.kgFin+fin;const accScrap=real.kgScrap+scrap;
-  const d=(a,t)=>{const v=a-t;const p=t>0?v/t*100:0;return{v,p};};
-  const dP=d(accPET,teo.kgPET);const dE=d(accPE,teo.kgPE);const dF=d(accFin,selectedOP.kgPedidos);
-  const clr=(ok,bad)=>ok?'color:var(--green-tx)':bad?'color:var(--red-tx)':'color:var(--amber)';
-  document.getElementById('t-compar').style.display='';
-  document.getElementById('t-compar').innerHTML=`
+  const aP=real.kgPET+pet,aE=real.kgPE+pe,aF=real.kgFin+fin,aS=real.kgScrap+scrap;
+  const d=(a,t)=>{const v=a-t,p=t>0?v/t*100:0;return{v,p};};
+  const dP=d(aP,teo.kgPET),dE=d(aE,teo.kgPE),dF=d(aF,selectedOP.kgPedidos);
+  const c=(ok,bad)=>ok?'var(--green)':bad?'var(--red)':'var(--amber)';
+  document.getElementById('tj-compar').style.display='';
+  document.getElementById('tj-compar').innerHTML=`
     <strong style="font-size:11px;color:var(--txt3);text-transform:uppercase">Acumulado al confirmar</strong><br>
-    PET: <strong>${accPET.toFixed(1)}</strong> kg &nbsp;<span style="${clr(Math.abs(dP.p)<3,dP.p>5)}">${dP.v>=0?'+':''}${dP.v.toFixed(1)} (${dP.p.toFixed(1)}%)</span><br>
-    PE: <strong>${accPE.toFixed(1)}</strong> kg &nbsp;<span style="${clr(Math.abs(dE.p)<3,dE.p>5)}">${dE.v>=0?'+':''}${dE.v.toFixed(1)} (${dE.p.toFixed(1)}%)</span><br>
-    Finales: <strong>${accFin.toFixed(1)}</strong>/${selectedOP.kgPedidos} kg &nbsp;<span style="${clr(dF.v>=0,dF.p<-5)}">${dF.v>=0?'+':''}${dF.v.toFixed(1)}</span><br>
-    Scrap: <strong>${accScrap.toFixed(1)}</strong> kg (teo: ${teo.kgScrap.toFixed(1)})
+    PET: <strong>${aP.toFixed(1)}</strong> kg &nbsp;<span style="color:${c(Math.abs(dP.p)<3,dP.p>5)}">${dP.v>=0?'+':''}${dP.v.toFixed(1)} (${dP.p.toFixed(1)}%)</span><br>
+    PE: <strong>${aE.toFixed(1)}</strong> kg &nbsp;<span style="color:${c(Math.abs(dE.p)<3,dE.p>5)}">${dE.v>=0?'+':''}${dE.v.toFixed(1)} (${dE.p.toFixed(1)}%)</span><br>
+    Finales: <strong>${aF.toFixed(1)}</strong> / ${selectedOP.kgPedidos} &nbsp;<span style="color:${c(dF.v>=0,dF.p<-5)}">${dF.v>=0?'+':''}${dF.v.toFixed(1)}</span><br>
+    Scrap acumulado: <strong>${aS.toFixed(1)}</strong> kg (teo: ${teo.kgScrap.toFixed(1)})
   `;
 }
 
-async function guardarCorrida(){
-  const kgPET=totalBobinas(petBobinas);
-  const kgPE=totalBobinas(peBobinas);
-  const kgFin=parseFloat(document.getElementById('c-fin').value)||0;
-  const bruto=parseFloat(document.getElementById('c-scrap-bruto').value)||0;
-  const cono=parseFloat(document.getElementById('c-scrap-cono').value)||0;
-  const kgScrap=Math.max(0,bruto-cono);
-  const turno=document.getElementById('c-turno').value;
-  const horaIni=document.getElementById('c-hora-ini').value;
-  const horaFin=document.getElementById('c-hora-fin').value;
+/* ══ OBS ══ */
+function renderObsChips(){
+  document.getElementById('obs-chips').innerHTML=OBS_OPTS.map(o=>
+    `<div class="obs-chip${selectedObs.has(o)?' sel':''}" onclick="toggleObs('${o}')">${o}</div>`
+  ).join('');
+}
+function toggleObs(o){selectedObs.has(o)?selectedObs.delete(o):selectedObs.add(o);renderObsChips();}
+
+/* ══ STEP BUTTONS ══ */
+function startStep(id,delta){
+  doStep(id,delta);
+  stepTimer=setTimeout(()=>{stepTimer=setInterval(()=>doStep(id,delta),80);},400);
+  document.addEventListener('pointerup',stopStep,{once:true});
+}
+function doStep(id,delta){
+  // For tj-fin → tj-fin-val
+  const realId=id==='tj-fin'?'tj-fin-val':id;
+  const e=document.getElementById(realId);
+  if(!e)return;
+  e.value=Math.max(0,(parseFloat(e.value)||0)+delta);
+  if(realId.includes('scrap'))updateScrapNeto();else updateCompar();
+}
+function stopStep(){if(stepTimer){clearTimeout(stepTimer);clearInterval(stepTimer);stepTimer=null;}}
+
+/* ══ GUARDAR JORNADA ══ */
+async function guardarJornada(){
+  const kgPET=totalKg(petBobs,'pet');
+  const kgPE=totalKg(peBobs,'pe');
+  const kgFin=parseFloat(document.getElementById('tj-fin-val').value)||0;
+  const kgScrap=parseFloat(document.getElementById('tj-scrap-b').value)||0;
+  const fecha=document.getElementById('tj-fecha').value;
+  const horaIni=document.getElementById('tj-ini').value;
+  const horaFin=document.getElementById('tj-fin').value;
   if(!kgPET&&!kgPE&&!kgFin){alert('Cargá al menos una bobina o los kg finales.');return;}
-  const sinDef=[...petBobinas,...peBobinas].filter(b=>b.usadaCompleta===null);
-  if(sinDef.length&&!confirm(`${sinDef.length} bobina(s) sin definir si fueron completas o parciales. ¿Confirmar igual?`))return;
+  if(!fecha){alert('Completá la fecha.');return;}
+  const sinEst=[...petBobs,...peBobs].filter(b=>!b.estado);
+  if(sinEst.length&&!confirm(`${sinEst.length} bobina(s) sin estado definido. ¿Confirmar igual?`))return;
   const obsArr=[...selectedObs];
-  const obsCustom=document.getElementById('c-obs').value.trim();
+  const obsCustom=document.getElementById('tj-obs').value.trim();
   if(obsCustom)obsArr.push(obsCustom);
-  const empPET=Math.max(0,petBobinas.length-1);
-  const empPE=Math.max(0,peBobinas.length-1);
+  const empPET=Math.max(0,petBobs.length-1),empPE=Math.max(0,peBobs.length-1);
   if(empPET>0)obsArr.unshift(`${empPET} empalmada${empPET>1?'s':''} PET`);
-  if(empPE>0)obsArr.unshift(`${empPE} empalmada${empPE>1?'s':''} PE`);
-  const corrida={
-    id:'corr_'+Date.now(),operario:currentUser.nombre,
-    fecha:new Date().toLocaleDateString('es-AR'),turno,horaIni,horaFin,
+  if(empPE >0)obsArr.unshift(`${empPE} empalmada${empPE>1?'s':''} PE`);
+  const horas=horasDiff(horaIni,horaFin);
+  const efStr=horas>0&&selectedOP.teorico.kgFinPorHora>0
+    ?` · Ef: ${((kgFin/horas)/selectedOP.teorico.kgFinPorHora*100).toFixed(0)}%`:'';
+  const jornada={
+    id:'j_'+Date.now(),operario:currentUser.nombre,fecha,horaIni,horaFin,horas,
     timestamp:new Date().toISOString(),
-    kgPET,kgPE,kgFin,kgScrap,scrapBruto:bruto,pesoCono:cono,
-    obs:obsArr.join(' · '),
-    bobinas_pet:petBobinas.map(b=>({...b})),
-    bobinas_pe:peBobinas.map(b=>({...b})),
+    kgPET,kgPE,kgFin,kgScrap,obs:obsArr.join(' · '),
+    bobinas_pet:petBobs.map(b=>({...b})),
+    bobinas_pe:peBobs.map(b=>({...b})),
     empalmadas_pet:empPET,empalmadas_pe:empPE
   };
-  if(!selectedOP.corridas)selectedOP.corridas=[];
-  selectedOP.corridas.push(corrida);
+  if(!selectedOP.jornadas)selectedOP.jornadas=[];
+  selectedOP.jornadas.push(jornada);
   await saveData();
-  const real=calcReal(selectedOP.corridas);
+  const real=calcReal(selectedOP.jornadas);
   document.getElementById('confirm-msg').innerHTML=
-    `<strong>Corrida ${selectedOP.corridas.length}</strong> · ${turno}${horaIni?' '+horaIni:''}${horaFin?'–'+horaFin:''}<br>
+    `<strong>${fecha} ${horaIni}${horaFin?'–'+horaFin:''}${efStr}</strong><br>
     PET: ${kgPET.toFixed(1)} kg · PE: ${kgPE.toFixed(1)} kg<br>
     Finales: ${kgFin} kg · Scrap: ${kgScrap.toFixed(1)} kg<br>
     <span style="color:var(--txt3)">Acumulado: ${real.kgFin.toFixed(0)} / ${selectedOP.kgPedidos} kg</span>`;
   tShowScreen('confirm');
 }
 
-/* ══ BOBINAS ══ */
-function addBobina(tipo){
-  const arr=tipo==='pet'?petBobinas:peBobinas;
-  arr.push({numBobina:'',partida:'',kgNetos:0,metros:0,usadaCompleta:null,pesoRestante:0,pesoCono:0});
-  renderBobinas(tipo);
-}
-function removeBobina(tipo,idx){
-  const arr=tipo==='pet'?petBobinas:peBobinas;
-  arr.splice(idx,1);renderBobinas(tipo);updateTeoCompar();
-}
-function updateBobinaField(tipo,idx,field,val){
-  const arr=tipo==='pet'?petBobinas:peBobinas;
-  if(!arr[idx])return;
-  if(['kgNetos','metros','pesoRestante','pesoCono'].includes(field))
-    arr[idx][field]=Math.max(0,parseFloat(val)||0);
-  else arr[idx][field]=val;
-  renderBobinas(tipo);updateTeoCompar();
-}
-function setBobinaUso(tipo,idx,completa){
-  const arr=tipo==='pet'?petBobinas:peBobinas;
-  if(arr[idx])arr[idx].usadaCompleta=completa;
-  renderBobinas(tipo);updateTeoCompar();
-}
-function kgConsumidoBobina(b){
-  if(b.usadaCompleta===true)return parseFloat(b.kgNetos)||0;
-  if(b.usadaCompleta===false){
-    const neto=parseFloat(b.kgNetos)||0;
-    const rest=parseFloat(b.pesoRestante)||0;
-    const cono=parseFloat(b.pesoCono)||0;
-    return Math.max(0,neto-(rest-cono));
-  }
-  return 0;
-}
-function totalBobinas(arr){return arr.reduce((s,b)=>s+kgConsumidoBobina(b),0);}
-
-function renderBobinas(tipo){
-  const arr=tipo==='pet'?petBobinas:peBobinas;
-  const listEl=document.getElementById(tipo+'-bobinas-list');
-  const totalEl=document.getElementById(tipo+'-total');
-  const countEl=document.getElementById(tipo+'-count');
-  const ac=tipo==='pet'?'#2E6B0E':'#1558A0';
-  const abg=tipo==='pet'?'var(--green-bg)':'var(--blue-bg)';
-  const total=totalBobinas(arr);
-  const emp=Math.max(0,arr.length-1);
-  const sinDef=arr.filter(b=>b.usadaCompleta===null).length;
-  if(totalEl)totalEl.textContent=total.toFixed(1)+' kg';
-  if(countEl)countEl.textContent=`${arr.length} bobina${arr.length!==1?'s':''}${emp?' · '+emp+' empalmada'+(emp>1?'s':''):''}${sinDef?' · ⚠ '+sinDef+' sin def':''}`;
-  if(!listEl)return;
-  if(!arr.length){listEl.innerHTML='';return;}
-  listEl.innerHTML=arr.map((b,i)=>{
-    const cons=kgConsumidoBobina(b);
-    const border=b.usadaCompleta===null?'var(--bord2)':b.usadaCompleta?ac:'var(--amber)';
-    return`<div style="background:var(--surf);border:2px solid ${border};border-radius:var(--r);overflow:hidden;margin-bottom:2px">
-      <div style="display:flex;align-items:center;gap:8px;padding:.5rem .75rem;background:${abg}">
-        <span style="font-size:13px;font-weight:700;color:${ac}">${tipo.toUpperCase()} — Bobina ${i+1}</span>
-        ${emp>0&&i>0?`<span style="font-size:11px;background:var(--amber-lt);color:var(--amber-dk);padding:1px 8px;border-radius:10px">Empalmada</span>`:''}
-        <button onclick="removeBobina('${tipo}',${i})" style="margin-left:auto;font-size:12px;padding:2px 8px;border:none;background:var(--red-bg);color:var(--red-tx);border-radius:4px;cursor:pointer">✕</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.625rem .75rem;border-bottom:1px solid var(--bord)">
-        ${['numBobina:N° Bobina:text:ej: B-0042','partida:N° Partida:text:ej: P-2026-04','kgNetos:Kg netos:number:0','metros:Metros:number:0'].map(cfg=>{
-          const[field,label,type,ph]=cfg.split(':');
-          const val=b[field]||'';
-          return`<div>
-            <div style="font-size:10px;font-weight:600;color:var(--txt3);text-transform:uppercase;margin-bottom:3px">${label}</div>
-            <input style="width:100%;font-size:15px;font-weight:600;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:7px 8px;background:var(--surf2);color:var(--txt);${type==='number'?'text-align:right;':''}outline:none"
-              type="${type}" value="${val}" ${type==='number'?'min="0" step="0.1"':''} placeholder="${ph}"
-              oninput="updateBobinaField('${tipo}',${i},'${field}',this.value)"/>
-          </div>`;
-        }).join('')}
-      </div>
-      <div style="padding:.625rem .75rem;border-bottom:1px solid var(--bord)">
-        <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;margin-bottom:6px">¿Se usó completa?</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-          <button onclick="setBobinaUso('${tipo}',${i},true)"
-            style="padding:12px 8px;font-size:14px;font-weight:700;border-radius:var(--r);border:2px solid ${b.usadaCompleta===true?ac:'var(--bord2)'};background:${b.usadaCompleta===true?abg:'var(--surf2)'};color:${b.usadaCompleta===true?ac:'var(--txt2)'};cursor:pointer">
-            ✓ Sí, completa
-          </button>
-          <button onclick="setBobinaUso('${tipo}',${i},false)"
-            style="padding:12px 8px;font-size:14px;font-weight:700;border-radius:var(--r);border:2px solid ${b.usadaCompleta===false?'var(--amber)':'var(--bord2)'};background:${b.usadaCompleta===false?'var(--amber-lt)':'var(--surf2)'};color:${b.usadaCompleta===false?'var(--amber-dk)':'var(--txt2)'};cursor:pointer">
-            ✗ Parcial — pesé resto
-          </button>
-        </div>
-      </div>
-      ${b.usadaCompleta===false?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.625rem .75rem;background:var(--amber-lt);border-bottom:1px solid var(--bord)">
-        <div>
-          <div style="font-size:10px;font-weight:600;color:var(--amber-dk);text-transform:uppercase;margin-bottom:3px">Peso restante bruto (kg)</div>
-          <input style="width:100%;font-size:15px;font-weight:600;border:1.5px solid var(--amber);border-radius:var(--rs);padding:7px 8px;background:var(--surf);color:var(--txt);text-align:right;outline:none"
-            type="number" value="${b.pesoRestante||''}" min="0" step="0.1" placeholder="0"
-            oninput="updateBobinaField('${tipo}',${i},'pesoRestante',this.value)"/>
-        </div>
-        <div>
-          <div style="font-size:10px;font-weight:600;color:var(--amber-dk);text-transform:uppercase;margin-bottom:3px">Peso del cono (kg)</div>
-          <input style="width:100%;font-size:15px;font-weight:600;border:1.5px solid var(--amber);border-radius:var(--rs);padding:7px 8px;background:var(--surf);color:var(--txt);text-align:right;outline:none"
-            type="number" value="${b.pesoCono||''}" min="0" step="0.1" placeholder="0"
-            oninput="updateBobinaField('${tipo}',${i},'pesoCono',this.value)"/>
-        </div>
-      </div>`:''}
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;background:${b.usadaCompleta!==null?abg:'var(--surf2)'}">
-        <span style="font-size:13px;color:${ac};font-weight:500">Consumido esta corrida</span>
-        <span style="font-size:20px;font-weight:700;font-family:var(--mono);color:${b.usadaCompleta!==null?ac:'var(--txt3)'}">${b.usadaCompleta!==null?cons.toFixed(1):'—'} kg</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function tVolverOPs(){
-  tShowScreen('ops');
-  renderTOPs();
-}
-
 /* ══ INIT ══ */
 async function init(){
   await loadData();
-  initNuevaOP();
   initPIN();
-  renderDashboard();
-  switchView('manager');
+  renderDash();
+  setFilter('all');
+  switchView('mgr');
 }
-
 init();
 </script>
 </body>
