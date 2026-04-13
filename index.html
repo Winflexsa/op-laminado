@@ -402,7 +402,19 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
         <span class="t-block-icon">📅</span>
         <span class="t-block-title">Fecha y horario</span>
       </div>
-      <div class="fecha-grid">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:.875rem 1rem;background:var(--surf2)">
+        <div class="fecha-field" style="grid-column:span 3">
+          <label>Operario</label>
+          <select id="tj-operario" style="width:100%;font-size:16px;font-weight:700;border:2px solid var(--bord2);border-radius:8px;padding:10px 8px;background:var(--surf);color:var(--txt);outline:none;-webkit-appearance:none">
+            <option value="">— seleccioná —</option>
+            <option value="Alejandro Deleleis">Alejandro Deleleis</option>
+            <option value="Juan Vera">Juan Vera</option>
+            <option value="Antonio Zayas">Antonio Zayas</option>
+            <option value="Alan Vera">Alan Vera</option>
+            <option value="Juan Brest">Juan Brest</option>
+            <option value="Jonathan">Jonathan</option>
+          </select>
+        </div>
         <div class="fecha-field">
           <label>Fecha</label>
           <input type="date" id="tj-fecha"/>
@@ -572,7 +584,7 @@ const API_KEY='$2a$10$8p4t41BnTv.9Ls.4kFLhouDMqJGQEd5LQlBYEz8n1y6nH/3dFq27G';
 let BIN_ID=localStorage.getItem('op_lam_bin_v2')||'';
 const DENS_PET=1.35,DENS_PE=0.92,PROD_LAM=110;
 
-const OPERARIOS={'1111':'Gabriel Luna','2222':'Alan Vera','3333':'Luis Garbia','4444':'Antonio Zayas','3080':'Jonathan','1540':'Matías'};
+const OPERARIOS={'1111':'Alejandro Deleleis','2222':'Juan Vera','3333':'Antonio Zayas','4444':'Alan Vera','5555':'Juan Brest','3080':'Jonathan','1540':'Matías'};
 
 const OBS_OPTS=['Rotura PET','Rotura PE','Bobina bloqueada','Problema adhesivo','Desalineación','Arranque largo','Bobina corta','Todo normal'];
 
@@ -1042,6 +1054,9 @@ function selectOP(id){
   set('tj-fecha',now.toISOString().slice(0,10),'value');
   set('tj-ini',now.toTimeString().slice(0,5),'value');
   set('tj-fin','','value');
+  // Pre-select operario from logged-in user
+  const opSel=document.getElementById('tj-operario');
+  if(opSel&&currentUser){opSel.value=currentUser.nombre;}
   // Bobinas salida info
   const teoJ=selectedOP.teorico;
   const tjBobInfo=document.getElementById('tj-teo-bobs-info');
@@ -1472,6 +1487,7 @@ function stopStep(){if(stepTimer){clearTimeout(stepTimer);clearInterval(stepTime
 
 /* ══ GUARDAR JORNADA ══ */
 async function guardarJornada(){
+  const oparioSel=document.getElementById('tj-operario')?.value||currentUser.nombre;
   const kgPET=totalKg(petBobs,'pet');
   const kgPE=totalKg(peBobs,'pe');
   const kgFin=outBobs.reduce((s,b)=>s+(parseFloat(b.kg)||0),0);
@@ -1493,7 +1509,7 @@ async function guardarJornada(){
   const efStr=horas>0&&selectedOP.teorico.kgFinPorHora>0
     ?` · Ef: ${((kgFin/horas)/selectedOP.teorico.kgFinPorHora*100).toFixed(0)}%`:'';
   const jornada={
-    id:'j_'+Date.now(),operario:currentUser.nombre,fecha,horaIni,horaFin,horas,
+    id:'j_'+Date.now(),operario:oparioSel,fecha,horaIni,horaFin,horas,
     timestamp:new Date().toISOString(),
     kgPET,kgPE,kgFin,kgScrap,obs:obsArr.join(' · '),
     bobinas_pet:petBobs.map(b=>({...b})),
@@ -1589,18 +1605,22 @@ function renderAnalisis(){
 function teoDesvPct(real,teo){return teo>0?(real-teo)/teo*100:0;}
 
 function exportarAnalisis(){
-  const rows=['OP,Cliente,Estado,KgPedidos,KgFinales,Avance%,PET real,PET teo,PET Δ%,PE real,PE teo,PE Δ%,Scrap real,Scrap teo,Eficiencia%,Horas'];
+  const SEP=';';
+  const rows=[['OP','Cliente','Estado','Kg Pedidos','Kg Finales','Avance%','PET real','PET teo','PET desvio%','PE real','PE teo','PE desvio%','Scrap real','Scrap teo','Eficiencia%','Horas'].join(SEP)];
   data.ops.filter(o=>(o.jornadas?.length||0)>0).forEach(op=>{
     const real=calcRealForOP(op);
     const t=op.teorico;
-    rows.push([op.numero,'"'+op.cliente+'"',op.estado,op.kgPedidos,real.kgFin.toFixed(1),
-      (real.kgFin/op.kgPedidos*100).toFixed(1),
-      real.kgPET.toFixed(1),t.kgPET.toFixed(1),teoDesvPct(real.kgPET,t.kgPET).toFixed(1),
-      real.kgPE.toFixed(1),t.kgPE.toFixed(1),teoDesvPct(real.kgPE,t.kgPE).toFixed(1),
-      real.kgScrap.toFixed(1),t.kgScrap.toFixed(1),
-      real.eficiencia!=null?real.eficiencia.toFixed(0):'',real.horas.toFixed(1)].join(','));
+    rows.push([op.numero,'"'+op.cliente+'"',op.estado,op.kgPedidos,
+      real.kgFin.toFixed(1).replace('.',','),
+      (real.kgFin/op.kgPedidos*100).toFixed(1).replace('.',','),
+      real.kgPET.toFixed(1).replace('.',','),t.kgPET.toFixed(1).replace('.',','),teoDesvPct(real.kgPET,t.kgPET).toFixed(1).replace('.',','),
+      real.kgPE.toFixed(1).replace('.',','),t.kgPE.toFixed(1).replace('.',','),teoDesvPct(real.kgPE,t.kgPE).toFixed(1).replace('.',','),
+      real.kgScrap.toFixed(1).replace('.',','),t.kgScrap.toFixed(1).replace('.',','),
+      real.eficiencia!=null?real.eficiencia.toFixed(0):'',
+      real.horas.toFixed(1).replace('.',',')].join(SEP));
   });
-  const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const BOM='﻿';
+  const blob=new Blob([BOM+rows.join('\r\n')],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download='winflex-analisis-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
@@ -1609,23 +1629,32 @@ function exportarOP(id){
   const op=data.ops.find(o=>o.id===id);if(!op)return;
   const real=calcRealForOP(op);
   const t=op.teorico;
-  const rows=['Campo,Teórico,Real,Desvío'];
-  rows.push(`kg finales,${op.kgPedidos},${real.kgFin.toFixed(1)},${(real.kgFin-op.kgPedidos).toFixed(1)}`);
-  rows.push(`PET lámina,${t.kgPET.toFixed(1)},${real.kgPET.toFixed(1)},${(real.kgPET-t.kgPET).toFixed(1)}`);
-  rows.push(`PE lámina,${t.kgPE.toFixed(1)},${real.kgPE.toFixed(1)},${(real.kgPE-t.kgPE).toFixed(1)}`);
-  rows.push(`Scrap,${t.kgScrap.toFixed(1)},${real.kgScrap.toFixed(1)},${(real.kgScrap-t.kgScrap).toFixed(1)}`);
-  rows.push(`Horas,${t.tiempoTotal.toFixed(1)},${real.horas.toFixed(1)},${(real.horas-t.tiempoTotal).toFixed(1)}`);
-  rows.push(`Eficiencia,${t.kgFinPorHora.toFixed(1)} kg/h,${real.eficiencia!=null?real.eficiencia.toFixed(0)+'%':'—'},`);
-  rows.push('');
-  rows.push('JORNADAS');
-  rows.push('Fecha,Operario,Turno ini,Turno fin,Horas,PET,PE,Finales,Scrap,Eficiencia%,Obs');
+  const SEP=';';
+  const n=v=>String(v).replace('.',',');
+  const rows=[
+    ['OP Laminado — Informe',op.numero,'',''].join(SEP),
+    ['Cliente',op.cliente,'',''].join(SEP),
+    ['Fecha',op.fecha,'Estado',op.estado].join(SEP),
+    ['','','',''].join(SEP),
+    ['Campo','Teorico','Real','Desvio'].join(SEP),
+    ['Kg finales pedidos',n(op.kgPedidos),n(real.kgFin.toFixed(1)),n((real.kgFin-op.kgPedidos).toFixed(1))].join(SEP),
+    ['PET lamina (kg)',n(t.kgPET.toFixed(1)),n(real.kgPET.toFixed(1)),n((real.kgPET-t.kgPET).toFixed(1))].join(SEP),
+    ['PE lamina (kg)',n(t.kgPE.toFixed(1)),n(real.kgPE.toFixed(1)),n((real.kgPE-t.kgPE).toFixed(1))].join(SEP),
+    ['Scrap (kg)',n(t.kgScrap.toFixed(1)),n(real.kgScrap.toFixed(1)),n((real.kgScrap-t.kgScrap).toFixed(1))].join(SEP),
+    ['Horas',n(t.tiempoTotal.toFixed(1)),n(real.horas.toFixed(1)),n((real.horas-t.tiempoTotal).toFixed(1))].join(SEP),
+    ['Eficiencia',n(t.kgFinPorHora.toFixed(1))+' kg/h',real.eficiencia!=null?n(real.eficiencia.toFixed(0))+'%':'—',''].join(SEP),
+    ['','','',''].join(SEP),
+    ['JORNADAS','','','','','','','','','',''].join(SEP),
+    ['Fecha','Operario','Ini','Fin','Horas','PET','PE','Finales','Scrap','Eficiencia%','Obs'].join(SEP),
+  ];
   (op.jornadas||[]).forEach(j=>{
-    const ef=j.horas>0&&t.kgFinPorHora>0?((j.kgFin/j.horas)/t.kgFinPorHora*100).toFixed(0):'';
-    rows.push([j.fecha||'','"'+(j.operario||'')+'"',j.horaIni||'',j.horaFin||'',
-      (j.horas||0).toFixed(1),(j.kgPET||0).toFixed(1),(j.kgPE||0).toFixed(1),
-      j.kgFin||0,(j.kgScrap||0).toFixed(1),ef,'"'+(j.obs||'')+'"'].join(','));
+    const ef=j.horas>0&&t.kgFinPorHora>0?n(((j.kgFin/j.horas)/t.kgFinPorHora*100).toFixed(0)):'';
+    rows.push([j.fecha||'',j.operario||'',j.horaIni||'',j.horaFin||'',
+      n((j.horas||0).toFixed(1)),n((j.kgPET||0).toFixed(1)),n((j.kgPE||0).toFixed(1)),
+      n(j.kgFin||0),n((j.kgScrap||0).toFixed(1)),ef,'"'+(j.obs||'')+'"'].join(SEP));
   });
-  const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const BOM='﻿';
+  const blob=new Blob([BOM+rows.join('\r\n')],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download='winflex-op-'+op.numero+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
