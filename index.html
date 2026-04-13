@@ -407,7 +407,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
           <label>Operario</label>
           <select id="tj-operario" style="width:100%;font-size:16px;font-weight:700;border:2px solid var(--bord2);border-radius:8px;padding:10px 8px;background:var(--surf);color:var(--txt);outline:none;-webkit-appearance:none">
             <option value="">— seleccioná —</option>
-            <option value="Alejandro Deleleis">Alejandro Deleleis</option>
+            <option value="Alejandro Delelis">Alejandro Delelis</option>
             <option value="Juan Vera">Juan Vera</option>
             <option value="Antonio Zayas">Antonio Zayas</option>
             <option value="Alan Vera">Alan Vera</option>
@@ -559,6 +559,18 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
       </div>
     </div>
 
+    <!-- STATUS BAR -->
+    <div id="t-status-bar" style="display:none;background:var(--surf);border:2px solid var(--bord2);border-radius:10px;padding:.875rem 1rem;margin-bottom:.75rem">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="t-status-icon" style="font-size:20px">💾</div>
+        <div style="flex:1">
+          <div id="t-status-msg" style="font-size:14px;font-weight:700">Cambios sin guardar</div>
+          <div id="t-status-sub" style="font-size:11px;color:var(--txt3)">Confirmá la jornada para guardar</div>
+        </div>
+        <button onclick="resetJornada()" style="padding:8px 14px;border:2px solid var(--red);background:transparent;color:var(--red);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">✕ Descartar</button>
+      </div>
+    </div>
+
     <button class="confirm-jornada-btn" onclick="guardarJornada()">
       ✓ &nbsp; Confirmar jornada
     </button>
@@ -584,7 +596,7 @@ const API_KEY='$2a$10$8p4t41BnTv.9Ls.4kFLhouDMqJGQEd5LQlBYEz8n1y6nH/3dFq27G';
 let BIN_ID=localStorage.getItem('op_lam_bin_v2')||'';
 const DENS_PET=1.35,DENS_PE=0.92,PROD_LAM=110;
 
-const OPERARIOS={'1111':'Alejandro Deleleis','2222':'Juan Vera','3333':'Antonio Zayas','4444':'Alan Vera','5555':'Juan Brest','3080':'Jonathan','1540':'Matías'};
+const OPERARIOS={'1111':'Alejandro Delelis','2222':'Juan Vera','3333':'Antonio Zayas','4444':'Alan Vera','5555':'Juan Brest','3080':'Jonathan','1540':'Matías'};
 
 const OBS_OPTS=['Rotura PET','Rotura PE','Bobina bloqueada','Problema adhesivo','Desalineación','Arranque largo','Bobina corta','Todo normal'];
 
@@ -1246,7 +1258,6 @@ function renderBobCard(b,i,tipo,emp){
   html+='<div class="bob-field"><label>Kg netos</label><input type="number" data-tipo="'+tipo+'" data-idx="'+i+'" data-field="kgNetos" value="'+escVal(b.kgNetos)+'" min="0" step="0.1" placeholder="0"/></div>';
   html+='<div class="bob-field"><label>Metros</label><input type="number" data-tipo="'+tipo+'" data-idx="'+i+'" data-field="metros" value="'+escVal(b.metros)+'" min="0" step="1" placeholder="0"/></div>';
   html+='</div>';
-  html+='</div>';
   // ESTADO
   html+='<div class="bob-estado-wrap"><div class="bob-estado-lbl">Estado de la bobina</div><div class="bob-estados">'+renderEstadoBtns(b,tipo,i)+'</div></div>';
   // PARCIAL
@@ -1278,6 +1289,7 @@ function renderBobs(tipo){
   const emp=Math.max(0,arr.length-1);
   el.innerHTML=arr.map((b,i)=>renderBobCard(b,i,tipo,emp)).join('');
   updBobTotals(tipo);
+  if(arr.length)showStatusBar();
 }
 
 /* ══ SCRAP ══ */
@@ -1327,6 +1339,7 @@ function updateCompar(){
   const dP=d(aP,teo.kgPET),dE=d(aE,teo.kgPE),dF=d(aF,selectedOP.kgPedidos);
   const c=(ok,bad)=>ok?'var(--green)':bad?'var(--red)':'var(--amber)';
   document.getElementById('tj-compar').style.display='';
+  showStatusBar();
   document.getElementById('tj-compar').innerHTML=`
     <strong style="font-size:11px;color:var(--txt3);text-transform:uppercase">Acumulado al confirmar</strong><br>
     PET: <strong>${aP.toFixed(1)}</strong> kg &nbsp;<span style="color:${c(Math.abs(dP.p)<3,dP.p>5)}">${dP.v>=0?'+':''}${dP.v.toFixed(1)} (${dP.p.toFixed(1)}%)</span><br>
@@ -1542,6 +1555,26 @@ function doStep(id,delta){
 function stopStep(){if(stepTimer){clearTimeout(stepTimer);clearInterval(stepTimer);stepTimer=null;}}
 
 /* ══ GUARDAR JORNADA ══ */
+function showStatusBar(){
+  const bar=document.getElementById('t-status-bar');
+  if(bar)bar.style.display='';
+}
+function hideStatusBar(){
+  const bar=document.getElementById('t-status-bar');
+  if(bar)bar.style.display='none';
+}
+function resetJornada(){
+  if(!confirm('¿Descartás los datos de esta jornada?'))return;
+  petBobs=[];peBobs=[];outBobs=[];
+  renderBobs('pet');renderBobs('pe');renderOutBobs();
+  ['tj-scrap-b','tj-tiras'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  updateScrapDesglose();
+  const tc=document.getElementById('tj-compar');if(tc)tc.style.display='none';
+  const to=document.getElementById('tj-obs');if(to)to.value='';
+  selectedObs=new Set();renderObsChips();
+  hideStatusBar();
+}
+
 async function guardarJornada(){
   const oparioSel=document.getElementById('tj-operario')?.value||currentUser.nombre;
   const kgPET=totalKg(petBobs,'pet');
@@ -1582,6 +1615,7 @@ async function guardarJornada(){
     PET: ${kgPET.toFixed(1)} kg · PE: ${kgPE.toFixed(1)} kg<br>
     Finales: ${kgFin} kg · Scrap: ${kgScrap.toFixed(1)} kg<br>
     <span style="color:var(--txt3)">Acumulado: ${real.kgFin.toFixed(0)} / ${selectedOP.kgPedidos} kg</span>`;
+  hideStatusBar();
   tShowScreen('confirm');
 }
 
