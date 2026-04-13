@@ -263,13 +263,16 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 <div class="page">
   <div class="tabs">
     <button class="tab on" id="mtab-ops" onclick="mTab('ops')">📋 Órdenes</button>
+    <button class="tab" id="mtab-analisis" onclick="mTab('analisis')">📈 Análisis</button>
     <button class="tab" id="mtab-nueva" onclick="mTab('nueva')">＋ Nueva OP</button>
   </div>
 
   <!-- Lista OPs -->
   <div id="m-ops">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem">
-      <span style="font-size:13px;color:var(--txt2)" id="ops-summary">—</span>
+    <!-- KPI bar -->
+    <div id="m-kpi-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem;gap:8px;flex-wrap:wrap">
+      <span style="font-size:13px;color:var(--txt2);font-weight:500" id="ops-summary">—</span>
       <div style="display:flex;gap:5px">
         <button class="btn sm" id="f-all" onclick="setFilter('all')">Todas</button>
         <button class="btn sm" id="f-open" onclick="setFilter('open')">Abiertas</button>
@@ -277,6 +280,11 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
       </div>
     </div>
     <div id="op-list"></div>
+  </div>
+
+  <!-- Análisis -->
+  <div id="m-analisis" style="display:none">
+    <div id="analisis-content"></div>
   </div>
 
   <!-- Nueva OP -->
@@ -719,9 +727,10 @@ function switchView(v){
 
 /* ══ MANAGER ══ */
 function mTab(t){
-  ['ops','nueva','detail'].forEach(x=>{const e=document.getElementById('m-'+x);if(e)e.style.display=x===t?'':'none';});
-  ['ops','nueva'].forEach(x=>{const e=document.getElementById('mtab-'+x);if(e)e.className='tab'+(x===t?' on':'');});
+  ['ops','analisis','nueva','detail'].forEach(x=>{const e=document.getElementById('m-'+x);if(e)e.style.display=x===t?'':'none';});
+  ['ops','analisis','nueva'].forEach(x=>{const e=document.getElementById('mtab-'+x);if(e)e.className='tab'+(x===t?' on':'');});
   if(t==='ops')renderDash();
+  if(t==='analisis'){renderAnalisis();}
   if(t==='nueva'){
     document.getElementById('n-fecha').value=new Date().toISOString().slice(0,10);
     document.getElementById('teo-card').style.display='none';
@@ -745,23 +754,54 @@ function renderDash(){
   if(filterMode==='open')ops=ops.filter(o=>o.estado==='abierta');
   if(filterMode==='closed')ops=ops.filter(o=>o.estado==='cerrada');
   ops.sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const allReal=data.ops.map(o=>({op:o,r:calcRealForOP(o)}));
   const open=data.ops.filter(o=>o.estado==='abierta').length;
-  document.getElementById('ops-summary').textContent=`${data.ops.length} OPs · ${open} abiertas`;
+  const closed=data.ops.filter(o=>o.estado==='cerrada').length;
+  const totalKgFin=allReal.reduce((s,x)=>s+x.r.kgFin,0);
+  const eficiencias=allReal.filter(x=>x.r.eficiencia!=null).map(x=>x.r.eficiencia);
+  const efProm=eficiencias.length?eficiencias.reduce((a,b)=>a+b,0)/eficiencias.length:null;
+  // KPI bar
+  const kpiBar=document.getElementById('m-kpi-bar');
+  if(kpiBar)kpiBar.innerHTML=[
+    {l:'OPs abiertas',v:open,u:'',c:'var(--green)'},
+    {l:'OPs cerradas',v:closed,u:'',c:'var(--txt3)'},
+    {l:'Kg producidos',v:totalKgFin.toFixed(0),u:'kg',c:'var(--amber)'},
+    {l:'Ef. promedio',v:efProm!=null?efProm.toFixed(0)+'%':'—',u:'',c:efProm>=90?'var(--green)':efProm>=75?'var(--amber)':'var(--red)'},
+  ].map(k=>`<div style="background:var(--surf);border:1px solid var(--bord);border-radius:8px;padding:.75rem 1rem;border-top:3px solid ${k.c}">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:4px">${k.l}</div>
+    <div style="font-size:22px;font-weight:800;font-family:var(--mono);color:${k.c}">${k.v}${k.u}</div>
+  </div>`).join('');
+  document.getElementById('ops-summary').textContent=`${ops.length} orden${ops.length!==1?'es':''} mostrada${ops.length!==1?'s':''}`;
   const el=document.getElementById('op-list');
-  if(!ops.length){el.innerHTML='<div class="empty">No hay OPs todavía.</div>';return;}
+  if(!ops.length){el.innerHTML='<div class="empty">No hay OPs en esta vista.</div>';return;}
   el.innerHTML=ops.map(op=>{
     const real=calcRealForOP(op);
     const pct=op.kgPedidos>0?Math.min(real.kgFin/op.kgPedidos*100,100):0;
-    const efStr=real.eficiencia!=null?` · Ef: ${real.eficiencia.toFixed(0)}%`:'';
-    return`<div class="op-item" onclick="openOP('${op.id}')">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-        <span style="font-family:var(--mono);font-size:12px;color:var(--amber);font-weight:700">${op.numero}</span>
-        <span style="font-size:14px;font-weight:600;flex:1">${op.cliente}</span>
-        <span class="badge ${op.estado==='abierta'?'open':'closed'}">${op.estado}</span>
+    const ef=real.eficiencia;
+    const efC=ef==null?'var(--txt3)':ef>=90?'var(--green)':ef>=75?'var(--amber)':'var(--red)';
+    const bc=op.estado==='abierta'?'var(--green)':'var(--bord2)';
+    return`<div class="op-item" onclick="openOP('${op.id}')" style="border-left:4px solid ${bc}">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-family:var(--mono);font-size:11px;color:var(--amber);font-weight:800;background:var(--amber-lt);padding:1px 7px;border-radius:4px">${op.numero}</span>
+            <span class="badge ${op.estado==='abierta'?'open':'closed'}">${op.estado}</span>
+          </div>
+          <div style="font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${op.cliente}</div>
+          <div style="font-size:12px;color:var(--txt3);margin-top:2px">${op.fecha} · ${op.kgPedidos} kg pedidos · ${op.jornadas?.length||0} jornada${(op.jornadas?.length||0)!==1?'s':''}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:18px;font-weight:800;font-family:var(--mono)">${pct.toFixed(0)}<span style="font-size:12px;font-weight:600">%</span></div>
+          ${ef!=null?`<div style="font-size:11px;font-weight:700;color:${efC}">Ef: ${ef.toFixed(0)}%</div>`:'<div style="font-size:11px;color:var(--txt3)">Sin datos</div>'}
+        </div>
       </div>
-      <div style="font-size:12px;color:var(--txt3)">${op.fecha} · ${op.kgPedidos} kg · ${op.jornadas?.length||0} jornada(s)${efStr}</div>
-      <div class="pbar"><div class="pfill" style="width:${pct.toFixed(1)}%"></div></div>
-      <div class="plabel">${real.kgFin.toFixed(0)} / ${op.kgPedidos} kg (${pct.toFixed(0)}%)</div>
+      <div style="margin-top:8px">
+        <div class="pbar" style="height:6px"><div class="pfill" style="width:${pct.toFixed(1)}%;background:${op.estado==='abierta'?'var(--green)':'var(--txt3)'}"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:3px">
+          <span class="plabel">${real.kgFin.toFixed(0)} / ${op.kgPedidos} kg finales</span>
+          <span class="plabel">PET: ${real.kgPET.toFixed(0)}kg · PE: ${real.kgPE.toFixed(0)}kg</span>
+        </div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -1312,7 +1352,18 @@ function showTeoModal(campo){
   if(!_lastTeo)return;
   const t=_lastTeo,m={};
   const f=(v,d=4)=>typeof v==='number'?v.toFixed(d):v;
-  const s=t._specs;
+  // Reconstruct _specs if missing (old OPs saved before _specs was added)
+  let s=t._specs;
+  if(!s&&selectedOP?.specs){
+    const sp=selectedOP.specs;
+    const pbPET=sp.aPET*sp.ePET*DENS_PET/1e6;
+    const pbPE =sp.aPE *sp.ePE *DENS_PE /1e6;
+    const pp=sp.nT*sp.af*(sp.ePET*DENS_PET+sp.ePE*DENS_PE)/1e6;
+    s={aPET:sp.aPET,ePET:sp.ePET,aPE:sp.aPE,ePE:sp.ePE,af:sp.af,nT:sp.nT,
+       pbPET,pbPE,pb:pbPET+pbPE,pp,factor:1+(selectedOP.merma||2)/100};
+    t._specs=s; // cache
+  }
+  if(!s){alert('No hay datos de especificaciones para esta OP.');return;}
   if(campo==='pet'){
     m.title='PET lámina necesaria';
     m.body=`Metros de corrida × peso PET por metro
@@ -1460,6 +1511,123 @@ async function guardarJornada(){
     Finales: ${kgFin} kg · Scrap: ${kgScrap.toFixed(1)} kg<br>
     <span style="color:var(--txt3)">Acumulado: ${real.kgFin.toFixed(0)} / ${selectedOP.kgPedidos} kg</span>`;
   tShowScreen('confirm');
+}
+
+/* ══ ANÁLISIS ══ */
+function renderAnalisis(){
+  const closed=data.ops.filter(o=>o.estado==='cerrada'&&(o.jornadas?.length||0)>0);
+  const all=data.ops.filter(o=>(o.jornadas?.length||0)>0);
+  const el=document.getElementById('analisis-content');
+  if(!el)return;
+  if(!all.length){el.innerHTML='<div class="empty">Sin datos todavía — completá al menos una jornada.</div>';return;}
+  // Compute metrics per OP
+  const rows=all.map(op=>{
+    const real=calcRealForOP(op);
+    const pct=op.kgPedidos>0?real.kgFin/op.kgPedidos*100:0;
+    const dPET=teoDesvPct(real.kgPET,op.teorico.kgPET);
+    const dPE=teoDesvPct(real.kgPE,op.teorico.kgPE);
+    const dFin=teoDesvPct(real.kgFin,op.kgPedidos);
+    const dScrap=teoDesvPct(real.kgScrap,op.teorico.kgScrap);
+    return{op,real,pct,dPET,dPE,dFin,dScrap};
+  });
+  const eficiencias=rows.filter(r=>r.real.eficiencia!=null).map(r=>r.real.eficiencia);
+  const efProm=eficiencias.length?eficiencias.reduce((a,b)=>a+b,0)/eficiencias.length:null;
+  const totalFin=rows.reduce((s,r)=>s+r.real.kgFin,0);
+  const totalPET=rows.reduce((s,r)=>s+r.real.kgPET,0);
+  const totalPE=rows.reduce((s,r)=>s+r.real.kgPE,0);
+  const totalScrap=rows.reduce((s,r)=>s+r.real.kgScrap,0);
+  const clsD=(v)=>Math.abs(v)<3?'ok':Math.abs(v)<8?'warn':'bad';
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem">
+      ${[
+        {l:'OPs con datos',v:all.length,c:'var(--amber)'},
+        {l:'Kg totales producidos',v:totalFin.toFixed(0)+' kg',c:'var(--green)'},
+        {l:'Eficiencia promedio',v:efProm!=null?efProm.toFixed(0)+'%':'—',c:efProm>=90?'var(--green)':efProm>=75?'var(--amber)':'var(--red)'},
+        {l:'Scrap total acumulado',v:totalScrap.toFixed(0)+' kg',c:'var(--txt2)'},
+      ].map(k=>`<div style="background:var(--surf);border:1px solid var(--bord);border-top:3px solid ${k.c};border-radius:8px;padding:.875rem 1rem">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:4px">${k.l}</div>
+        <div style="font-size:20px;font-weight:800;font-family:var(--mono);color:${k.c}">${k.v}</div>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-head" style="background:var(--surf2)">
+        <span class="card-title">Tabla comparativa — todas las OPs</span>
+        <button class="btn sm" onclick="exportarAnalisis()">↓ Exportar CSV</button>
+      </div>
+      <div style="overflow-x:auto">
+      <table class="cmp-tbl" style="min-width:700px">
+        <thead><tr>
+          <th style="text-align:left">OP</th><th>Estado</th>
+          <th>Kg finales</th><th>Avance</th>
+          <th>PET Δ%</th><th>PE Δ%</th><th>Scrap Δ%</th>
+          <th>Ef %</th><th>Horas</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(r=>`<tr onclick="openOP('${r.op.id}')" style="cursor:pointer">
+            <td style="text-align:left;font-family:var(--mono);font-size:12px">
+              <div style="font-weight:700;color:var(--amber)">${r.op.numero}</div>
+              <div style="font-size:11px;color:var(--txt2)">${r.op.cliente}</div>
+            </td>
+            <td><span class="badge ${r.op.estado==='abierta'?'open':'closed'}">${r.op.estado}</span></td>
+            <td><div style="font-weight:700;font-family:var(--mono)">${r.real.kgFin.toFixed(0)}</div><div style="font-size:10px;color:var(--txt3)">teo:${r.op.kgPedidos}</div></td>
+            <td><div style="font-weight:700;font-family:var(--mono)">${r.pct.toFixed(0)}%</div>
+              <div style="width:60px;height:4px;background:var(--surf2);border-radius:2px;overflow:hidden"><div style="width:${Math.min(r.pct,100).toFixed(0)}%;height:100%;background:var(--green)"></div></div>
+            </td>
+            <td class="${clsD(r.dPET)}">${r.dPET>=0?'+':''}${r.dPET.toFixed(1)}%</td>
+            <td class="${clsD(r.dPE)}">${r.dPE>=0?'+':''}${r.dPE.toFixed(1)}%</td>
+            <td class="${clsD(r.dScrap)}">${r.dScrap>=0?'+':''}${r.dScrap.toFixed(1)}%</td>
+            <td class="${r.real.eficiencia!=null?(r.real.eficiencia>=90?'ok':r.real.eficiencia>=75?'warn':'bad'):'na'}">${r.real.eficiencia!=null?r.real.eficiencia.toFixed(0)+'%':'—'}</td>
+            <td style="font-family:var(--mono)">${r.real.horas>0?r.real.horas.toFixed(1):'—'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  `;
+}
+
+function teoDesvPct(real,teo){return teo>0?(real-teo)/teo*100:0;}
+
+function exportarAnalisis(){
+  const rows=['OP,Cliente,Estado,KgPedidos,KgFinales,Avance%,PET real,PET teo,PET Δ%,PE real,PE teo,PE Δ%,Scrap real,Scrap teo,Eficiencia%,Horas'];
+  data.ops.filter(o=>(o.jornadas?.length||0)>0).forEach(op=>{
+    const real=calcRealForOP(op);
+    const t=op.teorico;
+    rows.push([op.numero,'"'+op.cliente+'"',op.estado,op.kgPedidos,real.kgFin.toFixed(1),
+      (real.kgFin/op.kgPedidos*100).toFixed(1),
+      real.kgPET.toFixed(1),t.kgPET.toFixed(1),teoDesvPct(real.kgPET,t.kgPET).toFixed(1),
+      real.kgPE.toFixed(1),t.kgPE.toFixed(1),teoDesvPct(real.kgPE,t.kgPE).toFixed(1),
+      real.kgScrap.toFixed(1),t.kgScrap.toFixed(1),
+      real.eficiencia!=null?real.eficiencia.toFixed(0):'',real.horas.toFixed(1)].join(','));
+  });
+  const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='winflex-analisis-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+function exportarOP(id){
+  const op=data.ops.find(o=>o.id===id);if(!op)return;
+  const real=calcRealForOP(op);
+  const t=op.teorico;
+  const rows=['Campo,Teórico,Real,Desvío'];
+  rows.push(`kg finales,${op.kgPedidos},${real.kgFin.toFixed(1)},${(real.kgFin-op.kgPedidos).toFixed(1)}`);
+  rows.push(`PET lámina,${t.kgPET.toFixed(1)},${real.kgPET.toFixed(1)},${(real.kgPET-t.kgPET).toFixed(1)}`);
+  rows.push(`PE lámina,${t.kgPE.toFixed(1)},${real.kgPE.toFixed(1)},${(real.kgPE-t.kgPE).toFixed(1)}`);
+  rows.push(`Scrap,${t.kgScrap.toFixed(1)},${real.kgScrap.toFixed(1)},${(real.kgScrap-t.kgScrap).toFixed(1)}`);
+  rows.push(`Horas,${t.tiempoTotal.toFixed(1)},${real.horas.toFixed(1)},${(real.horas-t.tiempoTotal).toFixed(1)}`);
+  rows.push(`Eficiencia,${t.kgFinPorHora.toFixed(1)} kg/h,${real.eficiencia!=null?real.eficiencia.toFixed(0)+'%':'—'},`);
+  rows.push('');
+  rows.push('JORNADAS');
+  rows.push('Fecha,Operario,Turno ini,Turno fin,Horas,PET,PE,Finales,Scrap,Eficiencia%,Obs');
+  (op.jornadas||[]).forEach(j=>{
+    const ef=j.horas>0&&t.kgFinPorHora>0?((j.kgFin/j.horas)/t.kgFinPorHora*100).toFixed(0):'';
+    rows.push([j.fecha||'','"'+(j.operario||'')+'"',j.horaIni||'',j.horaFin||'',
+      (j.horas||0).toFixed(1),(j.kgPET||0).toFixed(1),(j.kgPE||0).toFixed(1),
+      j.kgFin||0,(j.kgScrap||0).toFixed(1),ef,'"'+(j.obs||'')+'"'].join(','));
+  });
+  const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='winflex-op-'+op.numero+'-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
 
 /* ══ INIT ══ */
