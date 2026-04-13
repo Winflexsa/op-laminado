@@ -1070,6 +1070,7 @@ function selectOP(id){
   // Reset bobinas y form
   petBobs=[];peBobs=[];outBobs=[];
   renderBobs('pet');renderBobs('pe');renderOutBobs();
+  setTimeout(initBobDelegation,0);
   ['tj-scrap-b','tj-tiras'].forEach(fid=>{set(fid,0,'value');});
   updateScrapDesglose();
   set('tj-compar',undefined);
@@ -1122,6 +1123,7 @@ function addBobina(tipo){
   const arr=tipo==='pet'?petBobs:peBobs;
   arr.push({numBobina:'',partida:'',kgNetos:0,metros:0,estado:null,pesoRestante:0});
   renderBobs(tipo);
+  setTimeout(initBobDelegation,0);
 }
 function removeBobina(tipo,idx){
   const arr=tipo==='pet'?petBobs:peBobs;
@@ -1196,69 +1198,85 @@ function updBobTotals(tipo){
   document.getElementById(tipo+'-count').textContent=`${arr.length} bobina${arr.length!==1?'s':''}${emp?' · '+emp+' empalmada'+(emp>1?'s':''):''}`;
 }
 
+function escVal(v){return String(v||'').replace(/"/g,'&quot;');}
+function initBobDelegation(){
+  // Delegated handler for all bob-field inputs (avoids quoting issues)
+  ['pet-list','pe-list','out-bob-list'].forEach(listId=>{
+    const el=document.getElementById(listId);
+    if(!el||el._delegated)return;
+    el._delegated=true;
+    el.addEventListener('input',e=>{
+      const inp=e.target.closest('input[data-field]');if(!inp)return;
+      const idx=parseInt(inp.dataset.idx),field=inp.dataset.field;
+      if(inp.classList.contains('out-inp'))setOutBobField(idx,field,inp.value);
+      else setBobField(inp.dataset.tipo,idx,field,inp.value);
+    });
+    el.addEventListener('change',e=>{
+      const inp=e.target.closest('input[data-field]');if(!inp)return;
+      const idx=parseInt(inp.dataset.idx),field=inp.dataset.field;
+      if(inp.classList.contains('out-inp'))setOutBobField(idx,field,inp.value);
+      else setBobField(inp.dataset.tipo,idx,field,inp.value);
+    });
+    el.addEventListener('click',e=>{
+      const btn=e.target.closest('button.ref-btn');if(!btn)return;
+      toggleOutBobRef(parseInt(btn.dataset.outidx),btn.dataset.tipo,parseInt(btn.dataset.bobidx));
+    });
+  });
+}
+
+function renderBobCard(b,i,tipo,emp){
+  const ac=tipo==='pet'?'var(--pet)':'var(--pe)';
+  const bg=tipo==='pet'?'var(--pet-bg)':'var(--pe-bg)';
+  const headCls=tipo+'-head'; const lblCls=tipo+'-lbl';
+  const cono=tipo==='pet'?(selectedOP?.pesoCono_pet||0):(selectedOP?.pesoCono_pe||0);
+  const cons=kgConsumido(b,tipo);
+  const border=b.estado||'';
+  const q=JSON.stringify;
+  let html='<div class="bob-card '+border+'" id="bob-'+tipo+'-'+i+'">';
+  // HEAD
+  html+='<div class="bob-head '+headCls+'">';
+  html+='<span class="bob-num-lbl '+lblCls+'">'+tipo.toUpperCase()+' — Bobina '+(i+1)+'</span>';
+  if(emp>0&&i>0)html+='<span class="bob-emp">Empalmada</span>';
+  html+='<button class="bob-del" onclick="removeBobina('+q(tipo)+','+i+')">✕</button>';
+  html+='</div>';
+  // FIELDS
+  html+='<div class="bob-fields">';
+  html+='<div class="bob-field"><label>N\u00b0 Bobina</label><input type="text" data-tipo="'+tipo+'" data-idx="'+i+'" data-field="numBobina" value="'+escVal(b.numBobina)+'" placeholder="B-0042"/></div>';
+  html+='<div class="bob-field"><label>N\u00b0 Partida</label><input type="text" data-tipo="'+tipo+'" data-idx="'+i+'" data-field="partida" value="'+escVal(b.partida)+'" placeholder="P-2026-04"/></div>';
+  html+='<div class="bob-field"><label>Kg netos</label><input type="number" data-tipo="'+tipo+'" data-idx="'+i+'" data-field="kgNetos" value="'+escVal(b.kgNetos)+'" min="0" step="0.1" placeholder="0"/></div>';
+  html+='<div class="bob-field"><label>Metros</label><input type="number" data-tipo="'+tipo+'" data-idx="'+i+'" data-field="metros" value="'+escVal(b.metros)+'" min="0" step="1" placeholder="0"/></div>';
+  html+='</div>';
+  html+='</div>';
+  // ESTADO
+  html+='<div class="bob-estado-wrap"><div class="bob-estado-lbl">Estado de la bobina</div><div class="bob-estados">'+renderEstadoBtns(b,tipo,i)+'</div></div>';
+  // PARCIAL
+  if(b.estado==='parcial'){
+    html+='<div class="bob-parcial">';
+    html+='<div><label>Peso restante bruto (kg)</label>';
+    html+='<input type="number" data-tipo="'+tipo+'" data-idx="'+i+'" data-field="pesoRestante" value="'+escVal(b.pesoRestante)+'" min="0" step="0.1" placeholder="0"/></div>';
+    html+='<div><label>Peso cono OP ('+cono+' kg)</label>';
+    html+='<input type="number" value="'+cono+'" readonly style="opacity:.6;cursor:default"/></div>';
+    const neto=b.kgNetos||0;const rest=b.pesoRestante||0;
+    const consumido=Math.max(0,neto-(rest-cono));
+    html+='<div class="bob-cono-note" id="bc-note-'+tipo+'-'+i+'">Consumido = '+neto+'−('+rest+'−'+cono+') = '+consumido.toFixed(1)+' kg</div>';
+    html+='</div>';
+  }
+  // CONSUMIDO
+  const showCons=b.estado&&b.estado!=='bloqueada';
+  html+='<div class="bob-cons-row" style="background:'+(showCons?bg:'var(--surf2)')+'">';
+  html+='<span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:'+(showCons?ac:'var(--txt3)')+'">Consumido</span>';
+  html+='<span style="font-size:20px;font-weight:900;font-family:var(--mono);color:'+(showCons?ac:'var(--txt3)')+'" id="bc-'+tipo+'-'+i+'">'+(showCons?cons.toFixed(1)+' kg':'— kg')+'</span>';
+  html+='</div>';
+  html+='</div>';
+  return html;
+}
+
 function renderBobs(tipo){
   const arr=tipo==='pet'?petBobs:peBobs;
   const el=document.getElementById(tipo+'-list');
   if(!el)return;
-  const ac=tipo==='pet'?'var(--green)':'var(--blue)';
-  const headCls=tipo+'-head';const lblCls=tipo+'-lbl';
   const emp=Math.max(0,arr.length-1);
-  el.innerHTML=arr.map((b,i)=>{
-    const cons=kgConsumido(b,tipo);
-    const borderCls=b.estado?b.estado:'';
-    const cono=tipo==='pet'?(selectedOP?.pesoCono_pet||0):(selectedOP?.pesoCono_pe||0);
-    return`<div class="bob-card ${borderCls}" id="bob-${tipo}-${i}">
-      <div class="bob-head ${headCls}">
-        <span class="bob-num-lbl ${lblCls}">${tipo.toUpperCase()} — Bobina ${i+1}</span>
-        ${emp>0&&i>0?`<span class="bob-emp">Empalmada</span>`:''}
-        <button class="bob-del" onclick="removeBobina('${tipo}',${i})">✕</button>
-      </div>
-      <div class="bob-fields">
-        <div class="bob-field">
-          <label>N° Bobina</label>
-          <input type="text" value="${b.numBobina||''}" placeholder="B-0042"
-            onchange="setBobField('${tipo}',${i},'numBobina',this.value)"/>
-        </div>
-        <div class="bob-field">
-          <label>N° Partida</label>
-          <input type="text" value="${b.partida||''}" placeholder="P-2026-04"
-            onchange="setBobField('${tipo}',${i},'partida',this.value)"/>
-        </div>
-        <div class="bob-field">
-          <label>Kg netos</label>
-          <input type="number" value="${b.kgNetos||''}" min="0" step="0.1" placeholder="0"
-            oninput="setBobField('${tipo}',${i},'kgNetos',this.value)"/>
-        </div>
-        <div class="bob-field">
-          <label>Metros</label>
-          <input type="number" value="${b.metros||''}" min="0" step="1" placeholder="0"
-            onchange="setBobField('${tipo}',${i},'metros',this.value)"/>
-        </div>
-      </div>
-      <div class="bob-estado-wrap">
-        <div class="bob-estado-lbl">Estado de la bobina</div>
-        <div class="bob-estados">
-          ${renderEstadoBtns(b,tipo,i)}
-        </div>
-      </div>
-      ${b.estado==='parcial'?`<div class="bob-parcial">
-        <div>
-          <label>Peso restante bruto (kg)</label>
-          <input type="number" value="${b.pesoRestante||''}" min="0" step="0.1" placeholder="0"
-            oninput="setBobField('${tipo}',${i},'pesoRestante',this.value)"/>
-        </div>
-        <div>
-          <label>Peso cono (de la OP)</label>
-          <input type="number" value="${cono}" readonly style="opacity:.6;cursor:default"/>
-        </div>
-        <div class="bob-cono-note" id="bc-note-${tipo}-${i}">= ${b.kgNetos||0}kg − (${b.pesoRestante||0}kg − ${cono}kg cono)</div>
-      </div>`:''}
-      <div class="bob-cons-row" style="background:${b.estado&&b.estado!=='bloqueada'?tipo==='pet'?'var(--pet-bg)':'var(--pe-bg)':'var(--surf2)'}">
-        <span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:${b.estado&&b.estado!=='bloqueada'?ac:'var(--txt3)'}">Consumido</span>
-        <span style="font-size:20px;font-weight:900;font-family:var(--mono);color:${b.estado&&b.estado!=='bloqueada'?ac:'var(--txt3)'}" id="bc-${tipo}-${i}">${b.estado&&b.estado!=='bloqueada'?cons.toFixed(1)+' kg':'— kg'}</span>
-      </div>
-    </div>`;
-  }).join('');
+  el.innerHTML=arr.map((b,i)=>renderBobCard(b,i,tipo,emp)).join('');
   updBobTotals(tipo);
 }
 
@@ -1320,14 +1338,23 @@ function updateCompar(){
 
 /* ══ BOBINAS SALIDA ══ */
 function addOutBob(){
-  outBobs.push({numBobina:'',partida:'',kg:0,metros:0});
+  outBobs.push({numBobina:'',partida:'',kg:0,metros:0,petRefs:[],peRefs:[]});
   renderOutBobs();
+  setTimeout(initBobDelegation,0);
 }
 function removeOutBob(idx){outBobs.splice(idx,1);renderOutBobs();updateCompar();}
 function setOutBobField(idx,field,val){
   if(!outBobs[idx])return;
-  outBobs[idx][field]=(['kg','metros'].includes(field))?Math.max(0,parseFloat(val)||0):val;
+  if(['kg','metros'].includes(field))outBobs[idx][field]=Math.max(0,parseFloat(val)||0);
+  else outBobs[idx][field]=val;
   updOutBobTotals();updateCompar();
+}
+function toggleOutBobRef(outIdx,tipo,bobIdx){
+  const b=outBobs[outIdx];if(!b)return;
+  const arr=tipo==='pet'?b.petRefs:b.peRefs;
+  const pos=arr.indexOf(bobIdx);
+  if(pos>=0)arr.splice(pos,1);else arr.push(bobIdx);
+  renderOutBobs();
 }
 function updOutBobTotals(){
   const total=outBobs.reduce((s,b)=>s+(parseFloat(b.kg)||0),0);
@@ -1337,27 +1364,56 @@ function updOutBobTotals(){
 function renderOutBobs(){
   const el=document.getElementById('out-bob-list');if(!el)return;
   if(!outBobs.length){el.innerHTML='';updOutBobTotals();return;}
-  el.innerHTML=outBobs.map((b,i)=>`
-    <div style="background:var(--surf);border:2px solid var(--blue);border-radius:var(--r);overflow:hidden;margin-bottom:.625rem">
-      <div style="display:flex;align-items:center;gap:8px;padding:.5rem .875rem;background:var(--blue-bg)">
-        <span style="font-size:14px;font-weight:700;color:var(--blue);flex:1">Bobina salida ${i+1}</span>
-        <button onclick="removeOutBob(${i})" style="font-size:13px;padding:3px 10px;border:none;background:var(--red-bg);color:var(--red);border-radius:6px;cursor:pointer;font-weight:600">✕</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem">
-        <div class="bob-field"><label>N° Bobina</label>
-          <input type="text" value="${b.numBobina||''}" placeholder="B-0001"
-            onchange="setOutBobField(${i},'numBobina',this.value)"/></div>
-        <div class="bob-field"><label>N° Partida / Lote</label>
-          <input type="text" value="${b.partida||''}" placeholder="L-2026-04"
-            onchange="setOutBobField(${i},'partida',this.value)"/></div>
-        <div class="bob-field"><label>Kg</label>
-          <input type="number" value="${b.kg||''}" min="0" step="0.1" placeholder="0"
-            oninput="setOutBobField(${i},'kg',this.value)"/></div>
-        <div class="bob-field"><label>Metros</label>
-          <input type="number" value="${b.metros||''}" min="0" step="1" placeholder="0"
-            onchange="setOutBobField(${i},'metros',this.value)"/></div>
-      </div>
-    </div>`).join('');
+  el.innerHTML=outBobs.map((b,i)=>{
+    const q=JSON.stringify;
+    let h='<div style="background:var(--surf);border:2.5px solid var(--out);border-radius:10px;overflow:hidden;margin-bottom:.75rem">';
+    // HEAD
+    h+='<div style="display:flex;align-items:center;gap:8px;padding:.625rem .875rem;background:var(--out-bg)">';
+    h+='<span style="font-size:14px;font-weight:800;color:var(--out);flex:1;text-transform:uppercase;letter-spacing:.04em">Bobina salida '+(i+1)+'</span>';
+    h+='<button onclick="removeOutBob('+i+')" style="font-size:12px;padding:4px 10px;border:2px solid var(--red);background:transparent;color:var(--red);border-radius:6px;cursor:pointer;font-weight:700">✕</button>';
+    h+='</div>';
+    // FIELDS
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;border-bottom:2px solid var(--bord)">';
+    h+='<div class="bob-field"><label>N\u00b0 Bobina</label><input type="text" class="out-inp" data-idx="'+i+'" data-field="numBobina" value="'+escVal(b.numBobina)+'" placeholder="B-0001"/></div>';
+    h+='<div class="bob-field"><label>N\u00b0 Partida</label><input type="text" class="out-inp" data-idx="'+i+'" data-field="partida" value="'+escVal(b.partida)+'" placeholder="L-2026-04"/></div>';
+    h+='<div class="bob-field"><label>Kg</label><input type="number" class="out-inp" data-idx="'+i+'" data-field="kg" value="'+escVal(b.kg)+'" min="0" step="0.1" placeholder="0"/></div>';
+    h+='<div class="bob-field"><label>Metros</label><input type="number" class="out-inp" data-idx="'+i+'" data-field="metros" value="'+escVal(b.metros)+'" min="0" step="1" placeholder="0"/></div>';
+    h+='</div>';
+    // REFERENCIAS: qué bobinas PET y PE entran en esta bobina de salida
+    if(petBobs.length||peBobs.length){
+      h+='<div style="padding:.625rem .875rem;border-bottom:1px solid var(--bord)">';
+      h+='<div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--txt3);margin-bottom:6px">Compuesta por (seleccioná bobinas)</div>';
+      if(petBobs.length){
+        h+='<div style="margin-bottom:5px"><span style="font-size:10px;font-weight:700;color:var(--pet);text-transform:uppercase;letter-spacing:.06em;margin-right:6px">PET:</span>';
+        petBobs.forEach((bp,pi)=>{
+          const sel=b.petRefs.includes(pi);
+          const lbl=bp.numBobina?'#'+bp.numBobina:'PET '+(pi+1);
+          h+='<button data-outidx="'+i+'" data-tipo="pet" data-bobidx="'+pi+'" class="ref-btn" style="font-size:12px;font-weight:600;padding:5px 10px;margin:2px;border-radius:6px;border:2px solid '+( sel?'var(--pet)':' var(--bord2)')+';background:'+(sel?'var(--pet-bg)':'var(--surf2)')+';color:'+(sel?'var(--pet)':'var(--txt3)')+';cursor:pointer">'+lbl+'</button>';
+        });
+        h+='</div>';
+      }
+      if(peBobs.length){
+        h+='<div><span style="font-size:10px;font-weight:700;color:var(--pe);text-transform:uppercase;letter-spacing:.06em;margin-right:6px">PE:</span>';
+        peBobs.forEach((bp,pi)=>{
+          const sel=b.peRefs.includes(pi);
+          const lbl=bp.numBobina?'#'+bp.numBobina:'PE '+(pi+1);
+          h+='<button data-outidx="'+i+'" data-tipo="pe" data-bobidx="'+pi+'" class="ref-btn" style="font-size:12px;font-weight:600;padding:5px 10px;margin:2px;border-radius:6px;border:2px solid '+( sel?'var(--pe)':'var(--bord2)')+';background:'+(sel?'var(--pe-bg)':'var(--surf2)')+';color:'+(sel?'var(--pe)':'var(--txt3)')+';cursor:pointer">'+lbl+'</button>';
+        });
+        h+='</div>';
+      }
+      h+='</div>';
+    }
+    // TOTAL
+    h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem .875rem;background:var(--out-bg)">';
+    h+='<span style="font-size:12px;font-weight:700;color:var(--out);text-transform:uppercase;letter-spacing:.06em">'+b.kg.toFixed(1)+' kg · '+b.metros+' m</span>';
+    const refTxt=[];
+    if(b.petRefs.length)refTxt.push('PET: '+b.petRefs.map(ri=>petBobs[ri]?.numBobina||'B'+(ri+1)).join('+'));
+    if(b.peRefs.length)refTxt.push('PE: '+b.peRefs.map(ri=>peBobs[ri]?.numBobina||'B'+(ri+1)).join('+'));
+    h+='<span style="font-size:11px;color:var(--txt3)">'+( refTxt.join(' / ')||'Sin referencias')+'</span>';
+    h+='</div>';
+    h+='</div>';
+    return h;
+  }).join('');
   updOutBobTotals();
 }
 
@@ -1514,7 +1570,7 @@ async function guardarJornada(){
     kgPET,kgPE,kgFin,kgScrap,obs:obsArr.join(' · '),
     bobinas_pet:petBobs.map(b=>({...b})),
     bobinas_pe:peBobs.map(b=>({...b})),
-    bobinas_out:outBobs.map(b=>({...b})),
+    bobinas_out:outBobs.map(b=>({...b,petRefsNums:b.petRefs.map(ri=>petBobs[ri]?.numBobina||''),peRefsNums:b.peRefs.map(ri=>peBobs[ri]?.numBobina||'')})),
     empalmadas_pet:empPET,empalmadas_pe:empPE
   };
   if(!selectedOP.jornadas)selectedOP.jornadas=[];
