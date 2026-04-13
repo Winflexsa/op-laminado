@@ -91,124 +91,157 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 .empty{text-align:center;padding:3rem 1rem;color:var(--txt3);font-size:14px}
 
 /* ── TABLET ── */
-.t-screen{min-height:calc(100vh - 52px)}
-.t-page{padding:1rem}
+:root{
+  --pet:#1A6B2F;--pet-bg:#EBF5EE;--pet-mid:#D0EBD8;
+  --pe:#0D4F8C; --pe-bg:#E6F0FB; --pe-mid:#C8DFF5;
+  --out:#5034B8;--out-bg:#EEE8FF;
+  --scrap:#8B1A1A;--scrap-bg:#FDEAEA;
+}
+.t-screen{min-height:calc(100vh - 52px);background:#EBEBEB}
+.t-page{padding:.875rem}
 
 /* PIN */
-.pin-wrap{max-width:340px;margin:1.5rem auto;text-align:center}
-.pin-title{font-size:22px;font-weight:700;margin-bottom:.25rem}
-.pin-sub{font-size:14px;color:var(--txt3);margin-bottom:1.5rem}
-.pin-dots{font-size:36px;font-family:var(--mono);font-weight:700;letter-spacing:.4em;min-height:54px;color:var(--amber);margin-bottom:1rem}
+.pin-wrap{max-width:360px;margin:2rem auto;text-align:center}
+.pin-title{font-size:26px;font-weight:800;margin-bottom:.25rem;letter-spacing:-.02em}
+.pin-sub{font-size:15px;color:var(--txt3);margin-bottom:1.75rem}
+.pin-dots{font-size:40px;font-family:var(--mono);font-weight:900;letter-spacing:.5em;min-height:60px;color:var(--amber);margin-bottom:1.25rem}
 .pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
-.pkey{font-size:24px;font-weight:600;padding:18px 8px;border:1.5px solid var(--bord2);border-radius:var(--r);cursor:pointer;background:var(--surf);transition:all .15s;text-align:center;user-select:none}
-.pkey:active{transform:scale(.94);background:var(--surf2)}
-.pkey.act{background:var(--surf2);font-size:16px}
-.pkey.ok{background:var(--amber);color:#fff;border-color:var(--amber)}
+.pkey{font-size:26px;font-weight:700;padding:20px 8px;border:2px solid var(--bord2);border-radius:10px;cursor:pointer;background:var(--surf);transition:background .1s;text-align:center;user-select:none;-webkit-tap-highlight-color:transparent}
+.pkey:active{background:#1A1A1A;color:#fff;border-color:#1A1A1A;transform:scale(.95)}
+.pkey.act{background:var(--surf2);font-size:18px;color:var(--txt2)}
+.pkey.ok{background:var(--amber);color:#fff;border-color:var(--amber);font-size:20px}
 
 /* OP LIST TABLET */
-.t-op-item{background:var(--surf);border:2.5px solid var(--bord);border-radius:var(--r);padding:1rem 1.125rem;cursor:pointer;margin-bottom:.875rem;transition:all .15s;box-shadow:var(--shadow)}
-.t-op-item:active{transform:scale(.99)}
-.t-op-item:hover{border-color:var(--amber)}
-.t-op-id{font-size:12px;font-family:var(--mono);color:var(--amber);font-weight:700}
-.t-op-cliente{font-size:20px;font-weight:700;margin:.2rem 0 .1rem}
-.t-op-meta{font-size:13px;color:var(--txt2)}
+.t-op-item{background:var(--surf);border:2px solid var(--bord);border-left:5px solid var(--amber);border-radius:10px;padding:1rem 1.125rem;cursor:pointer;margin-bottom:.875rem;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.t-op-item:active{transform:scale(.99);border-left-color:var(--amber-dk)}
 
-/* JORNADA FORM */
-.t-sect{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;margin-bottom:.875rem;box-shadow:var(--shadow)}
-.t-sect-head{padding:.625rem 1rem;border-bottom:1px solid var(--bord);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);display:flex;align-items:center;gap:6px}
-.t-row{display:flex;align-items:center;padding:10px 1rem;border-bottom:1px solid var(--bord);gap:10px}
-.t-row:last-child{border-bottom:none}
-.t-row-lbl{flex:1;font-size:15px;font-weight:500}
-.t-row-sub{font-size:12px;color:var(--txt3);font-weight:400}
-.t-row-val{font-size:13px;font-family:var(--mono);color:var(--amber);font-weight:700;white-space:nowrap}
-.t-teo{background:var(--surf2);padding:.375rem 1rem;font-size:12px;color:var(--txt3);border-bottom:1px solid var(--bord);display:flex;align-items:center;gap:6px}
-.t-teo span{color:var(--amber);font-weight:700;font-family:var(--mono)}
+/* SECTION BLOCK */
+.t-block{background:var(--surf);border-radius:10px;overflow:hidden;margin-bottom:.75rem;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.t-block-hdr{display:flex;align-items:center;gap:10px;padding:.75rem 1rem;background:#1E2022;color:#fff}
+.t-block-hdr.pet{background:var(--pet)}
+.t-block-hdr.pe{background:var(--pe)}
+.t-block-hdr.out{background:var(--out)}
+.t-block-hdr.scrap{background:var(--scrap)}
+.t-block-hdr.obs-hdr{background:#3D3D3D}
+.t-block-icon{font-size:18px;line-height:1}
+.t-block-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;flex:1}
+.t-block-badge{font-size:12px;font-family:var(--mono);font-weight:700;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:20px}
+.t-block-teo{background:rgba(255,255,255,.12);padding:.375rem 1rem;font-size:12px;color:rgba(255,255,255,.8);font-family:var(--mono);letter-spacing:.03em;border-bottom:1px solid rgba(255,255,255,.1)}
+.t-block-body{padding:.875rem 1rem}
+.t-block-footer{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-top:3px solid var(--bord)}
+.t-block-footer.pet{border-top-color:var(--pet);background:var(--pet-bg)}
+.t-block-footer.pe{border-top-color:var(--pe);background:var(--pe-bg)}
+.t-block-footer.out{border-top-color:var(--out);background:var(--out-bg)}
+.t-total-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3)}
+.t-total-count{font-size:11px;color:var(--txt3);margin-top:1px}
+.t-total-val{font-size:24px;font-weight:800;font-family:var(--mono)}
+.t-total-val.pet{color:var(--pet)}
+.t-total-val.pe{color:var(--pe)}
+.t-total-val.out{color:var(--out)}
 
-/* BIG INPUT */
-.big-num{display:flex;align-items:center;gap:6px}
-.big-btn{width:44px;height:44px;border:1.5px solid var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:22px;background:var(--surf2);color:var(--txt);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;user-select:none}
-.big-btn:active{transform:scale(.9);background:var(--amber);color:#fff;border-color:var(--amber)}
-.big-inp{font-family:var(--mono);font-size:20px;font-weight:700;width:90px;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:8px 8px;background:var(--surf2);color:var(--txt);text-align:right;outline:none;-moz-appearance:textfield}
-.big-inp:focus{border-color:var(--amber)}
-.big-inp::-webkit-inner-spin-button,.big-inp::-webkit-outer-spin-button{-webkit-appearance:none}
+/* RESUMEN CELLS */
+.rsm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;padding:.75rem}
+.rsm-cell{border-radius:8px;padding:.625rem .875rem;border:1.5px solid var(--bord)}
+.rsm-cell.ok{border-color:var(--green);background:var(--green-bg)}
+.rsm-cell.warn{border-color:var(--amber);background:var(--amber-lt)}
+.rsm-cell.bad{border-color:var(--red);background:var(--red-bg)}
+.rsm-cell.neutral{border-color:var(--bord2);background:var(--surf2)}
+.rsm-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--txt3);margin-bottom:2px}
+.rsm-teo{font-size:11px;color:var(--txt3);font-family:var(--mono)}
+.rsm-real{font-size:20px;font-weight:800;font-family:var(--mono);line-height:1.1}
+.rsm-dev{font-size:11px;font-weight:700;font-family:var(--mono)}
+.rsm-dev.ok{color:var(--green)}.rsm-dev.warn{color:var(--amber)}.rsm-dev.bad{color:var(--red)}.rsm-dev.neutral{color:var(--txt3)}
+
+/* ADD BUTTON */
+.t-add-btn{width:100%;padding:14px;border:2.5px dashed;border-radius:8px;cursor:pointer;font-size:15px;font-weight:700;background:none;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.t-add-btn.pet{border-color:var(--pet);color:var(--pet)}
+.t-add-btn.pet:active{background:var(--pet-bg)}
+.t-add-btn.pe{border-color:var(--pe);color:var(--pe)}
+.t-add-btn.pe:active{background:var(--pe-bg)}
+.t-add-btn.out{border-color:var(--out);color:var(--out)}
+.t-add-btn.out:active{background:var(--out-bg)}
 
 /* BOBINA CARD */
-.bob-card{border:2.5px solid var(--bord2);border-radius:var(--r);overflow:hidden;background:var(--surf);margin-bottom:.625rem;box-shadow:0 1px 4px rgba(0,0,0,.08)}
-.bob-card.completa{border-color:var(--green)}
-.bob-card.parcial{border-color:var(--amber)}
-.bob-card.bloqueada{border-color:var(--red)}
-.bob-card.quebradiza{border-color:#854F0B}
-.bob-card.otro{border-color:#5034B8}
-.bob-head{display:flex;align-items:center;gap:6px;padding:.5rem .75rem;border-bottom:1px solid var(--bord)}
-.bob-head.pet-head{background:var(--green-bg)}
-.bob-head.pe-head{background:var(--blue-bg)}
-.bob-num-lbl{font-size:13px;font-weight:700;flex:1}
-.bob-num-lbl.pet-lbl{color:var(--green)}
-.bob-num-lbl.pe-lbl{color:var(--blue)}
-.bob-emp{font-size:10px;background:var(--amber-lt);color:var(--amber-dk);padding:1px 6px;border-radius:8px;font-weight:700}
-.bob-del{font-size:11px;padding:3px 8px;border:none;background:var(--red-bg);color:var(--red);border-radius:5px;cursor:pointer;font-weight:700}
-.bob-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:.625rem .75rem;border-bottom:1px solid var(--bord)}
-.bob-field label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);display:block;margin-bottom:3px}
-.bob-field input{width:100%;font-size:14px;font-weight:700;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:7px 6px;background:var(--surf2);color:var(--txt);outline:none}
-.bob-field input:focus{border-color:var(--amber)}
+.bob-card{border:2px solid var(--bord2);border-radius:10px;overflow:hidden;background:var(--surf);margin-bottom:.75rem}
+.bob-card.completa{border-color:var(--pet);border-width:3px}
+.bob-card.parcial{border-color:var(--amber);border-width:3px}
+.bob-card.bloqueada{border-color:var(--red);border-width:3px}
+.bob-card.quebradiza{border-color:#854F0B;border-width:3px}
+.bob-card.otro{border-color:#5034B8;border-width:3px}
+.bob-head{display:flex;align-items:center;gap:8px;padding:.625rem .875rem;border-bottom:2px solid var(--bord)}
+.bob-head.pet-head{background:var(--pet-mid)}
+.bob-head.pe-head{background:var(--pe-mid)}
+.bob-num-lbl{font-size:14px;font-weight:800;flex:1;text-transform:uppercase;letter-spacing:.04em}
+.bob-num-lbl.pet-lbl{color:var(--pet)}
+.bob-num-lbl.pe-lbl{color:var(--pe)}
+.bob-emp{font-size:11px;background:var(--amber);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700}
+.bob-del{font-size:12px;padding:4px 10px;border:2px solid var(--red);background:transparent;color:var(--red);border-radius:6px;cursor:pointer;font-weight:700}
+.bob-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;border-bottom:2px solid var(--bord)}
+.bob-field label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--txt3);display:block;margin-bottom:4px}
+.bob-field input{width:100%;font-size:16px;font-weight:700;border:2px solid var(--bord2);border-radius:8px;padding:9px 8px;background:var(--surf2);color:var(--txt);outline:none;transition:border-color .15s}
+.bob-field input:focus{border-color:var(--amber);background:var(--surf)}
 .bob-field input[type=number]{text-align:right;-moz-appearance:textfield}
 .bob-field input::-webkit-inner-spin-button{-webkit-appearance:none}
-
-/* ESTADO BOBINA */
-.bob-estado{padding:.625rem .875rem;border-bottom:1px solid var(--bord)}
-.bob-estado label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);display:block;margin-bottom:6px}
-.bob-estados{display:flex;flex-wrap:wrap;gap:6px}
-.est-btn{font-size:12px;font-weight:600;padding:7px 8px;border-radius:var(--rs);border:2px solid var(--bord2);background:var(--surf2);color:var(--txt2);cursor:pointer;transition:all .15s;text-align:center}
-.est-btn:active{transform:scale(.96)}
-.est-btn.sel-completa{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.bob-estado-wrap{padding:.75rem .875rem;border-bottom:2px solid var(--bord)}
+.bob-estado-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--txt3);margin-bottom:8px}
+.bob-estados{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.est-btn{font-size:12px;font-weight:700;padding:10px 8px;border-radius:8px;border:2px solid var(--bord2);background:var(--surf2);color:var(--txt2);cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent}
+.est-btn:active{transform:scale(.95)}
+.est-btn.sel-completa{border-color:var(--pet);background:var(--pet-bg);color:var(--pet)}
 .est-btn.sel-parcial{border-color:var(--amber);background:var(--amber-lt);color:var(--amber-dk)}
 .est-btn.sel-bloqueada{border-color:var(--red);background:var(--red-bg);color:var(--red)}
 .est-btn.sel-quebradiza{border-color:#854F0B;background:#FAEEDA;color:#854F0B}
 .est-btn.sel-otro{border-color:#5034B8;background:#F0EEFE;color:#5034B8}
-
-/* PARCIAL FIELDS */
-.bob-parcial{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;background:var(--amber-lt);border-bottom:1px solid var(--bord)}
-.bob-parcial label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--amber-dk);display:block;margin-bottom:4px}
-.bob-parcial input{width:100%;font-size:16px;font-weight:700;border:1.5px solid var(--amber);border-radius:var(--rs);padding:8px 8px;background:var(--surf);color:var(--txt);text-align:right;outline:none;-moz-appearance:textfield}
-.bob-parcial input:focus{border-color:var(--amber-dk)}
+.bob-parcial{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;background:var(--amber-lt);border-bottom:2px solid var(--amber)}
+.bob-parcial label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--amber-dk);display:block;margin-bottom:4px}
+.bob-parcial input{width:100%;font-size:16px;font-weight:700;border:2px solid var(--amber);border-radius:8px;padding:9px 8px;background:var(--surf);color:var(--txt);text-align:right;outline:none;-moz-appearance:textfield}
 .bob-parcial input::-webkit-inner-spin-button{-webkit-appearance:none}
-.bob-cono-note{font-size:11px;color:var(--amber-dk);grid-column:span 2;padding-top:2px}
+.bob-cono-note{font-size:11px;color:var(--amber-dk);grid-column:span 2;padding-top:2px;font-weight:600}
+.bob-cons-row{display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem;border-top:2px solid var(--bord)}
 
-/* CONSUMIDO */
-.bob-cons{display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem}
-.bob-cons-lbl{font-size:13px;font-weight:500}
-.bob-cons-val{font-size:22px;font-weight:700;font-family:var(--mono)}
+/* BIG INPUT */
+.big-num{display:flex;align-items:center;gap:8px}
+.big-btn{width:52px;height:52px;border:2px solid var(--bord2);border-radius:10px;cursor:pointer;font-size:26px;font-weight:700;background:var(--surf2);color:var(--txt);display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;user-select:none}
+.big-btn:active{background:#1E2022;color:#fff;border-color:#1E2022;transform:scale(.93)}
+.big-inp{font-family:var(--mono);font-size:24px;font-weight:800;width:100px;border:2px solid var(--bord2);border-radius:10px;padding:10px 8px;background:var(--surf2);color:var(--txt);text-align:right;outline:none;-moz-appearance:textfield}
+.big-inp:focus{border-color:var(--amber);background:var(--surf)}
+.big-inp::-webkit-inner-spin-button,.big-inp::-webkit-outer-spin-button{-webkit-appearance:none}
+.t-field-row{display:flex;align-items:center;padding:12px 1rem;border-bottom:1px solid var(--bord);gap:12px}
+.t-field-row:last-child{border-bottom:none}
+.t-field-lbl{flex:1}
+.t-field-lbl-main{font-size:15px;font-weight:600}
+.t-field-lbl-sub{font-size:11px;color:var(--txt3);margin-top:2px}
 
-/* ADD BOBINA */
-.bob-add{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:2.5px dashed var(--bord2);border-radius:var(--r);cursor:pointer;font-size:15px;font-weight:600;color:var(--txt3);background:none;width:100%;transition:all .15s}
-.bob-add:hover,.bob-add:active{border-color:var(--amber);color:var(--amber);background:var(--amber-lt)}
-.bob-total{display:flex;align-items:center;justify-content:space-between;padding:.625rem 1rem;border-top:2px solid var(--bord)}
-.bob-total-lbl{font-size:13px;color:var(--txt2)}
-.bob-total-val{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--amber)}
-.bob-total-sub{font-size:11px;color:var(--txt3)}
+/* SCRAP CELLS */
+.scrap-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:.875rem}
+.scrap-cell{border-radius:8px;padding:.75rem;text-align:center;border:2px solid var(--bord)}
+.scrap-cell-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.scrap-cell-val{font-size:22px;font-weight:800;font-family:var(--mono)}
+.scrap-cell-sub{font-size:10px;color:var(--txt3);margin-top:2px}
 
 /* OBS */
-.obs-chips{display:flex;flex-wrap:wrap;gap:7px;padding:.75rem 1rem}
-.obs-chip{font-size:13px;font-weight:500;padding:8px 12px;border-radius:20px;border:1.5px solid var(--bord2);cursor:pointer;background:var(--surf2);color:var(--txt2);transition:all .15s}
+.obs-chips{display:flex;flex-wrap:wrap;gap:8px;padding:.875rem}
+.obs-chip{font-size:13px;font-weight:600;padding:9px 14px;border-radius:20px;border:2px solid var(--bord2);cursor:pointer;background:var(--surf2);color:var(--txt2);-webkit-tap-highlight-color:transparent}
 .obs-chip:active{transform:scale(.96)}
-.obs-chip.sel{background:var(--amber);color:#fff;border-color:var(--amber)}
-.obs-area{width:100%;font-size:14px;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:10px;background:var(--surf2);color:var(--txt);outline:none;resize:none;min-height:70px}
+.obs-chip.sel{background:#1E2022;color:#fff;border-color:#1E2022}
+.obs-area{width:100%;font-size:15px;border:2px solid var(--bord2);border-radius:10px;padding:12px;background:var(--surf2);color:var(--txt);outline:none;resize:none;min-height:80px}
 .obs-area:focus{border-color:var(--amber)}
 
-/* RESUMEN TOP */
-.resumen-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:.75rem;border-bottom:1px solid var(--bord)}
-@media(max-width:600px){.resumen-grid{grid-template-columns:repeat(2,1fr)}}
-.res-cell{background:var(--surf2);border-radius:var(--rs);padding:.625rem .75rem;text-align:center}
-.res-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin-bottom:3px}
-.res-teo{font-size:11px;color:var(--txt3);font-family:var(--mono)}
-.res-real{font-size:17px;font-weight:700;font-family:var(--mono);color:var(--txt)}
-.res-dev{font-size:11px;font-family:var(--mono);font-weight:600}
-
 /* CONFIRM */
-.confirm-box{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:2rem 1.5rem;text-align:center;box-shadow:var(--shadow);margin:1rem 0}
-.confirm-icon{font-size:42px;margin-bottom:.5rem}
-.confirm-title{font-size:20px;font-weight:700;margin-bottom:.375rem}
-.confirm-sub{font-size:14px;color:var(--txt2);line-height:1.6;margin-bottom:1.25rem}
+.confirm-box{background:var(--surf);border-radius:12px;padding:2.5rem 1.5rem;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.12);margin:1rem 0}
+.confirm-icon{font-size:48px;margin-bottom:.5rem}
+.confirm-title{font-size:22px;font-weight:800;margin-bottom:.375rem}
+.confirm-sub{font-size:14px;color:var(--txt2);line-height:1.7;margin-bottom:1.5rem}
+
+/* FECHA GRID */
+.fecha-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:.875rem 1rem;background:var(--surf2)}
+.fecha-field label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--txt3);display:block;margin-bottom:5px}
+.fecha-field input{width:100%;font-size:15px;font-weight:700;border:2px solid var(--bord2);border-radius:8px;padding:10px 8px;background:var(--surf);color:var(--txt);outline:none;transition:border-color .15s}
+.fecha-field input:focus{border-color:var(--amber)}
+
+/* CONFIRM BTN */
+.confirm-jornada-btn{width:100%;padding:20px;font-size:18px;font-weight:800;background:#1E2022;color:#fff;border:none;border-radius:12px;cursor:pointer;margin-top:.5rem;margin-bottom:2rem;letter-spacing:.03em;-webkit-tap-highlight-color:transparent}
+.confirm-jornada-btn:active{background:var(--amber)}
 
 @media print{.hdr,.btn,.tab{display:none!important}.page{padding:0}}
 </style>
@@ -298,155 +331,182 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
 <div id="view-tab" style="display:none">
 <div class="t-screen">
 
-  <!-- PIN -->
+  <!-- ── PIN ── -->
   <div id="t-pin" class="t-page">
     <div class="pin-wrap">
-      <div class="pin-title">Identificación</div>
+      <div class="pin-title">OP Laminado</div>
       <div class="pin-sub">Ingresá tu PIN de operario</div>
       <div class="pin-dots" id="pin-dots">·  ·  ·  ·</div>
       <div class="pin-grid" id="pin-grid"></div>
-      <div id="pin-err" style="color:var(--red);font-size:14px;margin-top:.5rem"></div>
+      <div id="pin-err" style="color:var(--red);font-size:14px;margin-top:.5rem;font-weight:600"></div>
     </div>
   </div>
 
-  <!-- OP List tablet -->
+  <!-- ── LISTA OPs ── -->
   <div id="t-ops" class="t-page" style="display:none">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;padding:.875rem 1rem;background:#1E2022;border-radius:10px">
       <div style="flex:1">
-        <div style="font-size:20px;font-weight:700" id="t-username">—</div>
-        <div style="font-size:13px;color:var(--txt3)">Seleccioná una OP para cargar</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Operario</div>
+        <div style="font-size:22px;font-weight:800;color:#fff" id="t-username">—</div>
       </div>
-      <button class="btn sm" onclick="tLogout()">Salir</button>
+      <button onclick="tLogout()" style="padding:10px 16px;border:2px solid rgba(255,255,255,.3);border-radius:8px;background:transparent;color:#fff;font-size:13px;font-weight:700;cursor:pointer">Salir</button>
     </div>
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3);margin-bottom:.625rem;padding:0 .25rem">Órdenes abiertas</div>
     <div id="t-op-list"></div>
   </div>
 
-  <!-- Jornada form -->
+  <!-- ── JORNADA FORM ── -->
   <div id="t-jornada" class="t-page" style="display:none">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">
-      <button class="btn sm" onclick="tBackToOPs()">←</button>
-      <div style="flex:1">
-        <div style="font-size:16px;font-weight:700" id="tj-titulo">—</div>
-        <div style="font-size:12px;color:var(--txt3)" id="tj-sub">—</div>
+
+    <!-- HEADER OP -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;padding:.875rem 1rem;background:#1E2022;border-radius:10px">
+      <button onclick="tBackToOPs()" style="width:40px;height:40px;border:2px solid rgba(255,255,255,.3);border-radius:8px;background:transparent;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0">←</button>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Jornada <span id="tj-num">1</span></div>
+        <div style="font-size:17px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="tj-titulo">—</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5)" id="tj-sub">—</div>
       </div>
     </div>
 
-    <!-- Resumen OP acumulado -->
-    <div class="t-sect" style="margin-bottom:.75rem">
-      <div class="t-sect-head">Resumen OP — acumulado vs teórico</div>
-      <div class="resumen-grid" id="t-resumen"></div>
-      <div style="padding:.5rem .875rem .75rem">
-        <div class="pbar" style="height:8px"><div class="pfill" id="t-pfill" style="width:0%"></div></div>
-        <div class="plabel" id="t-plabel"></div>
+    <!-- RESUMEN ACUMULADO -->
+    <div class="t-block" style="margin-bottom:.75rem">
+      <div class="t-block-hdr">
+        <span class="t-block-icon">📊</span>
+        <span class="t-block-title">Acumulado vs Teórico</span>
       </div>
-    </div>
-
-    <!-- JORNADA -->
-    <div class="t-sect">
-      <div class="t-sect-head">📅 Jornada — <span id="tj-num" style="color:var(--amber)">1</span></div>
-
-      <!-- Fecha y horario -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem">
-        <div>
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:5px">Fecha</div>
-          <input type="date" id="tj-fecha" style="width:100%;font-size:15px;font-weight:600;border:2px solid var(--bord2);border-radius:var(--rs);padding:9px 8px;background:var(--surf2);color:var(--txt);outline:none"/>
+      <div class="rsm-grid" id="t-resumen">
+        <div class="rsm-cell neutral"><div class="rsm-label">Kg finales</div><div class="rsm-real">—</div></div>
+        <div class="rsm-cell neutral"><div class="rsm-label">PET</div><div class="rsm-real">—</div></div>
+        <div class="rsm-cell neutral"><div class="rsm-label">PE</div><div class="rsm-real">—</div></div>
+        <div class="rsm-cell neutral"><div class="rsm-label">Scrap</div><div class="rsm-real">—</div></div>
+      </div>
+      <div style="padding:.5rem 1rem .75rem">
+        <div style="height:10px;background:var(--surf2);border-radius:5px;overflow:hidden">
+          <div style="height:100%;background:var(--pet);border-radius:5px;transition:width .3s" id="t-pfill"></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;grid-column:span 1">
+        <div style="font-size:12px;color:var(--txt3);margin-top:4px;font-family:var(--mono);font-weight:600" id="t-plabel"></div>
+      </div>
+    </div>
+
+    <!-- FECHA / HORARIO -->
+    <div class="t-block" style="margin-bottom:.75rem">
+      <div class="t-block-hdr">
+        <span class="t-block-icon">📅</span>
+        <span class="t-block-title">Fecha y horario</span>
+      </div>
+      <div class="fecha-grid">
+        <div class="fecha-field">
+          <label>Fecha</label>
+          <input type="date" id="tj-fecha"/>
+        </div>
+        <div class="fecha-field">
+          <label>Hora inicio</label>
+          <input type="time" id="tj-ini"/>
+        </div>
+        <div class="fecha-field">
+          <label>Hora fin</label>
+          <input type="time" id="tj-fin"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRID 2 COL: PET | PE -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
+
+      <!-- PET -->
+      <div class="t-block" style="margin-bottom:0">
+        <div class="t-block-hdr pet">
+          <span class="t-block-icon">🎞</span>
+          <span class="t-block-title">PET</span>
+        </div>
+        <div class="t-block-teo">Restante: <span id="tj-teo-pet" style="color:#fff;font-weight:800">—</span></div>
+        <div id="pet-list" style="padding:.625rem .75rem .25rem"></div>
+        <div style="padding:.25rem .75rem .75rem">
+          <button class="t-add-btn pet" onclick="addBobina('pet')">＋ Bobina PET</button>
+        </div>
+        <div class="t-block-footer pet">
           <div>
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:5px">Inicio</div>
-            <input type="time" id="tj-ini" style="width:100%;font-size:15px;font-weight:600;border:2px solid var(--bord2);border-radius:var(--rs);padding:9px 6px;background:var(--surf2);color:var(--txt);outline:none"/>
+            <div class="t-total-label" style="color:var(--pet)">Total PET</div>
+            <div class="t-total-count" id="pet-count">0 bobinas</div>
           </div>
+          <div class="t-total-val pet" id="pet-total">0.0 kg</div>
+        </div>
+      </div>
+
+      <!-- PE -->
+      <div class="t-block" style="margin-bottom:0">
+        <div class="t-block-hdr pe">
+          <span class="t-block-icon">🎞</span>
+          <span class="t-block-title">PE</span>
+        </div>
+        <div class="t-block-teo">Restante: <span id="tj-teo-pe" style="color:#fff;font-weight:800">—</span></div>
+        <div id="pe-list" style="padding:.625rem .75rem .25rem"></div>
+        <div style="padding:.25rem .75rem .75rem">
+          <button class="t-add-btn pe" onclick="addBobina('pe')">＋ Bobina PE</button>
+        </div>
+        <div class="t-block-footer pe">
           <div>
-            <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:5px">Fin</div>
-            <input type="time" id="tj-fin" style="width:100%;font-size:15px;font-weight:600;border:2px solid var(--bord2);border-radius:var(--rs);padding:9px 6px;background:var(--surf2);color:var(--txt);outline:none"/>
+            <div class="t-total-label" style="color:var(--pe)">Total PE</div>
+            <div class="t-total-count" id="pe-count">0 bobinas</div>
           </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- GRID 2 COLUMNAS: PET | PE -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:.625rem">
-
-      <!-- COL PET -->
-      <div class="t-sect" style="margin-bottom:0">
-        <div class="t-sect-head" style="background:var(--green-bg);color:var(--green)">
-          🎞 PET
-        </div>
-        <div class="t-teo" style="font-size:11px">Restante: <span id="tj-teo-pet">—</span></div>
-        <div id="pet-list" style="padding:.5rem .625rem .25rem"></div>
-        <div style="padding:.25rem .625rem .625rem">
-          <button onclick="addBobina('pet')" style="width:100%;padding:10px 6px;border:2px dashed var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:700;color:var(--green);background:var(--green-bg)">＋ PET</button>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;border-top:2px solid var(--bord);background:var(--green-bg)">
-          <div style="font-size:11px;color:var(--green);font-weight:600" id="pet-count">0 bob</div>
-          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--green)" id="pet-total">0.0 kg</div>
-        </div>
-      </div>
-
-      <!-- COL PE -->
-      <div class="t-sect" style="margin-bottom:0">
-        <div class="t-sect-head" style="background:var(--blue-bg);color:var(--blue)">
-          🎞 PE
-        </div>
-        <div class="t-teo" style="font-size:11px">Restante: <span id="tj-teo-pe">—</span></div>
-        <div id="pe-list" style="padding:.5rem .625rem .25rem"></div>
-        <div style="padding:.25rem .625rem .625rem">
-          <button onclick="addBobina('pe')" style="width:100%;padding:10px 6px;border:2px dashed var(--bord2);border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:700;color:var(--blue);background:var(--blue-bg)">＋ PE</button>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;border-top:2px solid var(--bord);background:var(--blue-bg)">
-          <div style="font-size:11px;color:var(--blue);font-weight:600" id="pe-count">0 bob</div>
-          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--blue)" id="pe-total">0.0 kg</div>
+          <div class="t-total-val pe" id="pe-total">0.0 kg</div>
         </div>
       </div>
     </div>
 
-    <!-- BOBINAS PRODUCTO FINAL (ancho completo) -->
-    <div class="t-sect" style="margin-bottom:.625rem">
-      <div class="t-sect-head">✂ Producto terminado — <span style="color:var(--amber)">restante: <span id="tj-teo-fin">—</span></span></div>
-      <div class="t-teo" id="tj-teo-bobs-info" style="display:none;font-size:11px">
-        Esperadas: <span id="tj-teo-nbobs">—</span> bob · <span id="tj-teo-kgbob">—</span> kg/bob · <span id="tj-teo-mbob">—</span> m/bob
+    <!-- PRODUCTO FINAL -->
+    <div class="t-block" style="margin-bottom:.75rem">
+      <div class="t-block-hdr out">
+        <span class="t-block-icon">✂</span>
+        <span class="t-block-title">Producto terminado</span>
+        <span class="t-block-badge" id="tj-teo-fin-badge">Restante: —</span>
       </div>
-      <div id="out-bob-list" style="padding:.5rem .875rem .25rem"></div>
-      <div style="padding:.25rem .875rem .625rem">
-        <button class="bob-add" onclick="addOutBob()">＋ Agregar bobina de salida</button>
+      <div id="tj-teo-bobs-info" style="display:none" class="t-block-teo">
+        Esperadas: <span id="tj-teo-nbobs" style="color:#fff;font-weight:800">—</span> bob ·
+        <span id="tj-teo-kgbob" style="color:#fff;font-weight:800">—</span> kg/bob ·
+        <span id="tj-teo-mbob" style="color:#fff;font-weight:800">—</span> m/bob
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem;border-top:2px solid var(--bord)">
-        <div><div class="bob-total-lbl">Total producto terminado</div><div class="bob-total-sub" id="out-count">0 bobinas</div></div>
-        <div class="bob-total-val" id="out-total">0.0 kg</div>
+      <div id="out-bob-list" style="padding:.625rem .875rem .25rem"></div>
+      <div style="padding:.25rem .875rem .75rem">
+        <button class="t-add-btn out" onclick="addOutBob()">＋ Agregar bobina de salida</button>
       </div>
-    </div>
-
-    <!-- SCRAP + OBS + COMPAR (en sect separado) -->
-    <div class="t-sect">
-      <div class="t-sect-head">🗑 Scrap · Observaciones</div>
-
-      <!-- SCRAP AUTOMÁTICO DE BOBINAS -->
-      <div style="padding:.5rem .875rem .375rem;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3)">Scrap automático (calculado de bobinas)</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:.25rem .875rem .75rem;border-bottom:1px solid var(--bord)">
-        <div style="background:var(--green-bg);border-radius:var(--rs);padding:.625rem .75rem;text-align:center">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--green);margin-bottom:3px">PET sobrante</div>
-          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--green)" id="scrap-pet-bobs">0.0 kg</div>
-          <div style="font-size:10px;color:var(--txt3)" id="scrap-pet-detail">—</div>
-        </div>
-        <div style="background:var(--blue-bg);border-radius:var(--rs);padding:.625rem .75rem;text-align:center">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--blue);margin-bottom:3px">PE sobrante</div>
-          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--blue)" id="scrap-pe-bobs">0.0 kg</div>
-          <div style="font-size:10px;color:var(--txt3)" id="scrap-pe-detail">—</div>
-        </div>
-        <div style="background:var(--surf2);border-radius:var(--rs);padding:.625rem .75rem;text-align:center">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:3px">Total bobinas</div>
-          <div style="font-size:18px;font-weight:700;font-family:var(--mono);color:var(--txt)" id="scrap-bobs-total">0.0 kg</div>
-          <div style="font-size:10px;color:var(--txt3)">resto-cono</div>
-        </div>
-      </div>
-
-      <!-- TIRAS (manual) -->
-      <div style="padding:.5rem .875rem .375rem;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3)">Tiras de recorte — pesaje manual</div>
-      <div class="t-row">
+      <div class="t-block-footer out">
         <div>
-          <div class="t-row-lbl">Peso tiras</div>
-          <div class="t-row-sub">Recortes laterales del refilado</div>
+          <div class="t-total-label" style="color:var(--out)">Total producto</div>
+          <div class="t-total-count" id="out-count">0 bobinas</div>
+        </div>
+        <div class="t-total-val out" id="out-total">0.0 kg</div>
+      </div>
+    </div>
+
+    <!-- SCRAP -->
+    <div class="t-block" style="margin-bottom:.75rem">
+      <div class="t-block-hdr scrap">
+        <span class="t-block-icon">⚖</span>
+        <span class="t-block-title">Scrap</span>
+      </div>
+      <div class="scrap-grid">
+        <div class="scrap-cell" style="border-color:var(--pet);background:var(--pet-bg)">
+          <div class="scrap-cell-lbl" style="color:var(--pet)">PET sobrante</div>
+          <div class="scrap-cell-val" style="color:var(--pet)" id="scrap-pet-bobs">0.0</div>
+          <div class="scrap-cell-sub" id="scrap-pet-detail">kg</div>
+        </div>
+        <div class="scrap-cell" style="border-color:var(--pe);background:var(--pe-bg)">
+          <div class="scrap-cell-lbl" style="color:var(--pe)">PE sobrante</div>
+          <div class="scrap-cell-val" style="color:var(--pe)" id="scrap-pe-bobs">0.0</div>
+          <div class="scrap-cell-sub" id="scrap-pe-detail">kg</div>
+        </div>
+        <div class="scrap-cell" style="border-color:var(--bord2)">
+          <div class="scrap-cell-lbl" style="color:var(--txt3)">Bobinas total</div>
+          <div class="scrap-cell-val" style="color:var(--txt)" id="scrap-bobs-total">0.0</div>
+          <div class="scrap-cell-sub">kg</div>
+        </div>
+      </div>
+      <div style="padding:.5rem 1rem .25rem;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3);border-top:2px solid var(--bord)">Tiras de recorte — pesaje manual</div>
+      <div class="t-field-row">
+        <div class="t-field-lbl">
+          <div class="t-field-lbl-main">Peso tiras</div>
+          <div class="t-field-lbl-sub">Recortes del refilado — pesar al cerrar</div>
         </div>
         <div class="big-num">
           <button class="big-btn" onpointerdown="startStep('tj-tiras',-0.5)">−</button>
@@ -454,45 +514,49 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
           <button class="big-btn" onpointerdown="startStep('tj-tiras',0.5)">+</button>
         </div>
       </div>
-
-      <!-- TOTAL SCRAP -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem .875rem;background:var(--surf2);border-top:2px solid var(--bord)">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1rem;background:var(--scrap-bg);border-top:3px solid var(--scrap)">
         <div>
-          <div style="font-size:13px;font-weight:700">Scrap total esta jornada</div>
-          <div style="font-size:11px;color:var(--txt3)">Sobrante bobinas + tiras recorte</div>
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--scrap)">Scrap total jornada</div>
+          <div style="font-size:11px;color:var(--txt3);margin-top:2px" id="scrap-teo-comp">vs teórico: —</div>
         </div>
-        <div style="text-align:right">
-          <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--red)" id="scrap-total-disp">0.0 kg</div>
-          <div style="font-size:11px;color:var(--txt3)" id="scrap-teo-comp">teo: — kg</div>
-        </div>
+        <div style="font-size:28px;font-weight:900;font-family:var(--mono);color:var(--scrap)" id="scrap-total-disp">0.0 kg</div>
       </div>
-      <!-- hidden for compat -->
       <input type="hidden" id="tj-scrap-b" value="0"/>
-      <div id="tj-compar" style="display:none;padding:.75rem .875rem;border-top:1px solid var(--bord);font-size:13px;background:var(--surf2);line-height:1.9"></div>
-      <div style="padding:.5rem .875rem .3rem;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);border-top:1px solid var(--bord)">Observaciones</div>
+    </div>
+
+    <!-- COMPARACIÓN -->
+    <div id="tj-compar" style="display:none;background:var(--surf);border:2px solid var(--bord2);border-radius:10px;padding:.875rem 1rem;margin-bottom:.75rem;font-size:13px;font-family:var(--mono);line-height:2"></div>
+
+    <!-- OBSERVACIONES -->
+    <div class="t-block" style="margin-bottom:.75rem">
+      <div class="t-block-hdr obs-hdr">
+        <span class="t-block-icon">📝</span>
+        <span class="t-block-title">Observaciones</span>
+      </div>
       <div class="obs-chips" id="obs-chips"></div>
       <div style="padding:.25rem .875rem .875rem">
-        <textarea class="obs-area" id="tj-obs" placeholder="Detalles adicionales…"></textarea>
+        <textarea class="obs-area" id="tj-obs" placeholder="Anotá cualquier observación adicional…"></textarea>
       </div>
     </div>
 
-    <button onclick="guardarJornada()" style="width:100%;padding:18px;font-size:17px;font-weight:700;background:var(--amber);color:#fff;border:none;border-radius:var(--r);cursor:pointer;margin-top:.25rem;margin-bottom:2rem">
-      ✓ Confirmar jornada
+    <button class="confirm-jornada-btn" onclick="guardarJornada()">
+      ✓ &nbsp; Confirmar jornada
     </button>
   </div>
 
-  <!-- Confirmación -->
+  <!-- ── CONFIRMACIÓN ── -->
   <div id="t-confirm" class="t-page" style="display:none">
     <div class="confirm-box">
-      <div class="confirm-icon">✓</div>
+      <div class="confirm-icon">✅</div>
       <div class="confirm-title">Jornada registrada</div>
       <div class="confirm-sub" id="confirm-msg">—</div>
-      <button class="btn pri" onclick="tBackToOPs()" style="width:100%;padding:14px;font-size:15px">Volver a OPs</button>
+      <button onclick="tBackToOPs()" style="width:100%;padding:16px;font-size:16px;font-weight:800;background:#1E2022;color:#fff;border:none;border-radius:10px;cursor:pointer">Volver a OPs</button>
     </div>
   </div>
 
 </div>
 </div>
+
 
 <script>
 /* ══ CONFIG ══ */
@@ -974,7 +1038,8 @@ function updateResumen(){
   // Teórico restante para esta jornada
   document.getElementById('tj-teo-pet').textContent=Math.max(0,teo.kgPET-real.kgPET).toFixed(1)+' kg';
   document.getElementById('tj-teo-pe').textContent=Math.max(0,teo.kgPE-real.kgPE).toFixed(1)+' kg';
-  document.getElementById('tj-teo-fin').textContent=Math.max(0,kg-real.kgFin).toFixed(1)+' kg';
+  const _tfin=document.getElementById('tj-teo-fin');if(_tfin)_tfin.textContent=Math.max(0,kg-real.kgFin).toFixed(1)+' kg';
+  const _tfb=document.getElementById('tj-teo-fin-badge');if(_tfb)_tfb.textContent='Restante: '+Math.max(0,kg-real.kgFin).toFixed(1)+' kg';
 
   const hasData=real.kgFin>0||real.kgPET>0;
   const cells=[
@@ -986,12 +1051,13 @@ function updateResumen(){
   document.getElementById('t-resumen').innerHTML=cells.map(c=>{
     const d=c.real-c.teo,p=c.teo>0?d/c.teo*100:0;
     const ok=Math.abs(p)<3,bad=c.inv?p<-3:p>5;
-    const dcls=!hasData?'var(--txt3)':ok?'var(--green)':bad?'var(--red)':'var(--amber)';
-    return`<div class="res-cell">
-      <div class="res-label">${c.l}</div>
-      <div class="res-teo">Teo: ${c.teo.toFixed(0)}</div>
-      <div class="res-real">${hasData?c.real.toFixed(1):'—'}</div>
-      <div class="res-dev" style="color:${dcls}">${hasData?(d>=0?'+':'')+d.toFixed(1):'—'}</div>
+    const cellCls=!hasData?'neutral':ok?'ok':bad?'bad':'warn';
+    const devCls=!hasData?'neutral':ok?'ok':bad?'bad':'warn';
+    return`<div class="rsm-cell ${cellCls}">
+      <div class="rsm-label">${c.l}</div>
+      <div class="rsm-teo">Teo: ${c.teo.toFixed(0)}</div>
+      <div class="rsm-real">${hasData?c.real.toFixed(1):'—'}</div>
+      <div class="rsm-dev ${devCls}">${hasData?(d>=0?'+':'')+d.toFixed(1):'—'}</div>
     </div>`;
   }).join('');
 }
@@ -1114,8 +1180,8 @@ function renderBobs(tipo){
             onchange="setBobField('${tipo}',${i},'metros',this.value)"/>
         </div>
       </div>
-      <div class="bob-estado" style="padding:.5rem .75rem;border-bottom:1px solid var(--bord)">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:5px">Estado</div>
+      <div class="bob-estado-wrap">
+        <div class="bob-estado-lbl">Estado de la bobina</div>
         <div class="bob-estados">
           ${renderEstadoBtns(b,tipo,i)}
         </div>
@@ -1132,9 +1198,9 @@ function renderBobs(tipo){
         </div>
         <div class="bob-cono-note" id="bc-note-${tipo}-${i}">= ${b.kgNetos||0}kg − (${b.pesoRestante||0}kg − ${cono}kg cono)</div>
       </div>`:''}
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;background:${b.estado&&b.estado!=='bloqueada'?tipo==='pet'?'var(--green-bg)':'var(--blue-bg)':'var(--surf2)'}">
-        <span style="font-size:12px;font-weight:600;color:${ac}">Consumido</span>
-        <span style="font-size:17px;font-weight:700;font-family:var(--mono);color:${b.estado&&b.estado!=='bloqueada'?ac:'var(--txt3)'}" id="bc-${tipo}-${i}">${b.estado&&b.estado!=='bloqueada'?cons.toFixed(1)+' kg':'— kg'}</span>
+      <div class="bob-cons-row" style="background:${b.estado&&b.estado!=='bloqueada'?tipo==='pet'?'var(--pet-bg)':'var(--pe-bg)':'var(--surf2)'}">
+        <span style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:${b.estado&&b.estado!=='bloqueada'?ac:'var(--txt3)'}">Consumido</span>
+        <span style="font-size:20px;font-weight:900;font-family:var(--mono);color:${b.estado&&b.estado!=='bloqueada'?ac:'var(--txt3)'}" id="bc-${tipo}-${i}">${b.estado&&b.estado!=='bloqueada'?cons.toFixed(1)+' kg':'— kg'}</span>
       </div>
     </div>`;
   }).join('');
