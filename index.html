@@ -974,10 +974,11 @@ function renderOpDetail(){
           <div style="font-size:16px;font-weight:700">${op.cliente} <span style="font-size:12px;font-family:var(--mono);color:var(--amber)">${op.numero}</span></div>
           <div style="font-size:12px;color:var(--txt3)">Cono PET: ${op.pesoCono_pet||0}kg · Cono PE: ${op.pesoCono_pe||0}kg${op.notas?' · '+op.notas:''}</div>
         </div>
-        <div style="display:flex;gap:6px;align-items:center">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           <span class="badge ${op.estado==='abierta'?'open':'closed'}">${op.estado}</span>
           <button class="btn sm" onclick="mailOP('${op.id}')" title="Enviar mail de OP">✉ Mail OP</button>
           ${op.estado==='abierta'?`<button class="btn sm danger" onclick="cerrarOP('${op.id}')">Cerrar OP</button>`:''}
+          <button class="btn sm danger" onclick="eliminarOP('${op.id}')" title="Eliminar OP definitivamente">🗑 Eliminar</button>
         </div>
       </div>
       <div class="card-body">
@@ -1145,6 +1146,30 @@ async function cerrarOP(id){
   if(op)op.estado='cerrada';
   await saveData();
   renderOpDetail();
+}
+async function eliminarOP(id){
+  const op=data.ops.find(o=>o.id===id);if(!op)return;
+  const nJor=(op.jornadas||[]).length;
+  const nEnt=(op.entregas||[]).length;
+  const tieneData=nJor>0||nEnt>0;
+  if(tieneData){
+    const detalle=[];
+    if(nJor)detalle.push(nJor+' jornada'+(nJor!==1?'s':''));
+    if(nEnt)detalle.push(nEnt+' entrega'+(nEnt!==1?'s':''));
+    const conf=prompt(
+      `⚠ ATENCIÓN — Vas a borrar la OP ${op.numero} (${op.cliente}).\n\n`+
+      `Tiene ${detalle.join(' y ')} cargada${(nJor+nEnt)!==1?'s':''} que se van a perder.\n\n`+
+      `Para confirmar, tipeá el número de OP exacto:`
+    );
+    if(conf===null)return;
+    if(conf.trim()!==op.numero){alert('El número no coincide. No se borró nada.');return;}
+  }else{
+    if(!confirm(`¿Eliminar la OP ${op.numero} (${op.cliente})?\nEsta acción no se puede deshacer.`))return;
+  }
+  data.ops=data.ops.filter(o=>o.id!==id);
+  await saveData();
+  selectedOP=null;
+  mTab('ops');
 }
 
 /* ══ CLIENTES (CRUD) ══ */
