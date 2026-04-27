@@ -264,13 +264,15 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
   <div class="tabs">
     <button class="tab on" id="mtab-ops" onclick="mTab('ops')">📋 Órdenes</button>
     <button class="tab" id="mtab-analisis" onclick="mTab('analisis')">📈 Análisis</button>
+    <button class="tab" id="mtab-clientes" onclick="mTab('clientes')">👥 Clientes</button>
+    <button class="tab" id="mtab-config" onclick="mTab('config')">⚙ Config</button>
     <button class="tab" id="mtab-nueva" onclick="mTab('nueva')">＋ Nueva OP</button>
   </div>
 
   <!-- Lista OPs -->
   <div id="m-ops">
     <!-- KPI bar -->
-    <div id="m-kpi-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem"></div>
+    <div id="m-kpi-bar" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:1rem"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem;gap:8px;flex-wrap:wrap">
       <span style="font-size:13px;color:var(--txt2);font-weight:500" id="ops-summary">—</span>
       <div style="display:flex;gap:5px">
@@ -285,6 +287,52 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
   <!-- Análisis -->
   <div id="m-analisis" style="display:none">
     <div id="analisis-content"></div>
+  </div>
+
+  <!-- Clientes / Productos -->
+  <div id="m-clientes" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem;gap:8px;flex-wrap:wrap">
+      <span style="font-size:13px;color:var(--txt2);font-weight:500" id="cli-summary">—</span>
+      <button class="btn pri sm" onclick="openCliEdit(-1)">＋ Nuevo cliente / producto</button>
+    </div>
+    <div id="cli-list"></div>
+    <!-- Modal editor cliente -->
+    <div id="cli-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center">
+      <div style="background:var(--surf);border-radius:var(--r);padding:1.25rem;max-width:480px;width:94%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.25)">
+        <div id="cli-modal-title" style="font-size:15px;font-weight:700;margin-bottom:.875rem">—</div>
+        <div class="field"><span class="field-name">Nombre / producto</span><input type="text" id="cli-n" placeholder="Mendia (312)" style="text-align:left;flex:1"/></div>
+        <div class="card-head"><span class="card-title" style="font-size:11px;color:var(--txt3)">PET</span></div>
+        <div class="field"><span class="field-name">Ancho PET</span><span class="field-unit">mm</span><input type="number" id="cli-aPET" step="1" min="0"/></div>
+        <div class="field"><span class="field-name">Espesor PET</span><span class="field-unit">µ</span><input type="number" id="cli-ePET" step="1" min="0"/></div>
+        <div class="card-head"><span class="card-title" style="font-size:11px;color:var(--txt3)">PE</span></div>
+        <div class="field"><span class="field-name">Ancho PE</span><span class="field-unit">mm</span><input type="number" id="cli-aPE" step="1" min="0"/></div>
+        <div class="field"><span class="field-name">Espesor PE</span><span class="field-unit">µ</span><input type="number" id="cli-ePE" step="1" min="0"/></div>
+        <div class="card-head"><span class="card-title" style="font-size:11px;color:var(--txt3)">Producto final</span></div>
+        <div class="field"><span class="field-name">Ancho final</span><span class="field-unit">mm</span><input type="number" id="cli-af" step="1" min="0"/></div>
+        <div class="field"><span class="field-name">N° tiras (nT)</span><input type="number" id="cli-nT" step="1" min="1" value="1"/></div>
+        <div class="field"><span class="field-name">Peso bobina final (pBF)</span><span class="field-unit">kg</span><input type="number" id="cli-pBF" step="0.1" min="0" placeholder="opcional"/></div>
+        <div style="display:flex;gap:8px;margin-top:1rem">
+          <button class="btn pri" onclick="saveCli()" style="flex:1">Guardar</button>
+          <button class="btn" onclick="closeCliModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Configuración -->
+  <div id="m-config" style="display:none">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Destinatarios del mail de OP</span></div>
+      <div class="field"><span class="field-name">Agustín (PET)</span><input type="email" id="cfg-agustin" placeholder="agustin@winflex.com.ar" style="text-align:left;flex:1;max-width:280px"/></div>
+      <div class="field"><span class="field-name">Jonathan (PE / Laminado)</span><input type="email" id="cfg-jonathan" placeholder="jonathan@winflex.com.ar" style="text-align:left;flex:1;max-width:280px"/></div>
+      <div class="field"><span class="field-name">Mirta (CC)</span><input type="email" id="cfg-mirta" placeholder="mirta@winflex.com.ar" style="text-align:left;flex:1;max-width:280px"/></div>
+      <div class="field"><span class="field-name">Matías (CC / firma)</span><input type="email" id="cfg-matias" placeholder="matias@winflex.com.ar" style="text-align:left;flex:1;max-width:280px"/></div>
+      <div class="field"><span class="field-name">Otros CC (separar por coma)</span><input type="text" id="cfg-cc" placeholder="opcional" style="text-align:left;flex:1;max-width:280px"/></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn pri" onclick="saveCfg()">Guardar configuración</button>
+      <button class="btn" onclick="mTab('ops')">Volver</button>
+    </div>
   </div>
 
   <!-- Nueva OP -->
@@ -478,7 +526,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
     <div class="t-block" style="margin-bottom:.75rem">
       <div class="t-block-hdr out">
         <span class="t-block-icon">✂</span>
-        <span class="t-block-title">Producto terminado</span>
+        <span class="t-block-title">Bobinas en proceso (laminadas s/refilar)</span>
         <span class="t-block-badge" id="tj-teo-fin-badge">Restante: —</span>
       </div>
       <div id="tj-teo-bobs-info" style="display:none" class="t-block-teo">
@@ -488,11 +536,11 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
       </div>
       <div id="out-bob-list" style="padding:.625rem .875rem .25rem"></div>
       <div style="padding:.25rem .875rem .75rem">
-        <button class="t-add-btn out" onclick="addOutBob()">＋ Agregar bobina de salida</button>
+        <button class="t-add-btn out" onclick="addOutBob()">＋ Agregar bobina en proceso</button>
       </div>
       <div class="t-block-footer out">
         <div>
-          <div class="t-total-label" style="color:var(--out)">Total producto</div>
+          <div class="t-total-label" style="color:var(--out)">Total en proceso</div>
           <div class="t-total-count" id="out-count">0 bobinas</div>
         </div>
         <div class="t-total-val out" id="out-total">0.0 kg</div>
@@ -608,7 +656,7 @@ const BOB_ESTADOS=[
   {k:'otro',       label:'✏ Otro',         cls:'sel-otro'},
 ];
 
-const CLIENTES=[
+const CLIENTES_SEED=[
   // pBF = peso bobina final (kg) del producto terminado (de ficha técnica)
   {n:'Huertas del Pilar',   af:200,ef:450,aPET:430,ePET:400,aPE:450,ePE:50,nT:2,pBF:25},
   {n:'Dantelli (357-C)',    af:357,ef:350,aPET:380,ePET:300,aPE:400,ePE:50,nT:1,pBF:30},
@@ -629,12 +677,15 @@ const CLIENTES=[
   {n:'Pespasa (300)',       af:300,ef:93, aPET:330,ePET:13, aPE:350,ePE:80,nT:1,pBF:null},
 ];
 
+const CFG_DEFAULT={agustin:'',jonathan:'',mirta:'',matias:'',cc:''};
+
 /* ══ STATE ══ */
-let data={ops:[]},currentView='mgr',filterMode='all';
+let data={ops:[],clientes:[],config:{...CFG_DEFAULT}},currentView='mgr',filterMode='all';
 let currentUser=null,selectedOP=null,tScreen='pin';
 let pinBuffer='',selectedObs=new Set();
 let petBobs=[],peBobs=[],outBobs=[];  // input bobinas PET/PE y bobinas de salida
 let stepTimer=null;
+let cliEditIdx=-1;
 
 /* ══ JSONBIN ══ */
 async function loadData(){
@@ -643,8 +694,10 @@ async function loadData(){
     const r=await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`,{headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':'false'}});
     if(!r.ok)throw 0;
     data=await r.json();
-    if(!data.ops)data={ops:[]};
-  }catch{data={ops:[]};}
+    if(!data.ops)data.ops=[];
+    if(!data.clientes||!data.clientes.length)data.clientes=CLIENTES_SEED.map(c=>({...c}));
+    if(!data.config)data.config={...CFG_DEFAULT};
+  }catch{data={ops:[],clientes:CLIENTES_SEED.map(c=>({...c})),config:{...CFG_DEFAULT}};}
 }
 async function saveData(){
   if(!BIN_ID){
@@ -751,10 +804,12 @@ function switchView(v){
 
 /* ══ MANAGER ══ */
 function mTab(t){
-  ['ops','analisis','nueva','detail'].forEach(x=>{const e=document.getElementById('m-'+x);if(e)e.style.display=x===t?'':'none';});
-  ['ops','analisis','nueva'].forEach(x=>{const e=document.getElementById('mtab-'+x);if(e)e.className='tab'+(x===t?' on':'');});
+  ['ops','analisis','clientes','config','nueva','detail'].forEach(x=>{const e=document.getElementById('m-'+x);if(e)e.style.display=x===t?'':'none';});
+  ['ops','analisis','clientes','config','nueva'].forEach(x=>{const e=document.getElementById('mtab-'+x);if(e)e.className='tab'+(x===t?' on':'');});
   if(t==='ops')renderDash();
   if(t==='analisis'){renderAnalisis();}
+  if(t==='clientes'){renderClientes();}
+  if(t==='config'){renderConfig();}
   if(t==='nueva'){
     document.getElementById('n-fecha').value=new Date().toISOString().slice(0,10);
     document.getElementById('teo-card').style.display='none';
@@ -782,6 +837,7 @@ function renderDash(){
   const open=data.ops.filter(o=>o.estado==='abierta').length;
   const closed=data.ops.filter(o=>o.estado==='cerrada').length;
   const totalKgFin=allReal.reduce((s,x)=>s+x.r.kgFin,0);
+  const adeudadoOpen=data.ops.filter(o=>o.estado==='abierta').reduce((s,o)=>s+Math.max(0,o.kgPedidos-calcEntregado(o)),0);
   const eficiencias=allReal.filter(x=>x.r.eficiencia!=null).map(x=>x.r.eficiencia);
   const efProm=eficiencias.length?eficiencias.reduce((a,b)=>a+b,0)/eficiencias.length:null;
   // KPI bar
@@ -790,6 +846,7 @@ function renderDash(){
     {l:'OPs abiertas',v:open,u:'',c:'var(--green)'},
     {l:'OPs cerradas',v:closed,u:'',c:'var(--txt3)'},
     {l:'Kg producidos',v:totalKgFin.toFixed(0),u:'kg',c:'var(--amber)'},
+    {l:'Adeudado abierto',v:adeudadoOpen.toFixed(0),u:'kg',c:adeudadoOpen>0?'var(--red)':'var(--green)'},
     {l:'Ef. promedio',v:efProm!=null?efProm.toFixed(0)+'%':'—',u:'',c:efProm>=90?'var(--green)':efProm>=75?'var(--amber)':'var(--red)'},
   ].map(k=>`<div style="background:var(--surf);border:1px solid var(--bord);border-radius:8px;padding:.75rem 1rem;border-top:3px solid ${k.c}">
     <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:4px">${k.l}</div>
@@ -801,15 +858,20 @@ function renderDash(){
   el.innerHTML=ops.map(op=>{
     const real=calcRealForOP(op);
     const pct=op.kgPedidos>0?Math.min(real.kgFin/op.kgPedidos*100,100):0;
+    const entregado=calcEntregado(op);
+    const pctEnt=op.kgPedidos>0?Math.min(entregado/op.kgPedidos*100,100):0;
+    const adeudado=op.kgPedidos-entregado;
     const ef=real.eficiencia;
     const efC=ef==null?'var(--txt3)':ef>=90?'var(--green)':ef>=75?'var(--amber)':'var(--red)';
     const bc=op.estado==='abierta'?'var(--green)':'var(--bord2)';
+    const completaEnt=entregado>=op.kgPedidos&&op.kgPedidos>0;
     return`<div class="op-item" onclick="openOP('${op.id}')" style="border-left:4px solid ${bc}">
       <div style="display:flex;align-items:flex-start;gap:10px">
         <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap">
             <span style="font-family:var(--mono);font-size:11px;color:var(--amber);font-weight:800;background:var(--amber-lt);padding:1px 7px;border-radius:4px">${op.numero}</span>
             <span class="badge ${op.estado==='abierta'?'open':'closed'}">${op.estado}</span>
+            ${completaEnt&&op.estado==='abierta'?'<span class="badge open" style="background:var(--blue-bg);color:var(--blue)">✓ Entrega completa</span>':''}
           </div>
           <div style="font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${op.cliente}</div>
           <div style="font-size:12px;color:var(--txt3);margin-top:2px">${op.fecha} · ${op.kgPedidos} kg pedidos · ${op.jornadas?.length||0} jornada${(op.jornadas?.length||0)!==1?'s':''}</div>
@@ -822,8 +884,15 @@ function renderDash(){
       <div style="margin-top:8px">
         <div class="pbar" style="height:6px"><div class="pfill" style="width:${pct.toFixed(1)}%;background:${op.estado==='abierta'?'var(--green)':'var(--txt3)'}"></div></div>
         <div style="display:flex;justify-content:space-between;margin-top:3px">
-          <span class="plabel">${real.kgFin.toFixed(0)} / ${op.kgPedidos} kg finales</span>
+          <span class="plabel">Producido: ${real.kgFin.toFixed(0)} / ${op.kgPedidos} kg</span>
           <span class="plabel">PET: ${real.kgPET.toFixed(0)}kg · PE: ${real.kgPE.toFixed(0)}kg</span>
+        </div>
+      </div>
+      <div style="margin-top:6px">
+        <div class="pbar" style="height:6px;background:var(--blue-bg)"><div class="pfill" style="width:${pctEnt.toFixed(1)}%;background:var(--blue)"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:3px">
+          <span class="plabel">Entregado: ${entregado.toFixed(0)} / ${op.kgPedidos} kg${(op.entregas?.length)?' ('+op.entregas.length+' entrega'+(op.entregas.length!==1?'s':'')+')':''}</span>
+          <span class="plabel" style="color:${adeudado>0?'var(--red)':'var(--green)'};font-weight:700">${adeudado>0?'Adeudado: '+adeudado.toFixed(0)+' kg':adeudado<0?'Sobre-entrega: '+(-adeudado).toFixed(0)+' kg':'✓ Completa'}</span>
         </div>
       </div>
     </div>`;
@@ -859,8 +928,16 @@ function renderOpDetail(){
   const jornadasHTML=(op.jornadas||[]).map((j,i)=>{
     const efStr=j.horas>0&&teo.kgFinPorHora>0?` · Ef: ${((j.kgFin/j.horas)/teo.kgFinPorHora*100).toFixed(0)}%`:'';
     const bobsDetail=`
-      ${j.bobinas_pet?.length?`<div style="margin-top:4px;color:var(--txt2)"><b>PET:</b> ${j.bobinas_pet.map(b=>`#${b.numBobina||'—'} ${b.partida?'P:'+b.partida:''} ${b.kgNetos}kg${b.metros?'/'+b.metros+'m':''} [${b.estado||'—'}]${b.estado==='parcial'?` resto:${b.pesoRestante}kg`:''}`).join(', ')}</div>`:''}
-      ${j.bobinas_pe?.length?`<div style="margin-top:2px;color:var(--txt2)"><b>PE:</b> ${j.bobinas_pe.map(b=>`#${b.numBobina||'—'} ${b.partida?'P:'+b.partida:''} ${b.kgNetos}kg${b.metros?'/'+b.metros+'m':''} [${b.estado||'—'}]${b.estado==='parcial'?` resto:${b.pesoRestante}kg`:''}`).join(', ')}</div>`:''}
+      ${j.bobinas_pet?.length?`<div style="margin-top:4px;color:var(--txt2)"><b>PET madre:</b> ${j.bobinas_pet.map(b=>`#${b.numBobina||'—'} ${b.partida?'P:'+b.partida:''} ${b.kgNetos}kg${b.metros?'/'+b.metros+'m':''} [${b.estado||'—'}]${b.estado==='parcial'?` resto:${b.pesoRestante}kg`:''}`).join(', ')}</div>`:''}
+      ${j.bobinas_pe?.length?`<div style="margin-top:2px;color:var(--txt2)"><b>PE madre:</b> ${j.bobinas_pe.map(b=>`#${b.numBobina||'—'} ${b.partida?'P:'+b.partida:''} ${b.kgNetos}kg${b.metros?'/'+b.metros+'m':''} [${b.estado||'—'}]${b.estado==='parcial'?` resto:${b.pesoRestante}kg`:''}`).join(', ')}</div>`:''}
+      ${j.bobinas_out?.length?`<div style="margin-top:6px;color:var(--txt2)"><b>Bobinas en proceso (${j.bobinas_out.length}):</b><div style="margin-top:3px;padding-left:8px">${j.bobinas_out.map(b=>{
+        const petR=(b.petRefsNums||[]).filter(Boolean);
+        const peR =(b.peRefsNums||[]).filter(Boolean);
+        const refs=[];
+        if(petR.length)refs.push('PET '+petR.map(x=>'#'+x).join('+'));
+        if(peR.length)refs.push('PE '+peR.map(x=>'#'+x).join('+'));
+        return `<div style="font-size:11px;font-family:var(--mono)">▸ #${b.numBobina||'—'} · ${b.kg||0}kg${b.metros?' · '+b.metros+'m':''}${refs.length?' ← '+refs.join(' / '):''}</div>`;
+      }).join('')}</div></div>`:''}
       ${j.scrapPetBobs!=null?`<div style="margin-top:4px;color:var(--txt2);font-size:11px">Scrap: PET sobrante:${(j.scrapPetBobs||0).toFixed(1)}kg · PE sobrante:${(j.scrapPeBobs||0).toFixed(1)}kg · Tiras:${(j.scrapTiras||0).toFixed(1)}kg · Total:${(j.kgScrap||0).toFixed(1)}kg</div>`:''}
       ${j.obs?`<div style="margin-top:4px;font-style:italic;color:var(--txt3)">"${j.obs}"</div>`:''}`;
     return`<div class="jornada-row" onclick="toggleJorDetail(${i})">
@@ -899,6 +976,7 @@ function renderOpDetail(){
         </div>
         <div style="display:flex;gap:6px;align-items:center">
           <span class="badge ${op.estado==='abierta'?'open':'closed'}">${op.estado}</span>
+          <button class="btn sm" onclick="mailOP('${op.id}')" title="Enviar mail de OP">✉ Mail OP</button>
           ${op.estado==='abierta'?`<button class="btn sm danger" onclick="cerrarOP('${op.id}')">Cerrar OP</button>`:''}
         </div>
       </div>
@@ -925,10 +1003,84 @@ function renderOpDetail(){
       </div>
     </div>
     ${(op.jornadas||[]).length?`<div class="card"><div class="card-head"><span class="card-title">Jornadas (${op.jornadas.length})</span></div>${jornadasHTML}</div>`:'<div class="empty">Sin jornadas registradas.</div>'}
+    ${renderEntregasCard(op)}
   `;
 
   // Redirigir showTeoModal al modal del manager cuando estamos en esa vista
   window._mgrModalActive=true;
+}
+
+/* ══ ENTREGAS PARCIALES ══ */
+function calcEntregado(op){
+  return (op.entregas||[]).reduce((s,e)=>s+(parseFloat(e.kg)||0),0);
+}
+function renderEntregasCard(op){
+  const ent=op.entregas||[];
+  const entregado=calcEntregado(op);
+  const adeudado=op.kgPedidos-entregado;
+  const pct=op.kgPedidos>0?Math.min(entregado/op.kgPedidos*100,100):0;
+  const completa=entregado>=op.kgPedidos&&op.kgPedidos>0;
+  const sobre=entregado>op.kgPedidos?entregado-op.kgPedidos:0;
+  const hoy=new Date().toISOString().slice(0,10);
+  const lista=ent.length?ent.map((e,i)=>`
+    <div class="field" style="gap:10px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600">${e.fecha?e.fecha.split('-').reverse().join('/'):'—'} · ${(parseFloat(e.kg)||0).toFixed(1)} kg</div>
+        <div style="font-size:11px;color:var(--txt3);font-family:var(--mono)">${e.remito?'Remito '+escHtml(e.remito):'sin remito'}${e.notas?' · '+escHtml(e.notas):''}</div>
+      </div>
+      <button class="btn sm danger" onclick="removeEntrega('${op.id}',${i})">✕</button>
+    </div>`).join(''):'<div style="padding:1rem;text-align:center;color:var(--txt3);font-size:12px">Sin entregas registradas</div>';
+  return `
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Entregas (${ent.length})</span>
+        ${completa?`<span class="badge open">✓ Completa${sobre>0?' (+'+sobre.toFixed(1)+' kg)':''}</span>`:''}
+      </div>
+      <div style="padding:.875rem 1rem;background:var(--surf2);border-bottom:1px solid var(--bord)">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt2);margin-bottom:5px">
+          <span>Pedido: <b style="color:var(--txt)">${op.kgPedidos} kg</b></span>
+          <span>Entregado: <b style="color:var(--green)">${entregado.toFixed(1)} kg</b></span>
+          <span>${adeudado>0?'Adeudado':'Sobrante'}: <b style="color:${adeudado>0?'var(--red)':'var(--green)'}">${Math.abs(adeudado).toFixed(1)} kg</b></span>
+        </div>
+        <div class="pbar" style="height:8px"><div class="pfill" style="width:${pct.toFixed(1)}%;background:${completa?'var(--green)':'var(--amber)'}"></div></div>
+      </div>
+      ${lista}
+      <div style="padding:.875rem 1rem;background:var(--surf2);border-top:1px solid var(--bord)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:6px">Nueva entrega</div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 8px;align-items:center">
+          <label style="font-size:12px;color:var(--txt2)">Fecha</label>
+          <input type="date" id="ent-fecha-${op.id}" value="${hoy}" style="font-family:var(--mono);font-size:13px;border:1px solid var(--bord2);border-radius:var(--rs);padding:6px 8px;background:var(--surf);color:var(--txt)"/>
+          <label style="font-size:12px;color:var(--txt2)">Kg</label>
+          <input type="number" id="ent-kg-${op.id}" min="0" step="0.1" placeholder="0" style="font-family:var(--mono);font-size:13px;font-weight:600;border:1px solid var(--bord2);border-radius:var(--rs);padding:6px 8px;background:var(--surf);color:var(--txt);text-align:right"/>
+          <label style="font-size:12px;color:var(--txt2)">N° remito</label>
+          <input type="text" id="ent-remito-${op.id}" placeholder="opcional" style="font-family:var(--mono);font-size:13px;border:1px solid var(--bord2);border-radius:var(--rs);padding:6px 8px;background:var(--surf);color:var(--txt)"/>
+          <label style="font-size:12px;color:var(--txt2)">Notas</label>
+          <input type="text" id="ent-notas-${op.id}" placeholder="opcional" style="font-size:13px;border:1px solid var(--bord2);border-radius:var(--rs);padding:6px 8px;background:var(--surf);color:var(--txt)"/>
+        </div>
+        <button class="btn pri" onclick="addEntrega('${op.id}')" style="width:100%;margin-top:10px">＋ Agregar entrega</button>
+      </div>
+    </div>`;
+}
+async function addEntrega(opId){
+  const op=data.ops.find(o=>o.id===opId);if(!op)return;
+  const fecha=document.getElementById('ent-fecha-'+opId).value;
+  const kg=parseFloat(document.getElementById('ent-kg-'+opId).value)||0;
+  const remito=document.getElementById('ent-remito-'+opId).value.trim();
+  const notas=document.getElementById('ent-notas-'+opId).value.trim();
+  if(!fecha||kg<=0){alert('Cargá fecha y kg.');return;}
+  if(!op.entregas)op.entregas=[];
+  op.entregas.push({fecha,kg,remito,notas,createdAt:new Date().toISOString()});
+  op.entregas.sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||''));
+  await saveData();
+  renderOpDetail();
+}
+async function removeEntrega(opId,idx){
+  const op=data.ops.find(o=>o.id===opId);if(!op||!op.entregas)return;
+  const e=op.entregas[idx];if(!e)return;
+  if(!confirm(`¿Borrar la entrega del ${e.fecha?e.fecha.split('-').reverse().join('/'):'—'} (${e.kg} kg)?`))return;
+  op.entregas.splice(idx,1);
+  await saveData();
+  renderOpDetail();
 }
 
 function toggleJorDetail(i){
@@ -940,7 +1092,7 @@ function toggleJorDetail(i){
 function initClienteSel(){
   const s=document.getElementById('n-cliente');
   s.innerHTML='<option value="">— seleccionar —</option>';
-  CLIENTES.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.n;s.appendChild(o);});
+  (data.clientes||[]).forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c.n;s.appendChild(o);});
 }
 function onClienteSel(){recalcTeo();}
 function recalcTeo(){
@@ -948,7 +1100,7 @@ function recalcTeo(){
   const kg=parseFloat(document.getElementById('n-kg').value)||0;
   const merma=parseFloat(document.getElementById('n-merma').value)||2;
   if(isNaN(idx)||!kg){document.getElementById('teo-card').style.display='none';return;}
-  const specs=CLIENTES[idx];
+  const specs=data.clientes[idx];
   const t=calcTeo(specs,kg,merma);
   _lastTeo=t;
   document.getElementById('teo-card').style.display='';
@@ -975,7 +1127,7 @@ async function crearOP(){
   const notas=document.getElementById('n-notas').value.trim();
   if(!num||isNaN(idx)||!kg){alert('Completá número, cliente y kg.');return;}
   if(data.ops.find(o=>o.numero===num)){alert('Ya existe esa OP.');return;}
-  const specs=CLIENTES[idx];
+  const specs=data.clientes[idx];
   const teo=calcTeo(specs,kg,merma);
   const op={id:'op_'+Date.now(),numero:num,cliente:specs.n,specs,kgPedidos:kg,merma,
     fecha,notas,estado:'abierta',teorico:teo,jornadas:[],
@@ -993,6 +1145,143 @@ async function cerrarOP(id){
   if(op)op.estado='cerrada';
   await saveData();
   renderOpDetail();
+}
+
+/* ══ CLIENTES (CRUD) ══ */
+function renderClientes(){
+  const list=data.clientes||[];
+  const sum=document.getElementById('cli-summary');
+  if(sum)sum.textContent=list.length+' cliente'+(list.length!==1?'s':'')+' / producto'+(list.length!==1?'s':'');
+  const el=document.getElementById('cli-list');
+  if(!list.length){el.innerHTML='<div class="empty">Sin clientes cargados.</div>';return;}
+  el.innerHTML=list.map((c,i)=>`
+    <div class="op-item" style="cursor:default">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:700">${escHtml(c.n)}</div>
+          <div style="font-size:11px;color:var(--txt2);font-family:var(--mono);margin-top:3px">
+            PET ${c.aPET}×${c.ePET}µ · PE ${c.aPE}×${c.ePE}µ · Final ${c.af}mm · nT=${c.nT||1}${c.pBF?' · pBF='+c.pBF+'kg':''}
+          </div>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="btn sm" onclick="openCliEdit(${i})">✎ Editar</button>
+          <button class="btn sm danger" onclick="deleteCli(${i})">✕</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function escHtml(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function openCliEdit(idx){
+  cliEditIdx=idx;
+  const isNew=idx<0;
+  const c=isNew?{n:'',aPET:'',ePET:'',aPE:'',ePE:'',af:'',nT:1,pBF:''}:data.clientes[idx];
+  document.getElementById('cli-modal-title').textContent=isNew?'Nuevo cliente / producto':'Editar cliente / producto';
+  document.getElementById('cli-n').value=c.n||'';
+  document.getElementById('cli-aPET').value=c.aPET||'';
+  document.getElementById('cli-ePET').value=c.ePET||'';
+  document.getElementById('cli-aPE').value=c.aPE||'';
+  document.getElementById('cli-ePE').value=c.ePE||'';
+  document.getElementById('cli-af').value=c.af||'';
+  document.getElementById('cli-nT').value=c.nT||1;
+  document.getElementById('cli-pBF').value=c.pBF||'';
+  document.getElementById('cli-modal').style.display='flex';
+}
+function closeCliModal(){document.getElementById('cli-modal').style.display='none';cliEditIdx=-1;}
+async function saveCli(){
+  const c={
+    n:document.getElementById('cli-n').value.trim(),
+    aPET:parseFloat(document.getElementById('cli-aPET').value)||0,
+    ePET:parseFloat(document.getElementById('cli-ePET').value)||0,
+    aPE: parseFloat(document.getElementById('cli-aPE').value)||0,
+    ePE: parseFloat(document.getElementById('cli-ePE').value)||0,
+    af:  parseFloat(document.getElementById('cli-af').value)||0,
+    nT:  parseInt(document.getElementById('cli-nT').value)||1,
+    pBF: parseFloat(document.getElementById('cli-pBF').value)||null,
+    ef:0  // legacy compat
+  };
+  if(!c.n||!c.aPET||!c.ePET||!c.aPE||!c.ePE||!c.af){alert('Completá nombre y todas las medidas (PET, PE, ancho final).');return;}
+  if(!data.clientes)data.clientes=[];
+  if(cliEditIdx<0)data.clientes.push(c);
+  else data.clientes[cliEditIdx]=c;
+  await saveData();
+  closeCliModal();
+  renderClientes();
+}
+async function deleteCli(idx){
+  const c=data.clientes[idx];
+  if(!confirm(`¿Borrar "${c.n}"?\nLas OPs ya creadas no se ven afectadas.`))return;
+  data.clientes.splice(idx,1);
+  await saveData();
+  renderClientes();
+}
+
+/* ══ CONFIG (emails destinatarios) ══ */
+function renderConfig(){
+  const c=data.config||CFG_DEFAULT;
+  document.getElementById('cfg-agustin').value=c.agustin||'';
+  document.getElementById('cfg-jonathan').value=c.jonathan||'';
+  document.getElementById('cfg-mirta').value=c.mirta||'';
+  document.getElementById('cfg-matias').value=c.matias||'';
+  document.getElementById('cfg-cc').value=c.cc||'';
+}
+async function saveCfg(){
+  data.config={
+    agustin:document.getElementById('cfg-agustin').value.trim(),
+    jonathan:document.getElementById('cfg-jonathan').value.trim(),
+    mirta:document.getElementById('cfg-mirta').value.trim(),
+    matias:document.getElementById('cfg-matias').value.trim(),
+    cc:document.getElementById('cfg-cc').value.trim()
+  };
+  await saveData();
+  alert('Configuración guardada.');
+}
+
+/* ══ MAIL DE OP ══ */
+function mailOP(opId){
+  const op=data.ops.find(o=>o.id===opId);
+  if(!op){alert('OP no encontrada.');return;}
+  const cfg=data.config||CFG_DEFAULT;
+  if(!cfg.agustin&&!cfg.jonathan){
+    if(!confirm('No tenés cargados los emails en Configuración. ¿Continuar igual? El mail se va a abrir con los campos de destinatario vacíos.'))return;
+  }
+  const teo=op.teorico;
+  const fechaFmt=op.fecha?op.fecha.split('-').reverse().join('/'):'—';
+  const to=[cfg.agustin,cfg.jonathan].filter(Boolean).join(',');
+  const ccArr=[cfg.matias,cfg.mirta,cfg.cc].filter(Boolean).join(',');
+  const sub=`OP ${op.numero} — ${op.cliente} — ${op.kgPedidos} kg — Entrega ${fechaFmt}`;
+  const lines=[];
+  lines.push('Agustín, Jonathan,');
+  lines.push('');
+  lines.push('Les paso la OP para programar producción.');
+  lines.push('');
+  lines.push('— DETALLE —');
+  lines.push(`OP:               ${op.numero}`);
+  lines.push(`Cliente:          ${op.cliente}`);
+  lines.push(`Kg pedidos:       ${op.kgPedidos} kg`);
+  lines.push(`Fecha entrega:    ${fechaFmt}`);
+  lines.push(`Merma estimada:   ${op.merma}%`);
+  lines.push('');
+  lines.push('— ESTRUCTURA —');
+  lines.push(`PET:   ancho ${op.specs.aPET} mm · espesor ${op.specs.ePET} µ`);
+  lines.push(`PE:    ancho ${op.specs.aPE} mm · espesor ${op.specs.ePE} µ`);
+  lines.push(`Final: ancho ${op.specs.af} mm · nT=${op.specs.nT||1}${op.specs.pBF?' · pBF '+op.specs.pBF+' kg/bobina':''}`);
+  lines.push('');
+  lines.push('— NECESIDADES (teórico con merma) —');
+  lines.push(`PET lámina:       ${teo.kgPET.toFixed(0)} kg   → Agustín`);
+  lines.push(`PE lámina:        ${teo.kgPE.toFixed(0)} kg   → Jonathan`);
+  lines.push(`Metros corrida:   ~${teo.metros.toFixed(0)} m`);
+  if(teo.numBobs)lines.push(`Bobinas finales:  ~${teo.numBobs}`);
+  lines.push('');
+  lines.push('— PRODUCCIÓN —');
+  lines.push(`Producción teórica:  ~${teo.kgFinPorHora.toFixed(0)} kg fin/h`);
+  lines.push(`Tiempo laminado:     ~${teo.tiempoTotal.toFixed(1)} hs`);
+  if(op.notas){lines.push('');lines.push('— NOTAS —');lines.push(op.notas);}
+  lines.push('');
+  lines.push('Saludos,');
+  lines.push('Matías');
+  const body=lines.join('\r\n');
+  const url='mailto:'+encodeURIComponent(to)+'?'+(ccArr?'cc='+encodeURIComponent(ccArr)+'&':'')+'subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(body);
+  window.location.href=url;
 }
 
 /* ══ TABLET ══ */
@@ -1411,12 +1700,12 @@ function renderOutBobs(){
     let h='<div style="background:var(--surf);border:2.5px solid var(--out);border-radius:10px;overflow:hidden;margin-bottom:.75rem">';
     // HEAD
     h+='<div style="display:flex;align-items:center;gap:8px;padding:.625rem .875rem;background:var(--out-bg)">';
-    h+='<span style="font-size:14px;font-weight:800;color:var(--out);flex:1;text-transform:uppercase;letter-spacing:.04em">Bobina salida '+(i+1)+'</span>';
+    h+='<span style="font-size:14px;font-weight:800;color:var(--out);flex:1;text-transform:uppercase;letter-spacing:.04em">Bobina en proceso '+(i+1)+'</span>';
     h+='<button onclick="removeOutBob('+i+')" style="font-size:12px;padding:4px 10px;border:2px solid var(--red);background:transparent;color:var(--red);border-radius:6px;cursor:pointer;font-weight:700">✕</button>';
     h+='</div>';
     // FIELDS
     h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;border-bottom:2px solid var(--bord)">';
-    h+='<div class="bob-field"><label>N\u00b0 Bobina</label><input type="text" class="out-inp" data-idx="'+i+'" data-field="numBobina" value="'+escVal(b.numBobina)+'" placeholder="B-0001"/></div>';
+    h+='<div class="bob-field"><label>N\u00b0 etiqueta f\u00edsica</label><input type="text" class="out-inp" data-idx="'+i+'" data-field="numBobina" value="'+escVal(b.numBobina)+'" placeholder="ej: B-0847"/></div>';
     h+='<div class="bob-field"><label>N\u00b0 Partida</label><input type="text" class="out-inp" data-idx="'+i+'" data-field="partida" value="'+escVal(b.partida)+'" placeholder="L-2026-04"/></div>';
     h+='<div class="bob-field"><label>Kg</label><input type="number" class="out-inp" data-idx="'+i+'" data-field="kg" value="'+escVal(b.kg)+'" min="0" step="0.1" placeholder="0"/></div>';
     h+='<div class="bob-field"><label>Metros</label><input type="number" class="out-inp" data-idx="'+i+'" data-field="metros" value="'+escVal(b.metros)+'" min="0" step="1" placeholder="0"/></div>';
