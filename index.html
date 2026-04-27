@@ -296,6 +296,12 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
       <button class="btn pri sm" onclick="openCliEdit(-1)">＋ Nuevo cliente / producto</button>
     </div>
     <div id="cli-list"></div>
+    <!-- Modal INFO cliente (read-only con cálculos) -->
+    <div id="cli-info-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center">
+      <div style="background:var(--surf);border-radius:var(--r);padding:1.25rem;max-width:520px;width:94%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.25)">
+        <div id="cli-info-body"></div>
+      </div>
+    </div>
     <!-- Modal editor cliente -->
     <div id="cli-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center">
       <div style="background:var(--surf);border-radius:var(--r);padding:1.25rem;max-width:480px;width:94%;max-height:90vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.25)">
@@ -340,6 +346,7 @@ body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSys
     <div class="card">
       <div class="card-head"><span class="card-title">Nueva Orden de Producción</span></div>
       <div class="field"><span class="field-name">N° de OP</span><input type="text" id="n-num" placeholder="LAM-001" style="text-align:left"/></div>
+      <div class="field"><span class="field-name">N° OC cliente</span><input type="text" id="n-numOC" placeholder="ej: 4500220465" style="text-align:left"/></div>
       <div class="field"><span class="field-name">Cliente / producto</span>
         <select id="n-cliente" onchange="onClienteSel()" style="text-align:left;flex:1;max-width:300px"><option value="">— seleccionar —</option></select>
       </div>
@@ -874,7 +881,7 @@ function renderDash(){
             ${completaEnt&&op.estado==='abierta'?'<span class="badge open" style="background:var(--blue-bg);color:var(--blue)">✓ Entrega completa</span>':''}
           </div>
           <div style="font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${op.cliente}</div>
-          <div style="font-size:12px;color:var(--txt3);margin-top:2px">${op.fecha} · ${op.kgPedidos} kg pedidos · ${op.jornadas?.length||0} jornada${(op.jornadas?.length||0)!==1?'s':''}</div>
+          <div style="font-size:12px;color:var(--txt3);margin-top:2px">${op.fecha} · ${op.kgPedidos} kg pedidos${op.numOC?' · OC '+escHtml(op.numOC):''} · ${op.jornadas?.length||0} jornada${(op.jornadas?.length||0)!==1?'s':''}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div style="font-size:18px;font-weight:800;font-family:var(--mono)">${pct.toFixed(0)}<span style="font-size:12px;font-weight:600">%</span></div>
@@ -970,7 +977,7 @@ function renderOpDetail(){
     <div class="card">
       <div class="card-head">
         <div>
-          <div style="font-size:11px;color:var(--txt3)">${op.fecha}</div>
+          <div style="font-size:11px;color:var(--txt3)">${op.fecha}${op.numOC?' · OC cliente: <b style="color:var(--txt2)">'+escHtml(op.numOC)+'</b>':''}</div>
           <div style="font-size:16px;font-weight:700">${op.cliente} <span style="font-size:12px;font-family:var(--mono);color:var(--amber)">${op.numero}</span></div>
           <div style="font-size:12px;color:var(--txt3)">Cono PET: ${op.pesoCono_pet||0}kg · Cono PE: ${op.pesoCono_pe||0}kg${op.notas?' · '+op.notas:''}</div>
         </div>
@@ -1119,6 +1126,7 @@ function recalcTeo(){
 }
 async function crearOP(){
   const num=document.getElementById('n-num').value.trim();
+  const numOC=document.getElementById('n-numOC').value.trim();
   const idx=parseInt(document.getElementById('n-cliente').value);
   const kg=parseFloat(document.getElementById('n-kg').value)||0;
   const merma=parseFloat(document.getElementById('n-merma').value)||2;
@@ -1130,12 +1138,12 @@ async function crearOP(){
   if(data.ops.find(o=>o.numero===num)){alert('Ya existe esa OP.');return;}
   const specs=data.clientes[idx];
   const teo=calcTeo(specs,kg,merma);
-  const op={id:'op_'+Date.now(),numero:num,cliente:specs.n,specs,kgPedidos:kg,merma,
-    fecha,notas,estado:'abierta',teorico:teo,jornadas:[],
+  const op={id:'op_'+Date.now(),numero:num,numOC,cliente:specs.n,specs,kgPedidos:kg,merma,
+    fecha,notas,estado:'abierta',teorico:teo,jornadas:[],entregas:[],
     pesoCono_pet:conoPET,pesoCono_pe:conoPE,createdAt:new Date().toISOString()};
   data.ops.unshift(op);
   await saveData();
-  ['n-num','n-notas'].forEach(id=>document.getElementById(id).value='');
+  ['n-num','n-numOC','n-notas'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('n-cliente').value='';
   document.getElementById('teo-card').style.display='none';
   mTab('ops');
@@ -1180,7 +1188,7 @@ function renderClientes(){
   const el=document.getElementById('cli-list');
   if(!list.length){el.innerHTML='<div class="empty">Sin clientes cargados.</div>';return;}
   el.innerHTML=list.map((c,i)=>`
-    <div class="op-item" style="cursor:default">
+    <div class="op-item" onclick="openCliInfo(${i})" style="cursor:pointer">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-size:14px;font-weight:700">${escHtml(c.n)}</div>
@@ -1188,14 +1196,88 @@ function renderClientes(){
             PET ${c.aPET}×${c.ePET}µ · PE ${c.aPE}×${c.ePE}µ · Final ${c.af}mm · nT=${c.nT||1}${c.pBF?' · pBF='+c.pBF+'kg':''}
           </div>
         </div>
-        <div style="display:flex;gap:4px">
-          <button class="btn sm" onclick="openCliEdit(${i})">✎ Editar</button>
-          <button class="btn sm danger" onclick="deleteCli(${i})">✕</button>
-        </div>
+        <span style="color:var(--txt3);font-size:18px;flex-shrink:0">›</span>
       </div>
     </div>`).join('');
 }
 function escHtml(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function openCliInfo(idx){
+  const c=data.clientes[idx];if(!c)return;
+  // Cálculos derivados
+  const gramPET=c.ePET*DENS_PET;       // g/m²
+  const gramPE =c.ePE *DENS_PE;        // g/m²
+  const gramTot=gramPET+gramPE;        // g/m² total laminado
+  const pbPET=c.aPET*c.ePET*DENS_PET/1e6;  // kg/m de bobina madre PET
+  const pbPE =c.aPE *c.ePE *DENS_PE /1e6;  // kg/m de bobina madre PE
+  const pb=pbPET+pbPE;                     // kg/m total entrante
+  const pp=(c.nT||1)*c.af*gramTot/1e6;     // kg/m producto util
+  const trim=pb>0?(pb-pp)/pb*100:0;        // % trim teórico
+  const kgPorMetroFin=c.af*gramTot/1e6;
+  const mPorBob=c.pBF&&kgPorMetroFin>0?c.pBF/kgPorMetroFin:null;
+  // OPs históricas con este cliente
+  const opsClie=(data.ops||[]).filter(o=>o.cliente===c.n);
+  const kgHist=opsClie.reduce((s,o)=>s+(o.kgPedidos||0),0);
+
+  const body=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:.875rem">
+      <div>
+        <div style="font-size:18px;font-weight:800">${escHtml(c.n)}</div>
+        <div style="font-size:11px;color:var(--txt3);margin-top:3px">${opsClie.length} OP${opsClie.length!==1?'s':''} histórica${opsClie.length!==1?'s':''} · ${kgHist} kg pedidos totales</div>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button class="btn sm" onclick="closeCliInfo();openCliEdit(${idx})">✎ Editar</button>
+        <button class="btn sm danger" onclick="deleteCli(${idx});closeCliInfo()">🗑</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.875rem">
+      <div style="background:var(--pet-bg);border:2px solid var(--pet);border-radius:var(--rs);padding:.625rem .75rem">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--pet);margin-bottom:5px">PET (madre)</div>
+        <div style="font-size:13px;font-family:var(--mono);font-weight:600">Ancho: <b>${c.aPET}</b> mm</div>
+        <div style="font-size:13px;font-family:var(--mono);font-weight:600">Espesor: <b>${c.ePET}</b> µ</div>
+        <div style="font-size:11px;color:var(--pet);margin-top:5px;font-family:var(--mono)">Gramaje: ${gramPET.toFixed(0)} g/m²</div>
+        <div style="font-size:11px;color:var(--pet);font-family:var(--mono)">Peso/m bobina: ${pbPET.toFixed(4)} kg/m</div>
+      </div>
+      <div style="background:var(--pe-bg);border:2px solid var(--pe);border-radius:var(--rs);padding:.625rem .75rem">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--pe);margin-bottom:5px">PE (madre)</div>
+        <div style="font-size:13px;font-family:var(--mono);font-weight:600">Ancho: <b>${c.aPE}</b> mm</div>
+        <div style="font-size:13px;font-family:var(--mono);font-weight:600">Espesor: <b>${c.ePE}</b> µ</div>
+        <div style="font-size:11px;color:var(--pe);margin-top:5px;font-family:var(--mono)">Gramaje: ${gramPE.toFixed(0)} g/m²</div>
+        <div style="font-size:11px;color:var(--pe);font-family:var(--mono)">Peso/m bobina: ${pbPE.toFixed(4)} kg/m</div>
+      </div>
+    </div>
+
+    <div style="background:var(--out-bg);border:2px solid var(--out);border-radius:var(--rs);padding:.625rem .75rem;margin-bottom:.875rem">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--out);margin-bottom:5px">Producto laminado final</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="font-size:13px;font-family:var(--mono);font-weight:600">Ancho final: <b>${c.af}</b> mm</div>
+        <div style="font-size:13px;font-family:var(--mono);font-weight:600">N° tiras (nT): <b>${c.nT||1}</b></div>
+        <div style="font-size:13px;font-family:var(--mono);font-weight:600">Espesor total: <b>${c.ePET+c.ePE}</b> µ</div>
+        <div style="font-size:13px;font-family:var(--mono);font-weight:600">${c.pBF?'pBF: <b>'+c.pBF+'</b> kg/bob':'<span style="color:var(--txt3)">pBF no definido</span>'}</div>
+      </div>
+      <div style="font-size:11px;color:var(--out);margin-top:6px;font-family:var(--mono)">Gramaje total: ${gramTot.toFixed(0)} g/m² · Peso útil/m: ${pp.toFixed(4)} kg/m${mPorBob?' · Metros/bobina: '+mPorBob.toFixed(0)+' m':''}</div>
+    </div>
+
+    <div style="background:var(--surf2);border:1px solid var(--bord);border-radius:var(--rs);padding:.625rem .75rem;margin-bottom:.875rem">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:5px">Cálculo teórico (sin merma)</div>
+      <div style="font-size:12px;font-family:var(--mono);line-height:1.8">
+        <div>Peso bobina entrante (PET+PE): <b>${pb.toFixed(4)} kg/m</b></div>
+        <div>Peso útil por metro: <b>${pp.toFixed(4)} kg/m</b></div>
+        <div>Trim teórico: <b style="color:${trim>15?'var(--red)':trim>8?'var(--amber)':'var(--green)'}">${trim.toFixed(1)}%</b> de scrap por refilado</div>
+      </div>
+    </div>
+
+    ${opsClie.length?`<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:6px">Últimas OPs</div>
+    <div style="max-height:120px;overflow-y:auto;border:1px solid var(--bord);border-radius:var(--rs);margin-bottom:.875rem">
+      ${opsClie.slice(0,5).map(o=>`<div style="padding:6px 10px;border-bottom:1px solid var(--bord);font-size:12px;display:flex;justify-content:space-between"><span><b>${o.numero}</b> · ${o.fecha}</span><span style="color:var(--txt3)">${o.kgPedidos} kg · ${o.estado}</span></div>`).join('')}
+    </div>`:''}
+
+    <button onclick="closeCliInfo()" class="btn" style="width:100%">Cerrar</button>
+  `;
+  document.getElementById('cli-info-body').innerHTML=body;
+  document.getElementById('cli-info-modal').style.display='flex';
+}
+function closeCliInfo(){document.getElementById('cli-info-modal').style.display='none';}
 function openCliEdit(idx){
   cliEditIdx=idx;
   const isNew=idx<0;
@@ -1273,7 +1355,7 @@ function mailOP(opId){
   const fechaFmt=op.fecha?op.fecha.split('-').reverse().join('/'):'—';
   const to=[cfg.agustin,cfg.jonathan].filter(Boolean).join(',');
   const ccArr=[cfg.matias,cfg.mirta,cfg.cc].filter(Boolean).join(',');
-  const sub=`OP ${op.numero} — ${op.cliente} — ${op.kgPedidos} kg — Entrega ${fechaFmt}`;
+  const sub=`OP ${op.numero} — ${op.cliente}${op.numOC?' — OC '+op.numOC:''} — ${op.kgPedidos} kg — Entrega ${fechaFmt}`;
   const lines=[];
   lines.push('Agustín, Jonathan,');
   lines.push('');
@@ -1281,6 +1363,7 @@ function mailOP(opId){
   lines.push('');
   lines.push('— DETALLE —');
   lines.push(`OP:               ${op.numero}`);
+  if(op.numOC)lines.push(`OC cliente:       ${op.numOC}`);
   lines.push(`Cliente:          ${op.cliente}`);
   lines.push(`Kg pedidos:       ${op.kgPedidos} kg`);
   lines.push(`Fecha entrega:    ${fechaFmt}`);
