@@ -1557,14 +1557,13 @@ function getEstadoClsFor(b,ek){
   return '';
 }
 function renderEstadoBtns(b,tipo,i){
-  const q=JSON.stringify;
   const btns=BOB_ESTADOS.map(e=>{
     const cls=getEstadoClsFor(b,e.k);
-    return ["<button class='est-btn ",cls,"' onclick=\"setBobEstado(",q(tipo),",",i,",",q(e.k),")\">" ,e.label,"</button>"].join('');
+    return "<button class='est-btn "+cls+"' onclick=\"setBobEstado('"+tipo+"',"+i+",'"+e.k+"')\">"+e.label+"</button>";
   }).join('');
   const otroVal=isOtro(b.estado)&&b.estado!=='otro'?b.estado.slice(5):'';
   const otroInput=isOtro(b.estado)
-    ? "<input style='width:100%;margin-top:6px;font-size:14px;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:7px 8px;background:var(--surf2);color:var(--txt);outline:none' type='text' placeholder='Describí el problema\u2026' value='"+otroVal.replace(/'/g,"&#39;")+"' oninput=\"setBobEstadoOtro("+q(tipo)+","+i+",this.value)\"/>"
+    ? "<input style='width:100%;margin-top:6px;font-size:14px;border:1.5px solid var(--bord2);border-radius:var(--rs);padding:7px 8px;background:var(--surf2);color:var(--txt);outline:none' type='text' placeholder='Describí el problema\u2026' value='"+otroVal.replace(/'/g,"&#39;")+"' oninput=\"setBobEstadoOtro('"+tipo+"',"+i+",this.value)\"/>"
     :'';
   return btns+otroInput;
 }
@@ -1665,7 +1664,7 @@ function renderBobCard(b,i,tipo,emp){
   if(emp>0&&i>0)h+=' <span style="font-size:10px;background:rgba(255,255,255,.25);padding:1px 7px;border-radius:8px">EMPALMADA</span>';
   h+='</span>';
   if(hasKg)h+='<span style="font-size:16px;font-weight:900;font-family:var(--mono);color:'+sc.htx+';background:rgba(0,0,0,.2);padding:3px 10px;border-radius:8px">'+(b.kgNetos||0)+' kg</span>';
-  h+='<button onclick="removeBobina('+q(tipo)+','+i+')" style="width:32px;height:32px;border:2px solid rgba(255,255,255,.4);border-radius:6px;background:transparent;color:'+sc.htx+';font-size:14px;font-weight:900;cursor:pointer;flex-shrink:0">✕</button>';
+  h+='<button onclick="removeBobina(\''+tipo+'\','+i+')" style="width:32px;height:32px;border:2px solid rgba(255,255,255,.4);border-radius:6px;background:transparent;color:'+sc.htx+';font-size:14px;font-weight:900;cursor:pointer;flex-shrink:0">✕</button>';
   h+='</div>';
   // IDENTIFICACIÓN
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:.75rem .875rem;border-bottom:2px solid var(--bord)">';
